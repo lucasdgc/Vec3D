@@ -10,6 +10,7 @@ import openfl.gl.GL;
 import openfl.gl.GLProgram;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
+import openfl.Assets;
 
 /**
  * ...
@@ -34,6 +35,7 @@ class DeviceGL
 	
 	private var modelViewMatrixUniform:GLUniformLocation;
 	private var projectionMatrixUniform:GLUniformLocation;
+	private var materialColorUniform:GLUniformLocation;
 	
 	private var shaderProgram:GLProgram;
 	
@@ -59,16 +61,7 @@ class DeviceGL
 	}
 	
 	private function createProgram ():Void {
-		var vertexShaderSource = 
-			"attribute vec3 aVertexPosition;
-			
-			uniform mat4 uModelViewMatrix;
-			uniform mat4 uProjectionMatrix;
-			
-			void main(void) {
-				gl_PointSize = 2.5;
-				gl_Position = uProjectionMatrix * uModelViewMatrix * vec4 (aVertexPosition, 1.0);
-			}";
+		var vertexShaderSource:String = Assets.getText("assets/Shaders/VertexShader.txt");
 		
 		var vertexShader = GL.createShader (GL.VERTEX_SHADER);
 		GL.shaderSource (vertexShader, vertexShaderSource);
@@ -78,17 +71,21 @@ class DeviceGL
 			throw "Error compiling vertex shader";
 		}
 		
-		var fragmentShaderSource = 
-			"void main (void)  
-				{     
-				   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);  
-				} ";
+		#if html5
+		var fragmentShaderSource:String = Assets.getText("assets/Shaders/FragmentShader_WebGL.txt");
+		#end
+		
+		#if !html5
+		var fragmentShaderSource:String = Assets.getText("assets/Shaders/FragmentShader_OpenGL.txt");
+		#end
+		
 		
 		var fragmentShader = GL.createShader (GL.FRAGMENT_SHADER);
 		GL.shaderSource (fragmentShader, fragmentShaderSource);
 		GL.compileShader (fragmentShader);
 		
 		if (GL.getShaderParameter (fragmentShader, GL.COMPILE_STATUS) == 0) {
+			trace (GL.getShaderInfoLog(fragmentShader));
 			
 			throw "Error compiling fragment shader";
 			
@@ -106,6 +103,7 @@ class DeviceGL
 		
 		projectionMatrixUniform = GL.getUniformLocation (shaderProgram, "uProjectionMatrix");
 		modelViewMatrixUniform = GL.getUniformLocation (shaderProgram, "uModelViewMatrix");
+		materialColorUniform = GL.getUniformLocation (shaderProgram, "uMaterialColorv4");
 	}
 	
 	public function clear (color:UInt) {
@@ -127,6 +125,10 @@ class DeviceGL
 				
 				if(mesh.drawPoints && mesh.vertices.length > 0){
 					//var points = new Float32Array (Mesh.getRawVerticesData(mesh.vertices));
+					var colorArray:Array<Float> = [0, 0, 1, 1];
+		
+					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+					
 					var points = mesh.rawVertexData;
 					draw(points, DrawFormat.POINT, projectionMatrix, worldViewMatrix);
 				}
@@ -145,7 +147,7 @@ class DeviceGL
 					
 					var edgesData = mesh.rawEdgesData;
 					
-					draw(new Float32Array (edgesData), DrawFormat.LINE, projectionMatrix, worldViewMatrix);
+					draw(edgesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
 					
 				}
 				
@@ -166,7 +168,11 @@ class DeviceGL
 					
 					var facesData = mesh.rawFacesData;
 					
-					draw(new Float32Array (facesData), DrawFormat.LINE, projectionMatrix, worldViewMatrix);
+					var colorArray:Array<Float> = [0, 1, 0, 1];
+		
+					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+					
+					draw(facesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
 				}
 			} 
 		}
@@ -184,7 +190,7 @@ class DeviceGL
 
 		GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.m));
 		GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (worldViewMatrix.m));
-		
+
 		//GL.enable(GL.CULL_FACE);
 		
 		if(drawFormat == DrawFormat.POINT) {
