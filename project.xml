@@ -9,7 +9,7 @@
 	
 	<window orientation="landscape" fullscreen="true" if="mobile" />
 	
-	<android target-sdk-version="19" />
+	<android target-sdk-version="22" />
 	
 	<source path="Source" />
 	
@@ -19,6 +19,6 @@
 	
 	<icon path="assets/icon.svg" />
 	
-	<template path="MainActivity.java" rename="src/com/sample/vec3d/MainActivity.java" if="android" />
+	<template path="libs/MainActivity.java" rename="src/com/sample/vec3d/MainActivity.java" if="android" />
 	
 </project>
