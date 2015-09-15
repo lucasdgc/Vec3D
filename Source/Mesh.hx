@@ -9,6 +9,12 @@ import openfl.utils.Float32Array;
  * @author Lucas Gonçalves
  */
 
+ typedef Material = {
+	 var color:UInt;
+	 var name:String;
+	 
+ }
+ 
  typedef Edge = {
 	 var a:Int;
 	 var b:Int;
@@ -34,6 +40,9 @@ class Mesh
 	public var edges:Array<Edge>;
 	public var faces:Array<Face>;
 	
+	public var relPosition:Vector3;
+	public var relRotation:Vector3;
+	
 	public var gameObject:GameObject;
 	
 	public var drawEdges:Bool;
@@ -48,6 +57,9 @@ class Mesh
 	
 	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = true, drawEdges:Bool = true, drawFaces:Bool = true) {
 		meshes.push(this);
+		
+		relPosition = new Vector3();
+		relRotation = new Vector3();
 		
 		vertices = new Array<Vector3>();
 		if(verticesCount > 0){
@@ -99,24 +111,43 @@ class Mesh
 			
 			var jsonData:Dynamic = Json.parse(meshData);
 			
+			var mesh:Mesh = new Mesh();
+			
 			for(i in 0...jsonData.meshes.length) {
 				var verticesArray:Dynamic =  jsonData.meshes[i].vertices;
 				var facesArray:Dynamic =  jsonData.meshes[i].faces;
 				var edgesArray:Dynamic = jsonData.meshes[i].edges;
 				
-				
 				var verticesCount = Std.int(verticesArray.length / (vertexStep * 3));
 				var facesCount = Std.int(facesArray.length / 3);
 				var edgesCount = Std.int(edgesArray.length / 2);
 				
-				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
+				if(i == 0){
+					//mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
+				} else {
+					//mesh = mesh;
+				}
+				
+				var pos:Vector3 = new Vector3(jsonData.meshes[i].position[0], jsonData.meshes[i].position[1], jsonData.meshes[i].position[2]);
+				
+				//relPosition = pos;
+				
+				var rot:Vector3 = new Vector3(jsonData.meshes[i].rotation[0], jsonData.meshes[i].rotation[1], jsonData.meshes[i].rotation[2]);
+				
+				//mesh.relRotation = rot;
 				
 				for(k in 0...verticesCount){
 					var x = Std.parseFloat(verticesArray[k * 3]);
 					var y = Std.parseFloat(verticesArray[k * 3 + 1]);
 					var z = Std.parseFloat(verticesArray[k * 3 + 2]);
 					
-					mesh.vertices[k] = new Vector3(x, y, z);
+					if(i == 0){
+						mesh.vertices[k] = new Vector3(x, y, z);
+					} else {
+						mesh.vertices[mesh.vertices.length] = new Vector3(x + pos.x, y + pos.y, z + pos.z);
+					}
+					
+					trace(pos.x + x);
 				}
 				
 				//trace("Vertex Count: " + mesh.name + " - " + verticesArray.length / vertexStep);
@@ -143,9 +174,8 @@ class Mesh
 				trace("Edges Count: " + mesh.name + " - " + mesh.edges.length);
 				
 				mesh.setRawData();
-				
-				return mesh;
 			}
+			return mesh;
 			//}
 			
 		} else {

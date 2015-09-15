@@ -205,7 +205,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		mesh.transform(matrix_world)		
 								
 		# Triangulate mesh if required
-		# Export_babylon.mesh_triangulate(mesh)
+		Export_babylon.mesh_triangulate(mesh)
 		
 		# Getting vertices, faces and edges
 		vertices=",\"vertices\":["
@@ -320,7 +320,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 					index_UV = 0
 					if alreadySaved:
 						alreadySaved=False						
-						
+						verticesCount +=1
 						# if hasUV:
 						#	for vUV in vertices_UVs[vertex_index]:
 						#		if (vUV[0]==vertex_UV[0] and vUV[1]==vertex_UV[1]):
@@ -366,7 +366,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 					faces +="%i,"%(index)
 					indicesCount += 1			
 					
-			subMeshes[materialIndex].verticesCount = vertsCount - subMeshes[materialIndex].verticesStart
+			subMeshes[materialIndex].verticesCount = verticesCount - subMeshes[materialIndex].verticesStart
 			subMeshes[materialIndex].indexCount = indicesCount - subMeshes[materialIndex].indexStart
 			subMeshes[materialIndex].edgesCount = edgesCount - subMeshes[materialIndex].edgesStart
 				
@@ -437,6 +437,8 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			Export_babylon.write_int(file_handler, "verticesCount", subMesh.verticesCount)
 			Export_babylon.write_int(file_handler, "indexStart", subMesh.indexStart)
 			Export_babylon.write_int(file_handler, "indexCount", subMesh.indexCount)
+			Export_babylon.write_int(file_handler, "edgesStart", subMesh.edgesStart)
+			Export_babylon.write_int(file_handler, "edgesCount", subMesh.edgesCount)
 			file_handler.write("}")
 			first = False
 		file_handler.write("]")
@@ -447,7 +449,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 
 	def save(operator, context, filepath="",
 		use_apply_modifiers=False,
-		use_triangulate=False,
+		use_triangulate=True,
 		use_compress=True):
 
 		# Open file
