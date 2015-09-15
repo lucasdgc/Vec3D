@@ -244,58 +244,59 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		
 		vertsCount = 0
 		
+		for verts in mesh.vertices:
+			
+			vertex_index = vertsCount
+			vertex = mesh.vertices[vertex_index]
+			position = vertex.co
+			normal = vertex.normal	
+		
+			index=vertsCount
+			alreadySavedVertices[vertex_index]=True
+			vertices_indices[vertex_index].append(index)
+			
+			vertices+="%.4f,%.4f,%.4f,"%(position.x,position.z,position.y)				
+			# vertices+="%.4f,%.4f,%.4f,"%(normal.x,normal.z,normal.y)
+			#if hasUV:
+			#	vertices+="%.4f,%.4f,"%(vertex_UV[0], vertex_UV[1])
+				
+			#if hasUV2:
+			#	vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
+			
+			vertsCount += 1
+			
+		for edge in mesh.edges:
+		
+			#if edge.material_index != materialIndex:
+			#	continue
+	
+			for v in range (2):
+			
+				vertex_index = edge.vertices[v]
+				alreadySaved = alreadySavedVertices[vertex_index]
+				index_UV = 0
+				if alreadySaved:
+					alreadySaved=False						
+					
+					for savedIndex in vertices_indices[vertex_index]:
+						if savedIndex >= verticesCount:
+							alreadySaved=True
+							break
+						index_UV+=1
+				  
+				if (alreadySaved):
+					# Reuse vertex
+					index=vertices_indices[vertex_index][index_UV]
+				
+				edges +="%i,"%(index)
+				edgesCount += 1	
+		
 		for materialIndex in range(materialsCount):
 			subMeshes.append(SubMesh())
 			subMeshes[materialIndex].materialIndex = materialIndex
 			subMeshes[materialIndex].verticesStart = verticesCount
 			subMeshes[materialIndex].indexStart = indicesCount
 			subMeshes[materialIndex].edgesStart = edgesCount
-		
-			for verts in mesh.vertices:
-			
-				vertex_index = vertsCount
-				vertex = mesh.vertices[vertex_index]
-				position = vertex.co
-				normal = vertex.normal	
-			
-				index=vertsCount
-				alreadySavedVertices[vertex_index]=True
-				vertices_indices[vertex_index].append(index)
-				
-				vertices+="%.4f,%.4f,%.4f,"%(position.x,position.z,position.y)				
-				# vertices+="%.4f,%.4f,%.4f,"%(normal.x,normal.z,normal.y)
-				#if hasUV:
-				#	vertices+="%.4f,%.4f,"%(vertex_UV[0], vertex_UV[1])
-					
-				#if hasUV2:
-				#	vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
-				
-				vertsCount += 1
-			
-			for edge in mesh.edges:
-			
-				#if edge.material_index != materialIndex:
-				#	continue
-		
-				for v in range (2):
-					vertex_index = edge.vertices[v]
-					alreadySaved = alreadySavedVertices[vertex_index]
-					index_UV = 0
-					if alreadySaved:
-						alreadySaved=False						
-						
-						for savedIndex in vertices_indices[vertex_index]:
-							if savedIndex >= subMeshes[materialIndex].verticesStart:
-								alreadySaved=True
-								break
-							index_UV+=1
-					  
-					if (alreadySaved):
-						# Reuse vertex
-						index=vertices_indices[vertex_index][index_UV]
-					
-					edges +="%i,"%(index)
-					edgesCount += 1	
 		
 			for face in mesh.tessfaces:  # For each face
 				

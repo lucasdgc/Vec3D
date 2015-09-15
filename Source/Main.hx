@@ -45,7 +45,7 @@ class Main extends Sprite {
 		cube1 = new GameObject("cube01", Primitives.CUBE);
 		cube1.position = new Vector3 (0, 0, 4);*/
 		
-		var monkeyCount:Int = 0;
+		/*var monkeyCount:Int = 0;
 		
 		for (i in -4...4){
 			for (j in -2...4){
@@ -55,7 +55,7 @@ class Main extends Sprite {
 				monkeyCount ++;
 			}
 		}
-		trace(monkeyCount);
+		trace(monkeyCount);*/
 		
 		
 		camera.position = new Vector3(0, 0, -10);
@@ -75,8 +75,8 @@ class Main extends Sprite {
 		bullock.rotation = new Vector3 (bullock.rotation.x + 0.01, bullock.rotation.y + 0.01, bullock.rotation.z);
 		cube1.rotation = new Vector3 (cube1.rotation.x - .01, cube1.rotation.y - .02, cube1.rotation.z - .01);*/
 		
-		for(m in monkeyArray){
+		/*for(m in monkeyArray){
 			m.rotation =  new Vector3(m.rotation.x + 0.01, m.rotation.y + 0.01, m.rotation.z);
-		}
+		}*/
 	}
 }
