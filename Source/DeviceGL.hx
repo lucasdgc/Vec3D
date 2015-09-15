@@ -3,7 +3,6 @@ import openfl.display.OpenGLView;
 import com.babylonhx.math.Matrix;
 import com.babylonhx.math.Vector3;
 import openfl.display.Sprite;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.gl.GLBuffer;
 import openfl.gl.GL;
@@ -120,6 +119,8 @@ class DeviceGL
 	
 	public function render(camera:Camera, meshes:Array<Mesh> ) {
 		
+		GL.useProgram(shaderProgram);
+		
 		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 		
@@ -128,38 +129,7 @@ class DeviceGL
 				var worldMatrix = Matrix.RotationYawPitchRoll(mesh.gameObject.rotation.y, mesh.gameObject.rotation.x, mesh.gameObject.rotation.z) 
 				.multiply(Matrix.Translation(mesh.gameObject.position.x, mesh.gameObject.position.y, mesh.gameObject.position.z));
 				var worldViewMatrix = worldMatrix.multiply(viewMatrix);
-				
-				if(mesh.drawPoints && mesh.vertices.length > 0){
-					//var points = new Float32Array (Mesh.getRawVerticesData(mesh.vertices));					
-					
-					var colorArray:Array<Float> = [1, 0, 0, 1];
-					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
-					
-					var points = mesh.rawVertexData;
-					
-					//var points = Mesh.getRawVerticesData(mesh.vertices);
-					
-					draw(new Float32Array (points), DrawFormat.POINT, projectionMatrix, worldViewMatrix);
-				}
-				
-				if (mesh.drawEdges && mesh.edges.length > 0 ) {
-					
-					/*var edges:Array<Vector3> = new Array();
-					for (edge in mesh.edges) {
-						
-						var vertexA:Vector3 = mesh.vertices[edge.a];
-						var vertexB:Vector3 = mesh.vertices[edge.b];
-						
-						edges.push(vertexA);
-						edges.push(vertexB);
-					}*/
-					
-					var edgesData = mesh.rawEdgesData;
-					
-					draw(edgesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
-					
-				}
-				
+
 				if (mesh.drawFaces && mesh.faces.length > 0) {
 					/*var faces:Array<Vector3> = new Array();
 					for (face in mesh.faces){
@@ -183,13 +153,45 @@ class DeviceGL
 					
 					draw(facesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
 				}
+				
+				if (mesh.drawEdges && mesh.edges.length > 0 ) {
+					
+					/*var edges:Array<Vector3> = new Array();
+					for (edge in mesh.edges) {
+						
+						var vertexA:Vector3 = mesh.vertices[edge.a];
+						var vertexB:Vector3 = mesh.vertices[edge.b];
+						
+						edges.push(vertexA);
+						edges.push(vertexB);
+					}*/
+					
+					var edgesData = mesh.rawEdgesData;
+					
+					draw(edgesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
+				}
+				
+				if(mesh.drawPoints && mesh.vertices.length > 0){
+					//var points = new Float32Array (Mesh.getRawVerticesData(mesh.vertices));					
+				
+					var colorArray:Array<Float> = [0, 0, 1, 1];
+					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+					
+					var points = mesh.rawVertexData;
+					
+					//var points = Mesh.getRawVerticesData(mesh.vertices);
+					
+					draw(new Float32Array (points), DrawFormat.POINT, projectionMatrix, worldViewMatrix);
+				}
+				
+				
 			} 
 		}
 	}
 	
 	private function draw(vertices:Float32Array, drawFormat:DrawFormat, projectionMatrix:Matrix, worldViewMatrix:Matrix) {
 		
-		GL.useProgram(shaderProgram);
+		//GL.useProgram(shaderProgram);
 		GL.enableVertexAttribArray(vertexAttribute);
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
