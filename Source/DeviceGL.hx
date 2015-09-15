@@ -121,6 +121,10 @@ class DeviceGL
 		
 		GL.useProgram(shaderProgram);
 		
+		var colorArray:Array<Float> = [0, 1, 0, 1];
+
+		GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+		
 		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 		
@@ -146,10 +150,6 @@ class DeviceGL
 					}*/
 					
 					var facesData = mesh.rawFacesData;
-					
-					var colorArray:Array<Float> = [0, 1, 0, 1];
-		
-					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
 					
 					draw(facesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
 				}

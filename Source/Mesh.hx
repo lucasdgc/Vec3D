@@ -102,11 +102,14 @@ class Mesh
 			for(i in 0...jsonData.meshes.length) {
 				var verticesArray:Dynamic =  jsonData.meshes[i].vertices;
 				var facesArray:Dynamic =  jsonData.meshes[i].faces;
-
+				var edgesArray:Dynamic = jsonData.meshes[i].edges;
+				
+				
 				var verticesCount = Std.int(verticesArray.length / (vertexStep * 3));
 				var facesCount = Std.int(facesArray.length / 3);
+				var edgesCount = Std.int(edgesArray.length / 2);
 				
-				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount);
+				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
 				
 				for(k in 0...verticesCount){
 					var x = Std.parseFloat(verticesArray[k * 3]);
@@ -130,6 +133,14 @@ class Mesh
 				//trace("Face Count: " + mesh.name + " - " + facesArray.length / 3);
 				trace("Face Count: " + mesh.name + " - " + mesh.faces.length);
 				
+				for(l in 0...edgesCount){
+					var _a = Std.int(edgesArray[l * 2]);
+					var _b = Std.int(edgesArray[l * 2 + 1]);
+				
+					mesh.edges[l] = { a : _a, b : _b };
+				}
+				
+				trace("Edges Count: " + mesh.name + " - " + mesh.edges.length);
 				
 				mesh.setRawData();
 				

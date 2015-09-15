@@ -34,23 +34,29 @@ class Main extends Sprite {
 		device = new DeviceGL(this);
 		
 		monkey = new GameObject("monkey", "monkey_hollow");
-		monkey.mesh.drawFaces = true;
+		monkey.mesh.drawFaces = false;
 		monkey.mesh.drawPoints = true;
+		monkey.mesh.drawEdges = true;
 		/*icos = new GameObject("icos", "icosphere");
 		icos.position = new Vector3(2.5, 0, 2.5);
 		bullock = new GameObject("bullock", "bullock");
 		bullock.position = new Vector3(-2.5, 0, 2.5);
 		
 		cube1 = new GameObject("cube01", Primitives.CUBE);
-		cube1.position = new Vector3 (0, 0, 4);
+		cube1.position = new Vector3 (0, 0, 4);*/
+		
+		var monkeyCount:Int = 0;
 		
 		for (i in -4...4){
 			for (j in -2...4){
-				var m = new GameObject("", "monkey");
+				var m = new GameObject("", "monkey_hollow");
 				m.position = new Vector3(i, j , j);
 				monkeyArray.push(m);
+				monkeyCount ++;
 			}
-		}*/
+		}
+		trace(monkeyCount);
+		
 		
 		camera.position = new Vector3(0, 0, -10);
 		camera.target = Vector3.Zero();
@@ -67,10 +73,10 @@ class Main extends Sprite {
 		monkey.rotation = new Vector3 (monkey.rotation.x + 0.01, monkey.rotation.y + 0.01, monkey.rotation.z);
 		/*icos.rotation = new Vector3 (icos.rotation.x + 0.01, icos.rotation.y + 0.01, icos.rotation.z);
 		bullock.rotation = new Vector3 (bullock.rotation.x + 0.01, bullock.rotation.y + 0.01, bullock.rotation.z);
-		cube1.rotation = new Vector3 (cube1.rotation.x - .01, cube1.rotation.y - .02, cube1.rotation.z - .01);
+		cube1.rotation = new Vector3 (cube1.rotation.x - .01, cube1.rotation.y - .02, cube1.rotation.z - .01);*/
 		
 		for(m in monkeyArray){
 			m.rotation =  new Vector3(m.rotation.x + 0.01, m.rotation.y + 0.01, m.rotation.z);
-		}*/
+		}
 	}
 }

@@ -29,8 +29,6 @@ class SubMesh:
 	verticesCount = 0
 	indexStart = 0
 	indexCount = 0
-	edgesStart = 0
-	edgesCount = 0
 	
 class MultiMaterial:
 	name = ""
@@ -210,7 +208,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		# Getting vertices, faces and edges
 		vertices=",\"vertices\":["
 		faces =",\"faces\":["	
-		edges=",\"edges\":["
+		#edges=",\"edges\":["
 		hasUV = False;
 		hasUV2 = False;
 		
@@ -240,7 +238,6 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		materialsCount = max(1, len(object.material_slots))
 		verticesCount = 0
 		indicesCount = 0
-		edgesCount = 0
 		
 		vertsCount = 0
 		
@@ -249,7 +246,6 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			subMeshes[materialIndex].materialIndex = materialIndex
 			subMeshes[materialIndex].verticesStart = verticesCount
 			subMeshes[materialIndex].indexStart = indicesCount
-			subMeshes[materialIndex].edgesStart = edgesCount
 		
 			for verts in mesh.vertices:
 			
@@ -272,30 +268,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 				
 				vertsCount += 1
 			
-			for edge in mesh.edges:
 			
-				#if edge.material_index != materialIndex:
-				#	continue
-		
-				for v in range (2):
-					vertex_index = edge.vertices[v]
-					alreadySaved = alreadySavedVertices[vertex_index]
-					index_UV = 0
-					if alreadySaved:
-						alreadySaved=False						
-						
-						for savedIndex in vertices_indices[vertex_index]:
-							if savedIndex >= subMeshes[materialIndex].verticesStart:
-								alreadySaved=True
-								break
-							index_UV+=1
-					  
-					if (alreadySaved):
-						# Reuse vertex
-						index=vertices_indices[vertex_index][index_UV]
-					
-					edges +="%i,"%(index)
-					edgesCount += 1	
 		
 			for face in mesh.tessfaces:  # For each face
 				
@@ -365,17 +338,14 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 					faces +="%i,"%(index)
 					indicesCount += 1			
 					
-			subMeshes[materialIndex].verticesCount = vertsCount - subMeshes[materialIndex].verticesStart
+			subMeshes[materialIndex].verticesCount = verticesCount - subMeshes[materialIndex].verticesStart
 			subMeshes[materialIndex].indexCount = indicesCount - subMeshes[materialIndex].indexStart
-			subMeshes[materialIndex].edgesCount = edgesCount - subMeshes[materialIndex].edgesStart
 				
 		vertices=vertices.rstrip(',')
 		faces=faces.rstrip(',')
-		edges=edges.rstrip(',')
 			
 		vertices+="]\n"
 		faces+="]\n"	
-		edges+="]\n"		
 				
 		# Writing mesh		
 		file_handler.write("{")
@@ -422,7 +392,6 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			
 		file_handler.write(vertices)	
 		file_handler.write(faces)	
-		file_handler.write(edges)
 		
 		# Sub meshes
 		file_handler.write(",\"subMeshes\":[")
