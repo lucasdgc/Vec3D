@@ -35,7 +35,7 @@ class MultiMaterial:
 	materials = []
 
 class Export_babylon(bpy.types.Operator, ExportHelper):  
-	"""Export Babylon.js scene (.babylon)""" 
+	"""Export Vec3D Model (.vec3D)""" 
 	bl_idname = "model.vec3d"
 	bl_label = "Export Vec3d Model"
 
@@ -233,11 +233,12 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		# Triangulate mesh if required
 		# Export_babylon.mesh_triangulate(mesh)
 		
-		# Getting vertices and indices
+		# Getting vertices, faces and edges
 		vertices=",\"vertices\":["
-		indices=",\"indices\":["	
-		hasUV = True;
-		hasUV2 = True;
+		faces =",\"faces\":["	
+		#edges=",\"edges\":["
+		hasUV = False;
+		hasUV2 = False;
 		
 		if len(mesh.tessface_uv_textures) > 0:
 			UVmap=mesh.tessface_uv_textures[0].data	
@@ -329,7 +330,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 						vertices_indices[vertex_index].append(index)
 						
 						vertices+="%.4f,%.4f,%.4f,"%(position.x,position.z,position.y)				
-						vertices+="%.4f,%.4f,%.4f,"%(normal.x,normal.z,normal.y)
+						# vertices+="%.4f,%.4f,%.4f,"%(normal.x,normal.z,normal.y)
 						if hasUV:
 							vertices+="%.4f,%.4f,"%(vertex_UV[0], vertex_UV[1])
 							
@@ -337,17 +338,17 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 							vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
 						
 						verticesCount += 1
-					indices+="%i,"%(index)
+					faces +="%i,"%(index)
 					indicesCount += 1			
 					
 			subMeshes[materialIndex].verticesCount = verticesCount - subMeshes[materialIndex].verticesStart
 			subMeshes[materialIndex].indexCount = indicesCount - subMeshes[materialIndex].indexStart
 				
 		vertices=vertices.rstrip(',')
-		indices=indices.rstrip(',')
+		faces=faces.rstrip(',')
 			
 		vertices+="]\n"
-		indices+="]\n"	
+		faces+="]\n"	
 				
 		# Writing mesh		
 		file_handler.write("{")
@@ -393,7 +394,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			Export_babylon.write_int(file_handler, "uvCount", 0)
 			
 		file_handler.write(vertices)	
-		file_handler.write(indices)	
+		file_handler.write(faces)	
 		
 		# Sub meshes
 		file_handler.write(",\"subMeshes\":[")

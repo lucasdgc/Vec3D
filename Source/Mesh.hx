@@ -23,8 +23,8 @@ import openfl.utils.Float32Array;
 class Mesh
 {
 	private static var meshesPath:String = "assets/Meshes/";
-	private static var meshesExtension:String = ".babylon";
-	public static var vertexStep = 6;
+	private static var meshesExtension:String = ".vec3d";
+	public static var vertexStep = 1;
 	
 	public static var meshes:Array<Mesh> = new Array();
 	private static var defaultMeshName:String = "mesh_";
@@ -101,24 +101,22 @@ class Mesh
 			
 			for(i in 0...jsonData.meshes.length) {
 				var verticesArray:Dynamic =  jsonData.meshes[i].vertices;
-				var facesArray:Dynamic =  jsonData.meshes[i].indices;
+				var facesArray:Dynamic =  jsonData.meshes[i].faces;
 
-				var verticesCount = Std.int(verticesArray.length / vertexStep);
+				var verticesCount = Std.int(verticesArray.length / (vertexStep * 3));
 				var facesCount = Std.int(facesArray.length / 3);
 				
 				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount);
 				
 				for(k in 0...verticesCount){
-					var x = Std.parseFloat(verticesArray[k * vertexStep]);
-					var y = Std.parseFloat(verticesArray[k * vertexStep + 1]);
-					var z = Std.parseFloat(verticesArray[k * vertexStep + 2]);
+					var x = Std.parseFloat(verticesArray[k * 3]);
+					var y = Std.parseFloat(verticesArray[k * 3 + 1]);
+					var z = Std.parseFloat(verticesArray[k * 3 + 2]);
 					
 					mesh.vertices[k] = new Vector3(x, y, z);
-					//trace("k = " + k);
-					//trace("vertices = "+mesh.vertices.length);
 				}
 				
-				trace("Vertex Count: " + mesh.name + " - " + verticesArray.length / vertexStep);
+				//trace("Vertex Count: " + mesh.name + " - " + verticesArray.length / vertexStep);
 				trace("Vertex Count: " + mesh.name + " - " + mesh.vertices.length);
 				
 				for(j in 0...facesCount){
@@ -129,7 +127,7 @@ class Mesh
 					mesh.faces[j] = { a : _a, b : _b, c : _c };
 				}
 				
-				trace("Face Count: " + mesh.name + " - " + facesArray.length / 3);
+				//trace("Face Count: " + mesh.name + " - " + facesArray.length / 3);
 				trace("Face Count: " + mesh.name + " - " + mesh.faces.length);
 				
 				

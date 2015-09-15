@@ -205,7 +205,7 @@ class DeviceGL
 		//GL.enable(GL.CULL_FACE);
 		
 		if (drawFormat == DrawFormat.POINT) {
-			GL.drawArrays(GL.POINTS, 0, Std.int(vertices.length/ 3));
+			GL.drawArrays(GL.POINTS, 0, Std.int(vertices.length / 3));
 		} else if (drawFormat == DrawFormat.LINE) {
 			GL.drawArrays(GL.LINES, 0, Std.int(vertices.length / 3));
 		} else if (drawFormat == LINE_LOOP) {
