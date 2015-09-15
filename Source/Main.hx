@@ -34,7 +34,9 @@ class Main extends Sprite {
 		device = new DeviceGL(this);
 		
 		monkey = new GameObject("monkey", "monkey");
-		icos = new GameObject("icos", "icosphere");
+		monkey.mesh.drawFaces = true;
+		monkey.mesh.drawPoints = true;
+		/*icos = new GameObject("icos", "icosphere");
 		icos.position = new Vector3(2.5, 0, 2.5);
 		bullock = new GameObject("bullock", "bullock");
 		bullock.position = new Vector3(-2.5, 0, 2.5);
@@ -42,10 +44,10 @@ class Main extends Sprite {
 		cube1 = new GameObject("cube01", Primitives.CUBE);
 		cube1.position = new Vector3 (0, 0, 4);
 		
-		/*for (i in -3...3){
-			for (j in 0...4){
-				var m = new GameObject("", Primitives.CUBE);
-				m.position = new Vector3(i+100, j , j);
+		for (i in -4...4){
+			for (j in -2...4){
+				var m = new GameObject("", "monkey");
+				m.position = new Vector3(i, j , j);
 				monkeyArray.push(m);
 			}
 		}*/
@@ -55,7 +57,7 @@ class Main extends Sprite {
 		
 		device.activeCamera = camera;
 		
-		var fps:FPS = new FPS(10, 10, 0xFF0000);
+		var fps:FPS = new FPS(10, 10, 0xFFFFFF);
 		addChild(fps);
 		
 		addEventListener(Event.ENTER_FRAME, update);
@@ -63,11 +65,11 @@ class Main extends Sprite {
 	
 	private function update (event:Event) {
 		monkey.rotation = new Vector3 (monkey.rotation.x + 0.01, monkey.rotation.y + 0.01, monkey.rotation.z);
-		icos.rotation = new Vector3 (icos.rotation.x + 0.01, icos.rotation.y + 0.01, icos.rotation.z);
+		/*icos.rotation = new Vector3 (icos.rotation.x + 0.01, icos.rotation.y + 0.01, icos.rotation.z);
 		bullock.rotation = new Vector3 (bullock.rotation.x + 0.01, bullock.rotation.y + 0.01, bullock.rotation.z);
 		cube1.rotation = new Vector3 (cube1.rotation.x - .01, cube1.rotation.y - .02, cube1.rotation.z - .01);
 		
-		/*for(m in monkeyArray){
+		for(m in monkeyArray){
 			m.rotation =  new Vector3(m.rotation.x + 0.01, m.rotation.y + 0.01, m.rotation.z);
 		}*/
 	}

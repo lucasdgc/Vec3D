@@ -61,7 +61,13 @@ class DeviceGL
 	}
 	
 	private function createProgram ():Void {
-		var vertexShaderSource:String = Assets.getText("assets/Shaders/VertexShader.txt");
+		#if html5
+		var vertexShaderSource:String = Assets.getText("assets/Shaders/VertexShader_WebGL.txt");
+		#end
+		
+		#if !html5
+		var vertexShaderSource:String = Assets.getText("assets/Shaders/VertexShader_OpenGL.txt");
+		#end
 		
 		var vertexShader = GL.createShader (GL.VERTEX_SHADER);
 		GL.shaderSource (vertexShader, vertexShaderSource);
@@ -124,13 +130,16 @@ class DeviceGL
 				var worldViewMatrix = worldMatrix.multiply(viewMatrix);
 				
 				if(mesh.drawPoints && mesh.vertices.length > 0){
-					//var points = new Float32Array (Mesh.getRawVerticesData(mesh.vertices));
-					var colorArray:Array<Float> = [0, 0, 1, 1];
-		
+					//var points = new Float32Array (Mesh.getRawVerticesData(mesh.vertices));					
+					
+					var colorArray:Array<Float> = [1, 0, 0, 1];
 					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
 					
 					var points = mesh.rawVertexData;
-					draw(points, DrawFormat.POINT, projectionMatrix, worldViewMatrix);
+					
+					//var points = Mesh.getRawVerticesData(mesh.vertices);
+					
+					draw(new Float32Array (points), DrawFormat.POINT, projectionMatrix, worldViewMatrix);
 				}
 				
 				if (mesh.drawEdges && mesh.edges.length > 0 ) {
@@ -193,12 +202,12 @@ class DeviceGL
 
 		//GL.enable(GL.CULL_FACE);
 		
-		if(drawFormat == DrawFormat.POINT) {
-			GL.drawArrays(GL.POINTS, 0, Std.int(vertices.length / 3));
+		if (drawFormat == DrawFormat.POINT) {
+			GL.drawArrays(GL.POINTS, 0, Std.int(vertices.length/ 3));
 		} else if (drawFormat == DrawFormat.LINE) {
-			GL.drawArrays(GL.LINES, 0, Std.int(vertices.length/3));
+			GL.drawArrays(GL.LINES, 0, Std.int(vertices.length / 3));
 		} else if (drawFormat == LINE_LOOP) {
-			GL.drawArrays(GL.LINE_LOOP, 0, Std.int(vertices.length/3));
+			GL.drawArrays(GL.LINE_LOOP, 0, Std.int(vertices.length/ 3));
 		} else if (drawFormat == TRIANGLES) {
 			GL.drawArrays(GL.TRIANGLES, 0, Std.int(vertices.length/3));
 		}
@@ -207,7 +216,9 @@ class DeviceGL
 		GL.disableVertexAttribArray(vertexAttribute);
 	}
 	
-	private function renderLoop(rect:Rectangle){
+	private function renderLoop(rect:Rectangle) {
+	
+		//trace(rect.width);
 		GL.viewport (Std.int (rect.x), Std.int (rect.y), Std.int (rect.width), Std.int (rect.height));
 	
 		clear(0xFF000000);

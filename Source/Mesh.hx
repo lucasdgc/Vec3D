@@ -24,7 +24,7 @@ class Mesh
 {
 	private static var meshesPath:String = "assets/Meshes/";
 	private static var meshesExtension:String = ".babylon";
-	private static var vertexStep = 6;
+	public static var vertexStep = 6;
 	
 	public static var meshes:Array<Mesh> = new Array();
 	private static var defaultMeshName:String = "mesh_";
@@ -103,22 +103,25 @@ class Mesh
 				var verticesArray:Dynamic =  jsonData.meshes[i].vertices;
 				var facesArray:Dynamic =  jsonData.meshes[i].indices;
 
-				var verticesCount = verticesArray.length;
-				var facesCount = facesArray.length;
+				var verticesCount = Std.int(verticesArray.length / vertexStep);
+				var facesCount = Std.int(facesArray.length / 3);
 				
 				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount);
 				
-				for(k in 0...verticesArray.length){
+				for(k in 0...verticesCount){
 					var x = Std.parseFloat(verticesArray[k * vertexStep]);
 					var y = Std.parseFloat(verticesArray[k * vertexStep + 1]);
 					var z = Std.parseFloat(verticesArray[k * vertexStep + 2]);
 					
 					mesh.vertices[k] = new Vector3(x, y, z);
+					//trace("k = " + k);
+					//trace("vertices = "+mesh.vertices.length);
 				}
 				
-				trace("Vertex Count: " + mesh.name + " - " + verticesArray.length/vertexStep);
+				trace("Vertex Count: " + mesh.name + " - " + verticesArray.length / vertexStep);
+				trace("Vertex Count: " + mesh.name + " - " + mesh.vertices.length);
 				
-				for(j in 0...facesArray.length){
+				for(j in 0...facesCount){
 					var _a = Std.int(facesArray[j * 3]);
 					var _b = Std.int(facesArray[j * 3 + 1]);
 					var _c = Std.int(facesArray[j * 3 + 2]);
@@ -126,7 +129,9 @@ class Mesh
 					mesh.faces[j] = { a : _a, b : _b, c : _c };
 				}
 				
-				trace("Face Count: " + mesh.name + " - " + facesArray.length/vertexStep);
+				trace("Face Count: " + mesh.name + " - " + facesArray.length / 3);
+				trace("Face Count: " + mesh.name + " - " + mesh.faces.length);
+				
 				
 				mesh.setRawData();
 				
@@ -149,6 +154,10 @@ class Mesh
 			array.push(vertex.y);
 			array.push(vertex.z);
 		}
+		
+		/*array.push(verticesArray[0].x);
+		array.push(verticesArray[0].y);
+		array.push(verticesArray[0].z);*/
 		
 		return array;
 	}
