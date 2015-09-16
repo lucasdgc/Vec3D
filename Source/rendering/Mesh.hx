@@ -1,8 +1,11 @@
-package;
+package rendering;
+
 import com.babylonhx.math.Vector3;
+import objects.GameObject;
 import openfl.Assets;
 import haxe.Json;
 import openfl.utils.Float32Array;
+import utils.Color;
 
 /**
  * ...
@@ -10,7 +13,7 @@ import openfl.utils.Float32Array;
  */
 
  typedef VertexGroup = {
-	 var color:Color;
+	 var color:utils.Color;
 	 var name:String;
 	 var id:Int;
 	 var verticesIndex:Array<Int>;
@@ -19,7 +22,7 @@ import openfl.utils.Float32Array;
  
  typedef VertexGroupData = {
 	 var verticesArray:Float32Array;
-	 var color:Color;
+	 var color:utils.Color;
  }
  
  typedef Edge = {
@@ -55,7 +58,7 @@ class Mesh
 	public var relPosition:Vector3;
 	public var relRotation:Vector3;
 	
-	public var gameObject:GameObject;
+	public var gameObject:objects.GameObject;
 	
 	public var drawEdges:Bool;
 	public var drawPoints:Bool;
@@ -67,9 +70,9 @@ class Mesh
 	public var rawEdgesData:Float32Array;
 	public var rawFacesData:Float32Array;
 	
-	public var pointColor:Color;
-	public var edgeColor:Color;
-	public var faceColor:Color;
+	public var pointColor:utils.Color;
+	public var edgeColor:utils.Color;
+	public var faceColor:utils.Color;
 	
 	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = true, drawEdges:Bool = true, drawFaces:Bool = true) {
 		meshes.push(this);
@@ -105,9 +108,9 @@ class Mesh
 		
 		edgeGroupBatch = new Array();
 		
-		pointColor = Color.white;
-		edgeColor = Color.white;
-		faceColor = Color.white;
+		pointColor = utils.Color.white;
+		edgeColor = utils.Color.white;
+		faceColor = utils.Color.white;
 		
 		this.rawVertexData = new Float32Array(vertices);
 		this.rawEdgesData = new Float32Array(edges);
@@ -172,7 +175,7 @@ class Mesh
 					
 					var _isColorGroup:Bool = false;
 					
-					var _color:Color = Color.white;
+					var _color:utils.Color = utils.Color.white;
 					
 					var _vertices:Array<Int> = new Array();
 					
@@ -189,7 +192,7 @@ class Mesh
 					if(nameSplit.length > 0){
 						if (nameSplit[0] == "color") {	
 							_isColorGroup = true;
-							_color = Color.getColorHexByName(nameSplit[1]);
+							_color = utils.Color.getColorHexByName(nameSplit[1]);
 						}
 					}
 					
@@ -265,7 +268,7 @@ class Mesh
 			if(vGroup.isColorGroup){
 				var vgIndexArray:Array<Float> = new Array();
 				
-				var vgColor:Color = vGroup.color;
+				var vgColor:utils.Color = vGroup.color;
 				
 				for (vgIndex in vGroup.verticesIndex) {
 					vgIndexArray.push(vertices[vgIndex].x);
@@ -275,7 +278,7 @@ class Mesh
 					groupedVertexIndexes.push(vgIndex);
 				}
 				
-				trace(vGroup.color);
+				//trace(vGroup.color);
 				
 				var vgArrayData:Float32Array = new Float32Array(vgIndexArray);
 				
@@ -362,7 +365,7 @@ class Mesh
 		}
 		
 		var nonSavedEdges:Array<Float> = new Array();
-		var nonSavedColor:Color = edgeColor;
+		var nonSavedColor:utils.Color = edgeColor;
 		
 		if (edgeBatch.length > 0){
 			for (edge in edges) {

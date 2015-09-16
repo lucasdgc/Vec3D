@@ -1,42 +1,45 @@
 package;
 
 import com.babylonhx.math.Vector3;
-import openfl.display.BitmapData;
+import objects.Camera;
+import objects.GameObject;
 import openfl.display.FPS;
 import openfl.display.Sprite;
-import openfl.display.Stage;
 import openfl.events.Event;
+import rendering.primitives.Cube;
 
 class Main extends Sprite {
 	
 	//var mesh = new Mesh("Cube1", 8, 12, 13);
 	//var mesh2 = new Mesh("Cube2", 8, 12, 13);
 	
-	var cube1:GameObject;
-	var cube2:Cube;
-	var cube3:Cube;
+	var cube1:objects.GameObject;
+	var cube2:rendering.primitives.Cube;
+	var cube3:rendering.primitives.Cube;
 	
-	var monkey:GameObject;
-	var icos:GameObject;
-	var bullock:GameObject;
+	var monkey:objects.GameObject;
+	var icos:objects.GameObject;
+	var bullock:objects.GameObject;
 	
-	var go:GameObject;
+	var go:objects.GameObject;
 	
-	var camera = new Camera();
-	var device:DeviceGL;
+	var camera = new objects.Camera();
+	var device:Engine;
 
-	var monkeyArray:Array<GameObject> = new Array();
+	var monkeyArray:Array<objects.GameObject> = new Array();
 	
 	public function new () {
 		super ();
-		var bmp:BitmapData = new BitmapData (640, 480);
+		device = new Engine(this);
 		
-		device = new DeviceGL(this);
-		
-		monkey = new GameObject("monkey", "monkey");
+		monkey = new objects.GameObject("monkey", "monkey");
 		monkey.mesh.drawFaces = false;
-		monkey.mesh.drawPoints = true;
+		monkey.mesh.drawPoints = false;
 		monkey.mesh.drawEdges = true;
+		
+		monkey.rotation.z += 0.2;
+		monkey.rotation.x += 0.2;
+		
 		/*icos = new GameObject("icos", "icosphere");
 		icos.position = new Vector3(2.5, 0, 2.5);
 		bullock = new GameObject("bullock", "bullock");
@@ -58,7 +61,7 @@ class Main extends Sprite {
 		trace(monkeyCount);*/
 		
 		
-		camera.position = new Vector3(0, 0, -10);
+		camera.position = new Vector3(0, 5, -10);
 		camera.target = Vector3.Zero();
 		
 		device.activeCamera = camera;
@@ -70,7 +73,7 @@ class Main extends Sprite {
 	}
 	
 	private function update (event:Event) {
-		monkey.rotation = new Vector3 (monkey.rotation.x + 0.01, monkey.rotation.y + 0.01, monkey.rotation.z);
+		//monkey.rotation = new Vector3 (monkey.rotation.x, monkey.rotation.y + 0.01, monkey.rotation.z);
 		/*icos.rotation = new Vector3 (icos.rotation.x + 0.01, icos.rotation.y + 0.01, icos.rotation.z);
 		bullock.rotation = new Vector3 (bullock.rotation.x + 0.01, bullock.rotation.y + 0.01, bullock.rotation.z);
 		cube1.rotation = new Vector3 (cube1.rotation.x - .01, cube1.rotation.y - .02, cube1.rotation.z - .01);*/

@@ -1,4 +1,4 @@
-package;
+package objects;
 import com.babylonhx.math.Vector3;
 
 /**
@@ -8,6 +8,7 @@ import com.babylonhx.math.Vector3;
 class Camera
 {
 	public static var camerasList:Array<Camera> = new Array();
+	//public static var mainCamera:
 	
 	public var position:Vector3;
 	public var target:Vector3;
@@ -15,9 +16,7 @@ class Camera
 	public var name:String;
 	
 	public function new(){
-		//camerasList.push(this);
-		
-		//trace(camerasList.length);
+		camerasList.push(this);
 	}
 	
 }

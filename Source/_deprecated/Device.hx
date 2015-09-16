@@ -1,13 +1,15 @@
-package;
+package _deprecated;
 import com.babylonhx.math.Matrix;
 import com.babylonhx.math.Vector2;
 import com.babylonhx.math.Vector3;
+import objects.Camera;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.events.Event;
+import rendering.Mesh;
 /**
  * ...
  * @author Lucas Gonçalves
@@ -23,7 +25,7 @@ class Device
 	
 	private var canvas:Sprite;
 	
-	public var activeCamera:Camera;
+	public var activeCamera:objects.Camera;
 	
 	public function new(bmpData:BitmapData, _canvas:Sprite) 
 	{
@@ -102,7 +104,7 @@ class Device
 		this.drawLine(middlePoint, point2);
 	}
 	
-	public function render(camera:Camera, meshes:Array<Mesh> ) {
+	public function render(camera:objects.Camera, meshes:Array<rendering.Mesh> ) {
 	
 		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, bmp.width / bmp.height, .01, 1);
@@ -125,7 +127,7 @@ class Device
 	private function renderLoop(event:Event){
 		clear(0xFF000000);
 		
-		render(activeCamera, Mesh.meshes);
+		render(activeCamera, rendering.Mesh.meshes);
 		
 		present();
 	}

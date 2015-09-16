@@ -1,4 +1,5 @@
 package;
+import objects.Camera;
 import openfl.display.OpenGLView;
 import com.babylonhx.math.Matrix;
 import com.babylonhx.math.Vector3;
@@ -10,6 +11,7 @@ import openfl.gl.GLProgram;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
 import openfl.Assets;
+import rendering.Mesh;
 
 /**
  * ...
@@ -22,11 +24,11 @@ enum DrawFormat{
 	TRIANGLES;
 }
  
-class DeviceGL
+class Engine
 {
 	private var canvas:Sprite;
 	
-	public var activeCamera:Camera;
+	public var activeCamera:objects.Camera;
 	
 	private var glView:OpenGLView;
 	private var vertexBuffer:GLBuffer;
@@ -117,7 +119,7 @@ class DeviceGL
 		GL.clear (GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 	}
 	
-	public function render(camera:Camera, meshes:Array<Mesh> ) {
+	public function render(camera:objects.Camera, meshes:Array<rendering.Mesh> ) {
 		
 		GL.useProgram(shaderProgram);
 		
@@ -223,6 +225,6 @@ class DeviceGL
 	
 		clear(0xFF000000);
 		
-		render(activeCamera, Mesh.meshes);
+		render(activeCamera, rendering.Mesh.meshes);
 	}	
 }

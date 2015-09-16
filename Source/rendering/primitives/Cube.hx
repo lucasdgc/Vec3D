@@ -1,7 +1,7 @@
-package;
+package rendering.primitives;
 
 import com.babylonhx.math.Vector3;
-
+import rendering.Mesh;
 /**
  * ...
  * @author Lucas Gonçalves
@@ -9,11 +9,11 @@ import com.babylonhx.math.Vector3;
 class Cube {
 
 	public static var cubeCount:Int = 0;
-	public var mesh:Mesh;
+	public var mesh:rendering.Mesh;
 	
 	public function new() 
 	{
-		mesh = new Mesh("Cube_" + cubeCount, 8, 12, 13);
+		mesh = new rendering.Mesh("Cube_" + cubeCount, 8, 12, 13);
 		cubeCount++;
 		
 		mesh.vertices[0] = new Vector3(-1, 1, 1);
