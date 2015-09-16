@@ -10,10 +10,16 @@ import openfl.utils.Float32Array;
  */
 
  typedef VertexGroup = {
-	 var color:UInt;
+	 var color:Color;
 	 var name:String;
 	 var id:Int;
-	 var vertices:Array<Int>;
+	 var verticesIndex:Array<Int>;
+	 var isColorGroup:Bool;
+ }
+ 
+ typedef VertexGroupData = {
+	 var verticesArray:Float32Array;
+	 var color:Color;
  }
  
  typedef Edge = {
@@ -42,6 +48,7 @@ class Mesh
 	public var faces:Array<Face>;
 	
 	public var vertexGroups:Array<VertexGroup>;
+	public var vertexGroupBatch:Array<VertexGroupData>;
 	
 	public var relPosition:Vector3;
 	public var relRotation:Vector3;
@@ -57,6 +64,10 @@ class Mesh
 	public var rawVertexData:Float32Array;
 	public var rawEdgesData:Float32Array;
 	public var rawFacesData:Float32Array;
+	
+	public var pointColor:Color;
+	public var edgeColor:Color;
+	public var faceColor:Color;
 	
 	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = true, drawEdges:Bool = true, drawFaces:Bool = true) {
 		meshes.push(this);
@@ -86,6 +97,12 @@ class Mesh
 				edges.push(e);
 			}
 		}
+		
+		vertexGroups = new Array();
+		
+		pointColor = Color.white;
+		edgeColor = Color.white;
+		faceColor = Color.white;
 		
 		this.rawVertexData = new Float32Array(vertices);
 		this.rawEdgesData = new Float32Array(edges);
@@ -145,15 +162,12 @@ class Mesh
 				//mesh.relRotation = rot;
 				
 				for(v in 0...vertexGroupCount){
-					
-					if(v == 0){
-						mesh.vertexGroups = new Array();
-					}
-					
 					var _id = vGroups[v].id;
-					var _name = vGroups[v].name;
+					var _name:String = vGroups[v].name;
 					
-					var _color = 0x00000000;
+					var _isColorGroup:Bool = false;
+					
+					var _color:Color = Color.white;
 					
 					var _vertices:Array<Int> = new Array();
 					
@@ -162,11 +176,23 @@ class Mesh
 					for(vgi in 0...vgd.length){
 						_vertices.push(vgd[vgi]);
 					}
-					var vGroup:VertexGroup = { id : _id, name : _name, color : _color, vertices : _vertices };
+					
+					var nameLower:String = _name.toLowerCase();
+					
+					var nameSplit = nameLower.split('_');
+					
+					if(nameSplit.length > 0){
+						if (nameSplit[0] == "color") {	
+							_isColorGroup = true;
+							_color = Color.getColorHexByName(nameSplit[1]);
+						}
+					}
+					
+					var vGroup:VertexGroup = { id : _id, name : _name, color : _color, verticesIndex : _vertices, isColorGroup : _isColorGroup};
 					
 					mesh.vertexGroups.push(vGroup);
 					
-					trace(mesh.vertexGroups.length);
+					//trace(mesh.vertexGroups.length);
 				}
 				
 				for(k in 0...verticesCount){
@@ -206,6 +232,8 @@ class Mesh
 				
 				mesh.setRawData();
 				
+				mesh.setVertexGroupsBatch();
+				
 				return mesh;
 			}
 
@@ -216,6 +244,64 @@ class Mesh
 		}
 		
 		return null;
+	}
+	
+	public function setVertexGroupsBatch() {
+		var vGroupArray:Array<VertexGroupData> = new Array();
+		
+		var groupedVertexIndexes:Array<Int> = new Array();
+		
+		for (vGroup in vertexGroups) {
+			var vgIndexArray:Array<Float> = new Array();
+			
+			var vgColor:Color = vGroup.color;
+			
+			for (vgIndex in vGroup.verticesIndex) {
+				vgIndexArray.push(vertices[vgIndex].x);
+				vgIndexArray.push(vertices[vgIndex].y);
+				vgIndexArray.push(vertices[vgIndex].z);
+				
+				groupedVertexIndexes.push(vgIndex);
+			}
+			
+			trace(vGroup.color);
+			
+			var vgArrayData:Float32Array = new Float32Array(vgIndexArray);
+			
+			var vg:VertexGroupData = { color : vgColor, verticesArray : vgArrayData };
+			
+			vGroupArray.push(vg);
+		}
+		
+		var nonGroupedVertex:Array<Float> = new Array();
+		var nonGroupedVertexColor = pointColor;
+		
+		for (vertIndex in 0...vertices.length) {
+			var alreadySaved:Bool = false;
+			for(vGroup in vertexGroups){
+				for(vgIndex in vGroup.verticesIndex){
+					if(vertIndex == vgIndex){
+						alreadySaved = true;
+					}
+				}
+			}
+			if(!alreadySaved){
+				nonGroupedVertex.push(vertices[vertIndex].x);
+				nonGroupedVertex.push(vertices[vertIndex].y);
+				nonGroupedVertex.push(vertices[vertIndex].z);
+				
+				groupedVertexIndexes.push(vertIndex);
+			}
+		}
+		
+		if (nonGroupedVertex.length > 0) {
+			var vgVerts = new Float32Array (nonGroupedVertex);
+			
+			var vgData:VertexGroupData = { color : nonGroupedVertexColor, verticesArray : vgVerts };
+			vGroupArray.push(vgData);
+		}
+		
+		vertexGroupBatch = vGroupArray;
 	}
 	
 	public static function getRawVerticesData(verticesArray:Array<Vector3>):Array<Float>{

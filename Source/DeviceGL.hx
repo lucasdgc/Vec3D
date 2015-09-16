@@ -122,7 +122,6 @@ class DeviceGL
 		GL.useProgram(shaderProgram);
 		
 		var colorArray:Array<Float> = [0, 1, 0, 1];
-
 		GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
 		
 		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
@@ -174,14 +173,23 @@ class DeviceGL
 				if(mesh.drawPoints && mesh.vertices.length > 0){
 					//var points = new Float32Array (Mesh.getRawVerticesData(mesh.vertices));					
 				
-					var colorArray:Array<Float> = [0, 0, 1, 1];
-					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+					/*var colorArray:Array<Float> = [0, 0, 1, 1];
 					
-					var points = mesh.rawVertexData;
+					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));*/
+					
+					for (pointsGroup in mesh.vertexGroupBatch) {
+						var colorArray:Array<Float> = [pointsGroup.color.r, pointsGroup.color.g, pointsGroup.color.b, pointsGroup.color.a];
+						GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+						
+						var points = pointsGroup.verticesArray;
+						draw(new Float32Array (points), DrawFormat.POINT, projectionMatrix, worldViewMatrix);
+					}
+					
+					//var points = mesh.rawVertexData;
 					
 					//var points = Mesh.getRawVerticesData(mesh.vertices);
 					
-					draw(new Float32Array (points), DrawFormat.POINT, projectionMatrix, worldViewMatrix);
+					
 				}
 				
 				
