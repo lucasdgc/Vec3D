@@ -36,7 +36,7 @@ class Main extends Sprite {
 		monkey = new GameObject("monkey", "monkey");
 		monkey.mesh.drawFaces = false;
 		monkey.mesh.drawPoints = true;
-		monkey.mesh.drawEdges = false;
+		monkey.mesh.drawEdges = true;
 		/*icos = new GameObject("icos", "icosphere");
 		icos.position = new Vector3(2.5, 0, 2.5);
 		bullock = new GameObject("bullock", "bullock");

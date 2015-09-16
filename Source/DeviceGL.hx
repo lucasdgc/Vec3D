@@ -134,20 +134,6 @@ class DeviceGL
 				var worldViewMatrix = worldMatrix.multiply(viewMatrix);
 
 				if (mesh.drawFaces && mesh.faces.length > 0) {
-					/*var faces:Array<Vector3> = new Array();
-					for (face in mesh.faces){
-						var vertexA:Vector3 = mesh.vertices[face.a];
-						var vertexB:Vector3 = mesh.vertices[face.b];
-						var vertexC:Vector3 = mesh.vertices[face.c];
-						
-						faces.push(vertexA);
-						faces.push(vertexB);
-						faces.push(vertexB);
-						faces.push(vertexC);
-						faces.push(vertexC);
-						faces.push(vertexA);
-					}*/
-					
 					var facesData = mesh.rawFacesData;
 					
 					draw(facesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
@@ -155,36 +141,40 @@ class DeviceGL
 				
 				if (mesh.drawEdges && mesh.edges.length > 0 ) {
 					
-					/*var edges:Array<Vector3> = new Array();
-					for (edge in mesh.edges) {
+					if(mesh.edgeGroupBatch.length > 0) {
+						for(edgesGroup in mesh.edgeGroupBatch){
+							var colorArray:Array<Float> = [edgesGroup.color.r, edgesGroup.color.g, edgesGroup.color.b, edgesGroup.color.a];
+							GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+							
+							var edgesData = edgesGroup.verticesArray;
+							draw(edgesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
+						}
+					} else {
+						var colorArray:Array<Float> = [mesh.edgeColor.r, mesh.edgeColor.g, mesh.edgeColor.b, mesh.edgeColor.a];
+						GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
 						
-						var vertexA:Vector3 = mesh.vertices[edge.a];
-						var vertexB:Vector3 = mesh.vertices[edge.b];
-						
-						edges.push(vertexA);
-						edges.push(vertexB);
-					}*/
-					
-					var edgesData = mesh.rawEdgesData;
-					
-					draw(edgesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
+						var edgesData = mesh.rawEdgesData;
+						draw(edgesData, DrawFormat.LINE, projectionMatrix, worldViewMatrix);
+					}
 				}
 				
 				if(mesh.drawPoints && mesh.vertices.length > 0){
-					//var points = new Float32Array (Mesh.getRawVerticesData(mesh.vertices));					
-				
-					/*var colorArray:Array<Float> = [0, 0, 1, 1];
 					
-					GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));*/
-					
-					for (pointsGroup in mesh.vertexGroupBatch) {
-						var colorArray:Array<Float> = [pointsGroup.color.r, pointsGroup.color.g, pointsGroup.color.b, pointsGroup.color.a];
+					if(mesh.vertexGroupBatch.length > 0){
+						for (pointsGroup in mesh.vertexGroupBatch) {
+							var colorArray:Array<Float> = [pointsGroup.color.r, pointsGroup.color.g, pointsGroup.color.b, pointsGroup.color.a];
+							GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
+							
+							var points = pointsGroup.verticesArray;
+							draw(new Float32Array (points), DrawFormat.POINT, projectionMatrix, worldViewMatrix);
+						}
+					} else {
+						var colorArray:Array<Float> = [mesh.pointColor.r, mesh.pointColor.g, mesh.pointColor.b, mesh.pointColor.a];
 						GL.uniform4fv(materialColorUniform, new Float32Array(colorArray));
 						
-						var points = pointsGroup.verticesArray;
+						var points = mesh.rawVertexData;
 						draw(new Float32Array (points), DrawFormat.POINT, projectionMatrix, worldViewMatrix);
 					}
-					
 					//var points = mesh.rawVertexData;
 					
 					//var points = Mesh.getRawVerticesData(mesh.vertices);

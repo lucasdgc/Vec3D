@@ -50,6 +50,8 @@ class Mesh
 	public var vertexGroups:Array<VertexGroup>;
 	public var vertexGroupBatch:Array<VertexGroupData>;
 	
+	public var edgeGroupBatch:Array<VertexGroupData>;
+	
 	public var relPosition:Vector3;
 	public var relRotation:Vector3;
 	
@@ -99,6 +101,9 @@ class Mesh
 		}
 		
 		vertexGroups = new Array();
+		vertexGroupBatch = new Array();
+		
+		edgeGroupBatch = new Array();
 		
 		pointColor = Color.white;
 		edgeColor = Color.white;
@@ -231,8 +236,7 @@ class Mesh
 				trace("Edges Count: " + mesh.name + " - " + mesh.edges.length);
 				
 				mesh.setRawData();
-				
-				mesh.setVertexGroupsBatch();
+				mesh.setGroupBatches();
 				
 				return mesh;
 			}
@@ -246,51 +250,61 @@ class Mesh
 		return null;
 	}
 	
+	public function setGroupBatches(){
+		setVertexGroupsBatch();
+		
+		setEdgeGroupBatch();
+	}
+	
 	public function setVertexGroupsBatch() {
 		var vGroupArray:Array<VertexGroupData> = new Array();
 		
 		var groupedVertexIndexes:Array<Int> = new Array();
 		
 		for (vGroup in vertexGroups) {
-			var vgIndexArray:Array<Float> = new Array();
-			
-			var vgColor:Color = vGroup.color;
-			
-			for (vgIndex in vGroup.verticesIndex) {
-				vgIndexArray.push(vertices[vgIndex].x);
-				vgIndexArray.push(vertices[vgIndex].y);
-				vgIndexArray.push(vertices[vgIndex].z);
+			if(vGroup.isColorGroup){
+				var vgIndexArray:Array<Float> = new Array();
 				
-				groupedVertexIndexes.push(vgIndex);
+				var vgColor:Color = vGroup.color;
+				
+				for (vgIndex in vGroup.verticesIndex) {
+					vgIndexArray.push(vertices[vgIndex].x);
+					vgIndexArray.push(vertices[vgIndex].y);
+					vgIndexArray.push(vertices[vgIndex].z);
+					
+					groupedVertexIndexes.push(vgIndex);
+				}
+				
+				trace(vGroup.color);
+				
+				var vgArrayData:Float32Array = new Float32Array(vgIndexArray);
+				
+				var vg:VertexGroupData = { color : vgColor, verticesArray : vgArrayData };
+				
+				vGroupArray.push(vg);
 			}
-			
-			trace(vGroup.color);
-			
-			var vgArrayData:Float32Array = new Float32Array(vgIndexArray);
-			
-			var vg:VertexGroupData = { color : vgColor, verticesArray : vgArrayData };
-			
-			vGroupArray.push(vg);
 		}
 		
 		var nonGroupedVertex:Array<Float> = new Array();
 		var nonGroupedVertexColor = pointColor;
 		
-		for (vertIndex in 0...vertices.length) {
-			var alreadySaved:Bool = false;
-			for(vGroup in vertexGroups){
-				for(vgIndex in vGroup.verticesIndex){
-					if(vertIndex == vgIndex){
-						alreadySaved = true;
+		if(vGroupArray.length > 0){
+			for (vertIndex in 0...vertices.length) {
+				var alreadySaved:Bool = false;
+				for(vGroup in vertexGroups){
+					for(vgIndex in vGroup.verticesIndex){
+						if(vertIndex == vgIndex){
+							alreadySaved = true;
+						}
 					}
 				}
-			}
-			if(!alreadySaved){
-				nonGroupedVertex.push(vertices[vertIndex].x);
-				nonGroupedVertex.push(vertices[vertIndex].y);
-				nonGroupedVertex.push(vertices[vertIndex].z);
-				
-				groupedVertexIndexes.push(vertIndex);
+				if(!alreadySaved){
+					nonGroupedVertex.push(vertices[vertIndex].x);
+					nonGroupedVertex.push(vertices[vertIndex].y);
+					nonGroupedVertex.push(vertices[vertIndex].z);
+					
+					groupedVertexIndexes.push(vertIndex);
+				}
 			}
 		}
 		
@@ -304,6 +318,85 @@ class Mesh
 		vertexGroupBatch = vGroupArray;
 	}
 	
+	public function setEdgeGroupBatch() {
+		var edgeBatch:Array<VertexGroupData> = new Array();
+		var savedEdges:Array<Edge>= new Array();
+		
+		for (vGroup in vertexGroups) {
+			var edgeInfo:Array<Float> = new Array();
+			for(edge in edges){
+				var edgeA = edge.a;
+				var edgeB = edge.b;
+				
+				var foundA:Bool = false;
+				var foundB:Bool = false;
+				for (vgIndex in vGroup.verticesIndex) {
+					if(vgIndex == edgeA){
+						foundA = true;
+						for(vIndexB in vGroup.verticesIndex){
+							if(vIndexB == edgeB){
+								foundB = true;
+								edgeInfo.push(vertices[edge.a].x);
+								edgeInfo.push(vertices[edge.a].y);
+								edgeInfo.push(vertices[edge.a].z);
+								
+								edgeInfo.push(vertices[edge.b].x);
+								edgeInfo.push(vertices[edge.b].y);
+								edgeInfo.push(vertices[edge.b].z);
+								
+								savedEdges.push(edge);
+							}
+						}
+					}
+				}
+			}
+			
+			if(edgeInfo.length > 0){
+				var _color = vGroup.color;
+				var _edgeArray = new Float32Array(edgeInfo);
+				
+				var _edgeData:VertexGroupData = { color : _color, verticesArray : _edgeArray };
+				
+				edgeBatch.push(_edgeData);
+			}
+		}
+		
+		var nonSavedEdges:Array<Float> = new Array();
+		var nonSavedColor:Color = edgeColor;
+		
+		if (edgeBatch.length > 0){
+			for (edge in edges) {
+				var saved:Bool = false;
+				for(savedEdge in savedEdges){
+					if(edge == savedEdge){
+						saved = true;
+						break;
+					}
+				}
+				
+				if(!saved){
+					nonSavedEdges.push(vertices[edge.a].x);
+					nonSavedEdges.push(vertices[edge.a].y);
+					nonSavedEdges.push(vertices[edge.a].z);
+					
+					nonSavedEdges.push(vertices[edge.b].x);
+					nonSavedEdges.push(vertices[edge.b].y);
+					nonSavedEdges.push(vertices[edge.b].z);
+				}
+			}
+		}
+		
+		if (nonSavedEdges.length > 0) {
+			var nsEdges = new Float32Array (nonSavedEdges);
+			
+			var nonSavedbatch:VertexGroupData = { color : nonSavedColor, verticesArray : nsEdges };
+			
+			edgeBatch.push(nonSavedbatch);
+		}
+		
+		edgeGroupBatch = edgeBatch;
+	}
+	
 	public static function getRawVerticesData(verticesArray:Array<Vector3>):Array<Float>{
 		var array:Array<Float> = [];
 		
@@ -312,10 +405,6 @@ class Mesh
 			array.push(vertex.y);
 			array.push(vertex.z);
 		}
-		
-		/*array.push(verticesArray[0].x);
-		array.push(verticesArray[0].y);
-		array.push(verticesArray[0].z);*/
 		
 		return array;
 	}
