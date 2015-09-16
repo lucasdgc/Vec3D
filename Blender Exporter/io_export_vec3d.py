@@ -211,8 +211,10 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		vertices=",\"vertices\":["
 		faces =",\"faces\":["	
 		edges=",\"edges\":["
+		vertexGroups = ",\"vertexGroups\":["
 		hasUV = False;
 		hasUV2 = False;
+		
 		
 		#if len(mesh.tessface_uv_textures) > 0:
 		#	UVmap=mesh.tessface_uv_textures[0].data	
@@ -229,7 +231,12 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		vertices_UV2s=[]
 		vertices_indices=[]
 		subMeshes = []
-				
+		
+		alreadySavedGroups = []
+		#groups_indices=[]
+		groupsCount = 0
+		savedGroupData = []
+		
 		for v in range(0, len(mesh.vertices)):
 			alreadySavedVertices.append(False)
 			vertices_UVs.append([])
@@ -237,11 +244,15 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			vertices_indices.append([])
 		
 		
+		for g in range(0, len(object.vertex_groups)):
+			alreadySavedGroups.append(False)
+			#groups_indices.append([])
+			savedGroupData.append([])
+		
 		materialsCount = max(1, len(object.material_slots))
 		verticesCount = 0
 		indicesCount = 0
 		edgesCount = 0
-		
 		vertsCount = 0
 		
 		for verts in mesh.vertices:
@@ -255,7 +266,23 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			alreadySavedVertices[vertex_index]=True
 			vertices_indices[vertex_index].append(index)
 			
-			vertices+="%.4f,%.4f,%.4f,"%(position.x,position.z,position.y)				
+			vertices+="%.4f,%.4f,%.4f,"%(position.x,position.z,position.y)
+			
+			for vg in verts.groups:
+			
+				group_index = vg.group
+				alreadySaved = alreadySavedGroups[group_index]
+			
+				print("alreadySaved: "+str(alreadySaved));
+			
+				if(alreadySaved):
+					savedGroupData[group_index].append(index)
+				else:
+					alreadySavedGroups[group_index] = True
+					#if len(savedGroupData) > 1:
+					#	savedGroupData.append(group_index)
+					savedGroupData[group_index].append(index)
+					
 			# vertices+="%.4f,%.4f,%.4f,"%(normal.x,normal.z,normal.y)
 			#if hasUV:
 			#	vertices+="%.4f,%.4f,"%(vertex_UV[0], vertex_UV[1])
@@ -264,6 +291,35 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			#	vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
 			
 			vertsCount += 1
+			
+		groups_count = 0
+		for vGroup in savedGroupData:
+		
+			group_index = groups_count
+			group = savedGroupData[group_index]
+			
+			print("groups_index: "+str(group_index));
+			
+			vertexGroups += "{\"id\": "+str(group_index)+",";
+			vertexGroups += "\"name\": \""+object.vertex_groups[group_index].name+"\",";
+			#vertexGroups += "\"array_size\": \""+str(len(savedGroupData))+"\",";
+			vertexGroups += "\"items\": [";
+			
+			for groupItem in group:
+				vertexGroups += str(groupItem) + ",";
+			
+			vertexGroups = vertexGroups.rstrip(',');
+			vertexGroups += "]"
+			
+			#itemList = vGroup.data.vertices;
+			
+			#for item in itemList:
+			#	vertexGroups += item.name;
+			vertexGroups += "},";
+			groups_count += 1
+			
+		vertexGroups = vertexGroups.rstrip(',');
+		vertexGroups+="]"
 			
 		for edge in mesh.edges:
 		
@@ -382,7 +438,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		file_handler.write("{")
 		
 		Export_babylon.write_string(file_handler, "name", object.name, True)		
-		Export_babylon.write_string(file_handler, "id", object.name)		
+		Export_babylon.write_string(file_handler, "id", object.name)			
 		if object.parent != None:
 			Export_babylon.write_string(file_handler, "parentId", object.parent.name)
 		
@@ -424,6 +480,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		file_handler.write(vertices)	
 		file_handler.write(faces)	
 		file_handler.write(edges)
+		file_handler.write(vertexGroups)
 		
 		# Sub meshes
 		file_handler.write(",\"subMeshes\":[")

@@ -33,10 +33,10 @@ class Main extends Sprite {
 		
 		device = new DeviceGL(this);
 		
-		monkey = new GameObject("monkey", "test");
+		monkey = new GameObject("monkey", "cube");
 		monkey.mesh.drawFaces = false;
 		monkey.mesh.drawPoints = true;
-		monkey.mesh.drawEdges = false;
+		monkey.mesh.drawEdges = true;
 		/*icos = new GameObject("icos", "icosphere");
 		icos.position = new Vector3(2.5, 0, 2.5);
 		bullock = new GameObject("bullock", "bullock");

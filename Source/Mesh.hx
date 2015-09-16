@@ -9,10 +9,11 @@ import openfl.utils.Float32Array;
  * @author Lucas Gonçalves
  */
 
- typedef Material = {
+ typedef VertexGroup = {
 	 var color:UInt;
 	 var name:String;
-	 
+	 var id:Int;
+	 var vertices:Array<Int>;
  }
  
  typedef Edge = {
@@ -39,6 +40,8 @@ class Mesh
 	public var vertices:Array<Vector3>;
 	public var edges:Array<Edge>;
 	public var faces:Array<Face>;
+	
+	public var vertexGroups:Array<VertexGroup>;
 	
 	public var relPosition:Vector3;
 	public var relRotation:Vector3;
@@ -111,22 +114,27 @@ class Mesh
 			
 			var jsonData:Dynamic = Json.parse(meshData);
 			
-			var mesh:Mesh = new Mesh();
+			//var mesh:Mesh = new Mesh();
 			
 			for(i in 0...jsonData.meshes.length) {
 				var verticesArray:Dynamic =  jsonData.meshes[i].vertices;
 				var facesArray:Dynamic =  jsonData.meshes[i].faces;
 				var edgesArray:Dynamic = jsonData.meshes[i].edges;
 				
+				var vGroups:Dynamic = jsonData.meshes[i].vertexGroups;
+				var vertexGroupCount = vGroups.length;
+				
 				var verticesCount = Std.int(verticesArray.length / (vertexStep * 3));
 				var facesCount = Std.int(facesArray.length / 3);
 				var edgesCount = Std.int(edgesArray.length / 2);
 				
-				if(i == 0){
+				/*if(i == 0){
 					//mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
 				} else {
 					//mesh = mesh;
-				}
+				}*/
+				
+				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
 				
 				var pos:Vector3 = new Vector3(jsonData.meshes[i].position[0], jsonData.meshes[i].position[1], jsonData.meshes[i].position[2]);
 				
@@ -136,6 +144,31 @@ class Mesh
 				
 				//mesh.relRotation = rot;
 				
+				for(v in 0...vertexGroupCount){
+					
+					if(v == 0){
+						mesh.vertexGroups = new Array();
+					}
+					
+					var _id = vGroups[v].id;
+					var _name = vGroups[v].name;
+					
+					var _color = 0x00000000;
+					
+					var _vertices:Array<Int> = new Array();
+					
+					var vgd:Dynamic = vGroups[v].items;
+					
+					for(vgi in 0...vgd.length){
+						_vertices.push(vgd[vgi]);
+					}
+					var vGroup:VertexGroup = { id : _id, name : _name, color : _color, vertices : _vertices };
+					
+					mesh.vertexGroups.push(vGroup);
+					
+					trace(mesh.vertexGroups.length);
+				}
+				
 				for(k in 0...verticesCount){
 					var x = Std.parseFloat(verticesArray[k * 3]);
 					var y = Std.parseFloat(verticesArray[k * 3 + 1]);
@@ -143,11 +176,9 @@ class Mesh
 					
 					if(i == 0){
 						mesh.vertices[k] = new Vector3(x, y, z);
-					} else {
+					} /*else {
 						mesh.vertices[mesh.vertices.length] = new Vector3(x + pos.x, y + pos.y, z + pos.z);
-					}
-					
-					trace(pos.x + x);
+					}*/
 				}
 				
 				//trace("Vertex Count: " + mesh.name + " - " + verticesArray.length / vertexStep);
@@ -174,8 +205,10 @@ class Mesh
 				trace("Edges Count: " + mesh.name + " - " + mesh.edges.length);
 				
 				mesh.setRawData();
+				
+				return mesh;
 			}
-			return mesh;
+
 			//}
 			
 		} else {
