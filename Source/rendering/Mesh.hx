@@ -13,7 +13,7 @@ import utils.Color;
  */
 
  typedef VertexGroup = {
-	 var color:utils.Color;
+	 var color:Color;
 	 var name:String;
 	 var id:Int;
 	 var verticesIndex:Array<Int>;
@@ -44,6 +44,12 @@ class Mesh
 	
 	public static var meshes:Array<Mesh> = new Array();
 	private static var defaultMeshName:String = "mesh_";
+	
+	//public static var staticVertexBash:Float32Array = new Float32ArrayData ();
+	
+	public static var drawingEdges:Bool = true;
+	public static var drawingPoints:Bool = true;
+	public static var drawingFaces:Bool = true;
 	
 	public var name:String;
 	public var vertices:Array<Vector3>;
@@ -125,9 +131,11 @@ class Mesh
 		} else {
 			this.name = defaultMeshName+meshes.length;
 		}
+		
+		isStatic = true;
 	}
 	
-	public static function loadMeshFile(filename:String):Mesh {
+	public static function loadMeshFile(filename:String, _isStatic:Bool = true):Mesh {
 		if(filename != ""){
 			var meshes:Array<Mesh> = new Array();
 			
@@ -160,6 +168,8 @@ class Mesh
 				}*/
 				
 				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
+				
+				mesh.isStatic = _isStatic;
 				
 				var pos:Vector3 = new Vector3(jsonData.meshes[i].position[0], jsonData.meshes[i].position[1], jsonData.meshes[i].position[2]);
 				
@@ -215,8 +225,8 @@ class Mesh
 					}*/
 				}
 				
-				//trace("Vertex Count: " + mesh.name + " - " + verticesArray.length / vertexStep);
-				trace("Vertex Count: " + mesh.name + " - " + mesh.vertices.length);
+				trace("Successfully loaded mesh: " + mesh.name);
+				trace(mesh.name +" Vertex Count: " + mesh.vertices.length);
 				
 				for(j in 0...facesCount){
 					var _a = Std.int(facesArray[j * 3]);
@@ -227,7 +237,7 @@ class Mesh
 				}
 				
 				//trace("Face Count: " + mesh.name + " - " + facesArray.length / 3);
-				trace("Face Count: " + mesh.name + " - " + mesh.faces.length);
+				trace(mesh.name + " Face Count: " + mesh.faces.length);
 				
 				for(l in 0...edgesCount){
 					var _a = Std.int(edgesArray[l * 2]);
@@ -236,15 +246,15 @@ class Mesh
 					mesh.edges[l] = { a : _a, b : _b };
 				}
 				
-				trace("Edges Count: " + mesh.name + " - " + mesh.edges.length);
+				trace(mesh.name + " Edges Count: " + mesh.edges.length);
 				
-				mesh.setRawData();
-				mesh.setGroupBatches();
+				if (mesh.isStatic) {
+					mesh.setRawData();
+					mesh.setGroupBatches();
+				}
 				
 				return mesh;
 			}
-
-			//}
 			
 		} else {
 			throw "Mesh path not specified...";
@@ -470,5 +480,19 @@ class Mesh
 	public function addFace(pointA:Int, pointB:Int, pointC:Int){
 		var face:Face = { a : pointA, b : pointB, c : pointC };
 		faces.push(face);
+	}
+	
+	public static function toggleAllEdges() {
+		Mesh.drawingEdges = !Mesh.drawingEdges;
+		for(mesh in Mesh.meshes){
+			mesh.drawEdges = Mesh.drawingEdges;
+		}
+	}
+	
+	public static function toggleAllPoints() {
+		Mesh.drawingPoints = !Mesh.drawingPoints;
+		for(mesh in Mesh.meshes){
+			mesh.drawPoints = Mesh.drawingPoints;
+		}
 	}
 }

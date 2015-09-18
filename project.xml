@@ -4,10 +4,9 @@
 	<meta title="Vec3D" package="com.sample.vec3d" version="1.0.0" company="Company Name" />
 	<app main="Main" path="Export" file="Vec3D" />
 	
-	<window vsync="true" fps="60" width="720" heigth="480" unless="html5" />
-	<window require-shaders="true" hardware="true" depth-buffer="true" stencil-buffer="true" antialiasing="0" />
-	
-	<window orientation="landscape" fullscreen="true" if="mobile" />
+	<!-- <window vsync="true" fps="60" width="720" heigth="480" unless="html5" /> -->
+	<window heigth="480" width="720" unless="html5" />	<window orientation="landscape" fullscreen="true" if="mobile" />
+	<window fps="150" vsync="false" hardware="true" stencil-buffer="true" antialiasing="0" />
 	
 	<android target-sdk-version="22" />
 	

@@ -3,10 +3,18 @@ package;
 import com.babylonhx.math.Vector3;
 import objects.Camera;
 import objects.GameObject;
+import rendering.Scene;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import rendering.primitives.Cube;
+import utils.Color;
+import openfl.events.KeyboardEvent;
+import openfl.events.TouchEvent;
+import openfl.events.MouseEvent;
+import openfl.ui.Keyboard;
+import rendering.Mesh;
+import com.kircode.debug.FPS_Mem;
 
 class Main extends Sprite {
 	
@@ -23,22 +31,27 @@ class Main extends Sprite {
 	
 	var go:objects.GameObject;
 	
-	var camera = new objects.Camera();
-	var device:Engine;
+	//var camera = new Camera();
+	var engine:Engine;
 
 	var monkeyArray:Array<objects.GameObject> = new Array();
 	
 	public function new () {
 		super ();
-		device = new Engine(this);
+		engine = new Engine(this);
+		var scene = new MyScene(engine);
 		
-		monkey = new objects.GameObject("monkey", "monkey");
+		//Vector3.Back()
+		
+		//var 
+		
+		/*monkey = new objects.GameObject("monkey", "monkey");
 		monkey.mesh.drawFaces = false;
-		monkey.mesh.drawPoints = false;
+		monkey.mesh.drawPoints = true;
 		monkey.mesh.drawEdges = true;
 		
 		monkey.rotation.z += 0.2;
-		monkey.rotation.x += 0.2;
+		monkey.rotation.x += 0.2;*/
 		
 		/*icos = new GameObject("icos", "icosphere");
 		icos.position = new Vector3(2.5, 0, 2.5);
@@ -61,19 +74,27 @@ class Main extends Sprite {
 		trace(monkeyCount);*/
 		
 		
-		camera.position = new Vector3(0, 5, -10);
-		camera.target = Vector3.Zero();
+		//camera.position = new Vector3(0, 5, -10);
+		//camera.target = Vector3.Zero();
 		
-		device.activeCamera = camera;
+		//engine.activeCamera = camera;
 		
-		var fps:FPS = new FPS(10, 10, 0xFFFFFF);
-		addChild(fps);
+		/*var fps:FPS = new FPS(10, 10, 0xFFFFFF);
+		addChild(fps);*/
 		
-		addEventListener(Event.ENTER_FRAME, update);
+		var fpsMem:FPS_Mem= new FPS_Mem (10, 10, 0xFFFFFF);
+		addChild(fpsMem);
+		
+		stage.mouseEnabled = true;
+		
+		//addEventListener(Event.ENTER_FRAME, update);
+		/*stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyEnter);
+		stage.addEventListener(TouchEvent.TOUCH_TAP, onTouchBegin);
+		stage.addEventListener(MouseEvent.CLICK, onClick);*/
 	}
 	
 	private function update (event:Event) {
-		//monkey.rotation = new Vector3 (monkey.rotation.x, monkey.rotation.y + 0.01, monkey.rotation.z);
+		monkey.rotation = new Vector3 (monkey.rotation.x, monkey.rotation.y + 0.01, monkey.rotation.z);
 		/*icos.rotation = new Vector3 (icos.rotation.x + 0.01, icos.rotation.y + 0.01, icos.rotation.z);
 		bullock.rotation = new Vector3 (bullock.rotation.x + 0.01, bullock.rotation.y + 0.01, bullock.rotation.z);
 		cube1.rotation = new Vector3 (cube1.rotation.x - .01, cube1.rotation.y - .02, cube1.rotation.z - .01);*/
@@ -81,5 +102,26 @@ class Main extends Sprite {
 		/*for(m in monkeyArray){
 			m.rotation =  new Vector3(m.rotation.x + 0.01, m.rotation.y + 0.01, m.rotation.z);
 		}*/
+	}
+	
+	private function onClick (click:MouseEvent){
+		trace("clica clica");
+		Mesh.toggleAllEdges();
+	}
+	
+	private function onTouchBegin (touch:TouchEvent) {
+		trace("aperta...");
+		Mesh.toggleAllEdges();
+	}
+	
+	private function onKeyEnter (key:KeyboardEvent) {
+		//trace(key.keyCode == KeyboardEvent.ke);
+		if(key.keyCode == Keyboard.E){
+			Mesh.toggleAllEdges();
+		}
+		
+		if(key.keyCode == Keyboard.P){
+			Mesh.toggleAllPoints();
+		}
 	}
 }

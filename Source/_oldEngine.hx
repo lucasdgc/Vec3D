@@ -28,11 +28,6 @@ enum DrawFormat{
 	TRIANGLES;
 }
  
-typedef MeshBuffer= {
-	var buffer:GLBuffer;
-	var size:Int;
-}
-
 class Engine
 {
 	public static var canvas:Sprite;
@@ -44,15 +39,10 @@ class Engine
 	private var vertexBuffer:GLBuffer;
 	private var vertexAttribute:Int;
 	
-	private var vertexArrayObj:Int;
-	
 	private var staticVertexBuffer:GLBuffer;
-	private var staticIndexBuffer:GLBuffer;
 	private var staticVertexAttribute:Int;
-	private var staticIndexAttribute:Int;
 	private var staticVertexColorAttribute:Int;
 	private var staticBufferSize:Int;
-	private var staticIndexSize:Int;
 	
 	private var modelViewMatrixAttribute:Int;
 	private var projectionMatrixAttribute:Int;
@@ -67,8 +57,6 @@ class Engine
 	private var drawCallCount:Int;
 	
 	public var backgroundColor:Color;
-	
-	var staticGambi:Float32Array;
 	
 	public function new(_canvas:Sprite) 
 	{
@@ -104,33 +92,14 @@ class Engine
 		GL.bufferData(GL.ARRAY_BUFFER, staticBufferBatch, GL.STATIC_DRAW);
 		
 		GL.enableVertexAttribArray(staticVertexAttribute);
-		GL.vertexAttribPointer(staticVertexAttribute, 3, GL.FLOAT, false, 7 * 4, 0);
+		GL.vertexAttribPointer(staticVertexAttribute, 3, GL.FLOAT, false, 7, 0);
 		
-		GL.enableVertexAttribArray(materialColorAttrib);
-		GL.vertexAttribPointer(materialColorAttrib, 4, GL.FLOAT, false, 7 * 4, 4 * 4);
+		
+		
+		//GL.enableVertexAttribArray(materialColorAttrib);
+		//GL.vertexAttribPointer(materialColorAttrib, 4, GL.FLOAT, false, 7, 3);
 		
 		staticBufferSize = Std.int(staticBufferBatch.length / 7);
-		
-		var staticBufferIndex = currentScene.getEdgesBatch();
-		
-		//GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, staticIndexBuffer);
-		//GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, staticBufferIndex, GL.STATIC_DRAW);
-		
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, staticIndexBuffer);
-		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, staticBufferIndex, GL.STATIC_DRAW);
-		
-		staticIndexSize = Std.int(staticBufferIndex.length / 2);
-		
-		trace("Static Vertex Size: " + staticBufferSize);
-		trace("Static Edges Size: " + staticIndexSize);
-		
-		GL.bindBuffer(GL.ARRAY_BUFFER, null);
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
-		//GL.disableVertexAttribArray(0);
-	
-		/*for(i in 0...staticIndexSize){
-			trace(staticBufferIndex[i]);
-		}*/
 		
 	}
 	
@@ -139,13 +108,9 @@ class Engine
 		//GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
 		
 		staticVertexBuffer = GL.createBuffer();
-		staticIndexBuffer = GL.createBuffer();
-		
 		//GL.bindBuffer(GL.ARRAY_BUFFER, staticVertexBuffer);
 		
-		//GL.GenVertexArra(
 		
-		//GL.enable(GL.STENCIL_TEST
 	}
 	
 	private function createProgram ():Void {
@@ -198,9 +163,15 @@ class Engine
 		
 		projectionMatrixUniform = GL.getUniformLocation (shaderProgram, "uProjectionMatrix");
 		modelViewMatrixUniform = GL.getUniformLocation (shaderProgram, "uModelViewMatrix");
+		materialColorUniform = GL.getUniformLocation (shaderProgram, "uMaterialColorv4");
 		
-		staticVertexAttribute = GL.getAttribLocation (shaderProgram, "aVertexPosition");
 		staticVertexColorAttribute = GL.getAttribLocation (shaderProgram, "aVertexColor");
+		
+		//materialColorAttrib = 42;
+		//GL.bindAttribLocation (shaderProgram, materialColorAttrib,"uMaterialColorv4");
+		
+		//trace(materialColorUniform);
+		
 	}
 	
 	public function clear () {
@@ -310,12 +281,12 @@ class Engine
 		GL.disableVertexAttribArray(vertexAttribute);
 	}
 	
-	private function newRender(camera:Camera) {
+	private function newRender() {
 	
 		//var colorArray:Array<Float> = [0, 1, 0, 1];
 		//GL.uniform4f(materialColorUniform, 0, 1, 0, 1);
 		
-		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
+		var viewMatrix = Matrix.LookAtLH(currentScene.activeCamera.position, currentScene.activeCamera.target, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 		
 		var worldViewMatrix:Matrix = Matrix.Identity().multiply(viewMatrix);
@@ -326,38 +297,26 @@ class Engine
 		GL.bindBuffer(GL.ARRAY_BUFFER, staticVertexBuffer);
 		
 		GL.enableVertexAttribArray(staticVertexAttribute);
-		GL.vertexAttribPointer(staticVertexAttribute, 3, GL.FLOAT, false, 7 * 4, 0);
+		GL.vertexAttribPointer(staticVertexAttribute, 3, GL.FLOAT, false, 7, 0);
 		
 		GL.enableVertexAttribArray(staticVertexColorAttribute);
-		GL.vertexAttribPointer(staticVertexColorAttribute, 4, GL.FLOAT, false, 7 * 4, 3 * 4);
+		GL.vertexAttribPointer(staticVertexColorAttribute, 4, GL.FLOAT, false, 7, 0);
+		
+		//GL.enableVertexAttribArray(materialColorAttrib);
+		//GL.vertexAttribPointer(materialColorAttrib, 4, GL.FLOAT, false, 7, 3);
+		//GL.vertexAttribPointer(staticVertexAttribute, 3, GL.FLOAT, false, 0, 0);
+		
+		
+		//GL.bindBuffer(GL.ARRAY_BUFFER, staticVertexBuffer);
+		//GL.bufferData(GL.ARRAY_BUFFER, currentScene.getStaticVertexBatch(), GL.STATIC_DRAW);
+
+
+		
+		
+		//trace(staticBufferSize);
 		
 		GL.drawArrays(GL.POINTS, 0, staticBufferSize);
 		
-		//GL.enable(GL.ARRAY);
-		
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, staticIndexBuffer);
-		/*GL.enableVertexAttribArray(staticIndexAttribute);
-		GL.vertexAttribPointer(staticIndexAttribute, 2, GL.FLOAT, false, 0, 0);*/
-		//GL.
-		
-		GL.drawElements(GL.LINES, staticIndexSize * 2, GL.UNSIGNED_SHORT, 2 * 0);
-		
-		/*for (i in 0...Std.int(staticIndexSize / 4)) {
-			trace(i * 2);
-			GL.drawElements(GL.LINES, 2, GL.UNSIGNED_SHORT, i * 2);
-		}*/
-		
-		//GL.
-		
-		//GL.drawArrays(GL.LINES, 0, Std.int(staticIndexSize / 3));
-		/*for(i in 0...Std.int(staticIndexSize / 2)) {
-			GL.drawElements(GL.LINES, 2, GL.UNSIGNED_SHORT, i * 2);
-			trace(i);
-		}*/
-		
-		//GL.disableVertexAttribArray(0);
-		//GL.bindBuffer(GL.ARRAY_BUFFER, null);
-		//GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 	}
 	
 	private function renderLoop(rect:Rectangle) {
@@ -367,12 +326,7 @@ class Engine
 		clear();
 		if(currentScene != null){
 			//render(currentScene.activeCamera, currentScene.gameObject);
-			
-			
-			
-			
-			newRender(currentScene.activeCamera);
-			//newRender2(currentScene.activeCamera);
+			newRender();
 		}
 	}	
 }
