@@ -64,7 +64,10 @@ class Engine
 	
 	private var shaderProgram:GLProgram;
 	
-	private var drawCallCount:Int;
+	public var drawCallCount:Int = 0;
+	private var drawCalls:Int = 0;
+	
+	private var frameCount:Int = 0;
 	
 	public var backgroundColor:Color;
 	
@@ -209,7 +212,7 @@ class Engine
 		GL.clear (GL.COLOR_BUFFER_BIT);
 	}
 	
-	public function render(camera:Camera, gameObjects:Array<GameObject> ) {
+	/*public function render(camera:Camera, gameObjects:Array<GameObject> ) {
 		
 		//
 		
@@ -279,7 +282,7 @@ class Engine
 				
 			} 
 		}
-	}
+	}*/
 	
 	private function draw(vertices:Float32Array, drawFormat:DrawFormat, projectionMatrix:Matrix, worldViewMatrix:Matrix) {
 		
@@ -311,19 +314,44 @@ class Engine
 	}
 	
 	private function newRender(camera:Camera) {
-	
-		//var colorArray:Array<Float> = [0, 1, 0, 1];
-		//GL.uniform4f(materialColorUniform, 0, 1, 0, 1);
 		
 		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 		
-		var worldViewMatrix:Matrix = Matrix.Identity().multiply(viewMatrix);
+		if(currentScene.staticVertexSize > 0){
+			
+			var worldViewMatrix:Matrix = Matrix.Identity().multiply(viewMatrix);
 		
-		GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.m));
-		GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (worldViewMatrix.m));
+			GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.m));
+			GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (worldViewMatrix.m));
 
-		GL.bindBuffer(GL.ARRAY_BUFFER, staticVertexBuffer);
+			drawGeometry(currentScene.staticMeshBuffer.vertexBuffer, currentScene.staticVertexSize, currentScene.drawStaticPoints,
+						currentScene.staticMeshBuffer.edgeIndexBuffer, currentScene.staticEdgeSize, currentScene.drawStaticEdges,
+						currentScene.staticMeshBuffer.faceIndexBuffer, currentScene.staticFaceSize, currentScene.drawStaticFaces);
+		}
+		
+		for(gameObject in currentScene.gameObject) { 
+			if ( !gameObject.isStatic && gameObject.isVisible ) {
+				var mesh = gameObject.mesh;
+				
+				var worldMatrix = Matrix.RotationYawPitchRoll(gameObject.rotation.y, gameObject.rotation.x, gameObject.rotation.z) 
+				.multiply(Matrix.Translation(gameObject.position.x, gameObject.position.y, gameObject.position.z));
+				
+				var worldViewMatrix:Matrix = worldMatrix.multiply(viewMatrix);
+		
+				GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.m));
+				GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (worldViewMatrix.m));
+				
+				drawGeometry(mesh.meshBuffer.vertexBuffer, mesh.vertices.length, mesh.drawPoints,
+						mesh.meshBuffer.edgeIndexBuffer, mesh.edges.length, mesh.drawEdges,
+						mesh.meshBuffer.faceIndexBuffer, mesh.faces.length, mesh.drawFaces);
+				
+			}
+		}
+		
+		GL.bindBuffer(GL.ARRAY_BUFFER, null);
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+		/*GL.bindBuffer(GL.ARRAY_BUFFER, staticVertexBuffer);
 		
 		GL.enableVertexAttribArray(staticVertexAttribute);
 		GL.vertexAttribPointer(staticVertexAttribute, 3, GL.FLOAT, false, 7 * 4, 0);
@@ -333,44 +361,53 @@ class Engine
 		
 		GL.drawArrays(GL.POINTS, 0, staticBufferSize);
 		
-		//GL.enable(GL.ARRAY);
-		
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, staticIndexBuffer);
-		/*GL.enableVertexAttribArray(staticIndexAttribute);
-		GL.vertexAttribPointer(staticIndexAttribute, 2, GL.FLOAT, false, 0, 0);*/
-		//GL.
+
+		GL.drawElements(GL.LINES, staticIndexSize * 2, GL.UNSIGNED_SHORT, 2 * 0);*/
 		
-		GL.drawElements(GL.LINES, staticIndexSize * 2, GL.UNSIGNED_SHORT, 2 * 0);
+	}
+	
+	private function drawGeometry (vertexBuffer:GLBuffer, vertexBufferSize:Int, drawVertex:Bool, 
+									edgeIndexBuffer:GLBuffer, edgeBufferSize:Int, drawEdges:Bool,
+									facesIndexBuffer:GLBuffer, faceBufferSize:Int, drawFaces:Bool) {
+									GL.bindBuffer(GL.ARRAY_BUFFER, staticVertexBuffer);
 		
-		/*for (i in 0...Std.int(staticIndexSize / 4)) {
-			trace(i * 2);
-			GL.drawElements(GL.LINES, 2, GL.UNSIGNED_SHORT, i * 2);
-		}*/
+		GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
+									
+		GL.enableVertexAttribArray(staticVertexAttribute);
+		GL.vertexAttribPointer(staticVertexAttribute, 3, GL.FLOAT, false, 7 * 4, 0);
 		
-		//GL.
+		GL.enableVertexAttribArray(staticVertexColorAttribute);
+		GL.vertexAttribPointer(staticVertexColorAttribute, 4, GL.FLOAT, false, 7 * 4, 3 * 4);
 		
-		//GL.drawArrays(GL.LINES, 0, Std.int(staticIndexSize / 3));
-		/*for(i in 0...Std.int(staticIndexSize / 2)) {
-			GL.drawElements(GL.LINES, 2, GL.UNSIGNED_SHORT, i * 2);
-			trace(i);
-		}*/
+		if (drawVertex) {
+			drawCalls ++;
+			GL.drawArrays(GL.POINTS, 0, vertexBufferSize);
+		}
 		
-		//GL.disableVertexAttribArray(0);
-		//GL.bindBuffer(GL.ARRAY_BUFFER, null);
-		//GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, edgeIndexBuffer);
+		if (drawEdges) {
+			drawCalls ++;
+			GL.drawElements(GL.LINES, edgeBufferSize * 2, GL.UNSIGNED_SHORT, 2 * 0);	
+		}
+		
 	}
 	
 	private function renderLoop(rect:Rectangle) {
+		//drawCallCount = 0;
+		frameCount ++;
+		
+		if (frameCount % 30 == 0) {
+			drawCallCount = Std.int(drawCalls / frameCount);
+			drawCalls = 0;
+			frameCount = 0;
+		}
 		
 		GL.useProgram(shaderProgram);
 	
 		clear();
 		if(currentScene != null){
 			//render(currentScene.activeCamera, currentScene.gameObject);
-			
-			
-			
-			
 			newRender(currentScene.activeCamera);
 			//newRender2(currentScene.activeCamera);
 		}

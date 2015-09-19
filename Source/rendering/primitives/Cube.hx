@@ -52,7 +52,7 @@ class Cube {
 		mesh.edges[10] = { a : 7, b : 6 };
 		mesh.edges[11] = { a : 7, b : 3 };
 		
-		mesh.setRawData();
+		//mesh.setRawData();
 	}
 	
 }

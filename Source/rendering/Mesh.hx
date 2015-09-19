@@ -1,10 +1,14 @@
 package rendering;
 
 import com.babylonhx.math.Vector3;
+import lime.graphics.opengl.GLBuffer;
 import objects.GameObject;
 import openfl.Assets;
 import haxe.Json;
+import openfl.gl.GL;
 import openfl.utils.Float32Array;
+import lime.utils.UInt16Array;
+import rendering.Mesh.MeshBuffer;
 import utils.Color;
 
 /**
@@ -12,6 +16,12 @@ import utils.Color;
  * @author Lucas Gonçalves
  */
 
+ typedef MeshBuffer = {
+	var vertexBuffer:GLBuffer;
+	var edgeIndexBuffer:GLBuffer;
+	var faceIndexBuffer:GLBuffer;
+}
+ 
  typedef VertexGroup = {
 	 var color:Color;
 	 var name:String;
@@ -20,10 +30,10 @@ import utils.Color;
 	 var isColorGroup:Bool;
  }
  
- typedef VertexGroupData = {
+ /*typedef VertexGroupData = {
 	 var verticesArray:Float32Array;
 	 var color:utils.Color;
- }
+ }*/
  
  typedef Edge = {
 	 var a:Int;
@@ -40,9 +50,10 @@ class Mesh
 {
 	private static var meshesPath:String = "assets/Meshes/";
 	private static var meshesExtension:String = ".vec3d";
+	
 	public static var vertexStep = 1;
 	
-	public static var meshes:Array<Mesh> = new Array();
+	//public static var meshes:Array<Mesh> = new Array();
 	private static var defaultMeshName:String = "mesh_";
 	
 	//public static var staticVertexBash:Float32Array = new Float32ArrayData ();
@@ -57,14 +68,11 @@ class Mesh
 	public var faces:Array<Face>;
 	
 	public var vertexGroups:Array<VertexGroup>;
-	public var vertexGroupBatch:Array<VertexGroupData>;
-	
-	public var edgeGroupBatch:Array<VertexGroupData>;
 	
 	public var relPosition:Vector3;
 	public var relRotation:Vector3;
 	
-	public var gameObject:objects.GameObject;
+	public var gameObject:GameObject;
 	
 	public var drawEdges:Bool;
 	public var drawPoints:Bool;
@@ -72,16 +80,18 @@ class Mesh
 	
 	public var isStatic:Bool = true;
 	
-	public var rawVertexData:Float32Array;
+	/*public var rawVertexData:Float32Array;
 	public var rawEdgesData:Float32Array;
-	public var rawFacesData:Float32Array;
+	public var rawFacesData:Float32Array;*/
 	
 	public var pointColor:utils.Color;
 	public var edgeColor:utils.Color;
 	public var faceColor:utils.Color;
 	
+	public var meshBuffer:MeshBuffer;
+	
 	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = true, drawEdges:Bool = true, drawFaces:Bool = true) {
-		meshes.push(this);
+		//meshes.push(this);
 		
 		relPosition = new Vector3();
 		relRotation = new Vector3();
@@ -110,17 +120,14 @@ class Mesh
 		}
 		
 		vertexGroups = new Array();
-		vertexGroupBatch = new Array();
-		
-		edgeGroupBatch = new Array();
 		
 		pointColor = utils.Color.white;
 		edgeColor = utils.Color.white;
 		faceColor = utils.Color.white;
 		
-		this.rawVertexData = new Float32Array(vertices);
+		/*this.rawVertexData = new Float32Array(vertices);
 		this.rawEdgesData = new Float32Array(edges);
-		this.rawFacesData = new Float32Array(faces);
+		this.rawFacesData = new Float32Array(faces);*/
 		
 		this.drawEdges = drawEdges;
 		this.drawFaces = drawFaces;
@@ -129,13 +136,104 @@ class Mesh
 		if(name != ""){
 			this.name = name;
 		} else {
-			this.name = defaultMeshName+meshes.length;
+			this.name = defaultMeshName+Engine.instance.currentScene.gameObject.length;
 		}
 		
 		isStatic = true;
 	}
 	
-	public static function loadMeshFile(filename:String, _isStatic:Bool = true):Mesh {
+	public function bindMeshBuffers() {
+		if(this.meshBuffer == null){
+			initMeshBuffers ();
+		}
+		
+		GL.bindBuffer(GL.ARRAY_BUFFER, meshBuffer.vertexBuffer);
+		
+		if(isStatic){
+			GL.bufferData(GL.ARRAY_BUFFER, getBindVertexData(), GL.STATIC_DRAW);
+		} else {
+			GL.bufferData(GL.ARRAY_BUFFER, getBindVertexData(), GL.DYNAMIC_DRAW);
+		}
+		
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, meshBuffer.edgeIndexBuffer);
+		
+		if(isStatic){
+			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, getBindEdgeData(), GL.STATIC_DRAW);
+		} else {
+			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, getBindEdgeData(), GL.DYNAMIC_DRAW);
+		}
+		
+		GL.bindBuffer(GL.ARRAY_BUFFER, null);
+		
+	}
+	
+	public function getBindVertexData():Float32Array{
+		var batch:Array<Float> = new Array();
+		
+		for(i in 0...vertices.length){
+			batch.push(vertices[i].x);
+			batch.push(vertices[i].y);
+			batch.push(vertices[i].z);
+			
+			var isInGroup = false;
+			var vertexColor:Color = new Color();
+			
+			for(vGroup in vertexGroups){
+				for (vGroup in vertexGroups) {
+					if (vGroup.isColorGroup) {
+						for (vertIndex in vGroup.verticesIndex) {
+							if (vertIndex == i) {
+								isInGroup = true;
+								vertexColor = vGroup.color;
+								break;
+							}
+						}
+					}
+				}
+			}
+			if(!isInGroup) {
+				vertexColor = this.pointColor;
+			}
+			batch.push(vertexColor.r);
+			batch.push(vertexColor.g);
+			batch.push(vertexColor.b);
+			batch.push(vertexColor.a);
+		}
+		
+		var returnBatch:Float32Array = new Float32Array (batch);
+		return returnBatch;
+	}
+	
+	public function getBindEdgeData():UInt16Array {
+		var batch:Array<Int> = new Array();
+		
+		for( edge in edges ){
+			batch.push(edge.a);
+			batch.push(edge.b);
+		}
+		
+		var returnBatch:UInt16Array = new UInt16Array (batch);
+		return returnBatch;
+	}
+	
+	public function getBindFaceData():UInt16Array {
+		var batch:Array<Int> = new Array();
+		
+		for( face in faces ){
+			batch.push(face.a);
+			batch.push(face.b);
+			batch.push(face.c);
+		}
+		
+		var returnBatch:UInt16Array = new UInt16Array (batch);
+		return returnBatch;
+	}
+	
+	public function initMeshBuffers(){
+		meshBuffer = { vertexBuffer : GL.createBuffer(), edgeIndexBuffer : GL.createBuffer(), faceIndexBuffer : GL.createBuffer() } ;
+	}
+	
+	public static function loadMeshFile(filename:String, gameObject:GameObject, _isStatic:Bool = true):Mesh {
 		if(filename != ""){
 			var meshes:Array<Mesh> = new Array();
 			
@@ -168,6 +266,7 @@ class Mesh
 				}*/
 				
 				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
+				mesh.gameObject = gameObject;
 				
 				mesh.isStatic = _isStatic;
 				
@@ -249,8 +348,12 @@ class Mesh
 				trace(mesh.name + " Edges Count: " + mesh.edges.length);
 				
 				if (mesh.isStatic) {
-					mesh.setRawData();
-					mesh.setGroupBatches();
+					//mesh.setRawData();
+					//mesh.setGroupBatches();
+				}
+				
+				if(mesh != null && gameObject != null && !gameObject.isStatic){
+					mesh.bindMeshBuffers();
 				}
 				
 				return mesh;
@@ -263,7 +366,7 @@ class Mesh
 		return null;
 	}
 	
-	public function setGroupBatches(){
+	/*public function setGroupBatches(){
 		setVertexGroupsBatch();
 		
 		setEdgeGroupBatch();
@@ -471,7 +574,7 @@ class Mesh
 		rawVertexData = new Float32Array (vertexArray);
 		rawEdgesData = new Float32Array (edgesArray);
 		rawFacesData = new Float32Array (facesArray);
-	}
+	}*/
 	
 	public function addVertex(x:Float, y:Float, z:Float){
 		vertices.push(new Vector3(x, y, z));
@@ -484,15 +587,15 @@ class Mesh
 	
 	public static function toggleAllEdges() {
 		Mesh.drawingEdges = !Mesh.drawingEdges;
-		for(mesh in Mesh.meshes){
-			mesh.drawEdges = Mesh.drawingEdges;
+		for(go in Engine.instance.currentScene.gameObject){
+			go.mesh.drawEdges = Mesh.drawingEdges;
 		}
 	}
 	
 	public static function toggleAllPoints() {
 		Mesh.drawingPoints = !Mesh.drawingPoints;
-		for(mesh in Mesh.meshes){
-			mesh.drawPoints = Mesh.drawingPoints;
+		for(go in Engine.instance.currentScene.gameObject){
+			go.mesh.drawPoints = Mesh.drawingPoints;
 		}
 	}
 }

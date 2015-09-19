@@ -82,7 +82,7 @@ class Main extends Sprite {
 		/*var fps:FPS = new FPS(10, 10, 0xFFFFFF);
 		addChild(fps);*/
 		
-		var fpsMem:FPS_Mem= new FPS_Mem (10, 10, 0xFFFFFF);
+		var fpsMem:FPS_Mem= new FPS_Mem (10, 10, 0x00FF00);
 		addChild(fpsMem);
 		
 		stage.mouseEnabled = true;

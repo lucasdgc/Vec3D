@@ -14,25 +14,29 @@ class MyScene extends Scene
 {
 
 	var monkey:GameObject;
+	var monkey2:GameObject;
 	
 	public function new(engine:Engine) 
 	{
 		super(engine);
 		
-		monkey = new GameObject("monkey", "cube");
+		monkey = new GameObject("monkey", "monkey", true);
+		monkey.position = new Vector3( -2, 0, 6);
 		
 		var monkeyArray:Array<GameObject> = new Array();
 		
-		var cube2:GameObject = new GameObject("cube", "cube");
-		cube2.position = new Vector3(-2, 0, 2);
+		var cube2:GameObject = new GameObject("cube", "cube", true);
+		cube2.position = new Vector3( -2, 0, 2);
 		
-		var cube3:GameObject = new GameObject("cube", "cube");
+		var cube3:GameObject = new GameObject("cube", "cube", true);
 		cube3.position = new Vector3(2, 0, 2);
 		
-		var cube4:GameObject = new GameObject("cube", "cube");
+		var cube4:GameObject = new GameObject("cube", "cube", true);
 		cube4.position = new Vector3(0, 0, 4);
 		
-		var monkeyCount:Int = 0;
+		monkey2 = new GameObject("monkey2", "monkey");
+		//monkey2.mesh.drawEdges = true;
+		/*var monkeyCount:Int = 0;
 		
 		for (i in -4...4){
 			for (j in -4...4){
@@ -42,8 +46,8 @@ class MyScene extends Scene
 				monkeyCount ++;
 			}
 		}
-		trace(monkeyCount);
-		Engine.instance.bindStaticBufferData();
+		trace(monkeyCount);*/
+		Engine.instance.currentScene.bindStaticMeshBuffer();
 		
 		Engine.canvas.mouseEnabled = true;
 		
@@ -52,7 +56,7 @@ class MyScene extends Scene
 	}
 	
 	private function update(event:Event){
-		//monkey.rotation = new Vector3 (monkey.rotation.x, monkey.rotation.y + 0.01, monkey.rotation.z);
+		monkey2.rotation = new Vector3 (monkey2.rotation.x, monkey2.rotation.y + 0.01, monkey2.rotation.z);
 	}
 	
 	private function onClick (click:MouseEvent){

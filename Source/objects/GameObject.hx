@@ -9,30 +9,35 @@ import rendering.Scene;
  * ...
  * @author Lucas Gonçalves
  */
+ 
 class GameObject
 {
 	//public static var gameObjectsList:Array<GameObject> = new Array();
 	
 	public var isVisible:Bool = true;
 	
+	public var isStatic:Bool;
+	
 	public var name:String;
 	public var position:Vector3;
 	public var rotation:Vector3;
 	
-	public var mesh:rendering.Mesh;
+	public var mesh:Mesh;
 	
 	public var scene:Scene;
 	
-	public function new(name:String = "", mesh:String = "", position:Vector3 = null, rotation:Vector3 = null) {
+	public function new(name:String = "", mesh:String = "", isStatic:Bool = false, position:Vector3 = null, rotation:Vector3 = null) {
 		if(Engine.instance.currentScene != null) {
 			Engine.instance.currentScene.gameObject.push(this);
 			
 			scene = Engine.instance.currentScene;
 			
+			this.isStatic = isStatic;
+			
 			if(name != ""){
 				this.name = name;
 			} else {
-				this.name = "gameObject_";// + gameObjectsList.length;
+				this.name = "gameObject_"+scene.gameObject.length;
 			}
 			
 			if (position != null){
@@ -52,13 +57,13 @@ class GameObject
 					this.mesh = new rendering.primitives.Cube ().mesh;
 				}
 				else {
-					this.mesh = Mesh.loadMeshFile(mesh);
-					//this.mesh.drawFaces = false;
-					//this.mesh.drawEdges = false;
-					//this.mesh.drawPoints = true;
+					this.mesh = Mesh.loadMeshFile(mesh, this);
+					if(this.mesh != null && this.isStatic) {
+						this.mesh.drawPoints = false;
+						this.mesh.drawEdges = true;
+						this.mesh.drawFaces = false;
+					}
 				}
-				
-				this.mesh.gameObject = this;
 			}
 		} else {
 			throw "Scene not instantiated...";

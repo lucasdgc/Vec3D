@@ -61,7 +61,7 @@ class FPS_Mem extends TextField
 		
 		if (visible)
 		{	
-			text = "FPS: " + times.length + "\nMEM: " + mem + " MB\nMEM peak: " + memPeak + " MB";	
+			text = "FPS: " + times.length + "\nMEM: " + mem + " MB\nMEM peak: " + memPeak + " MB\nDrawCalls: "+Engine.instance.drawCallCount;	
 		}
 	}
 	
