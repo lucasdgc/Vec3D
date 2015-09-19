@@ -39,7 +39,7 @@ class Main extends Sprite {
 	public function new () {
 		super ();
 		engine = new Engine(this);
-		var scene = new MyScene(engine);
+		var scene = new PhysicsScene(engine);
 		
 		//Vector3.Back()
 		
