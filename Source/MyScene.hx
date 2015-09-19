@@ -40,7 +40,7 @@ class MyScene extends Scene
 		
 		for (i in -4...4){
 			for (j in -4...4){
-				var m = new GameObject("", "monkey");
+				var m = new GameObject("", "monkey", true);
 				m.position = new Vector3(i, j , j);
 				monkeyArray.push(m);
 				monkeyCount ++;

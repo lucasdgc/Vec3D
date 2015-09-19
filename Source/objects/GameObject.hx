@@ -12,8 +12,6 @@ import rendering.Scene;
  
 class GameObject
 {
-	//public static var gameObjectsList:Array<GameObject> = new Array();
-	
 	public var isVisible:Bool = true;
 	
 	public var isStatic:Bool;

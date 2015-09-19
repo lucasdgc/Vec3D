@@ -117,6 +117,8 @@ class Scene
 		
 		staticVertexSize = Std.int(batch.length / 7);
 		
+		trace("Vertices batched: "+staticVertexSize);
+		
 		var returnBatch:Float32Array = new Float32Array(batch);
 		return returnBatch;
 	}
@@ -138,6 +140,8 @@ class Scene
 		}
 		
 		staticEdgeSize = Std.int(batch.length / 2);
+		trace("Edges batched: "+staticEdgeSize);
+		
 		var returnBatch = new UInt16Array (batch);
 		return returnBatch;
 	}
@@ -157,6 +161,7 @@ class Scene
 		}
 		
 		staticFaceSize = Std.int(batch.length / 2);
+		trace("Faces batched: "+staticFaceSize);
 		
 		var returnBatch:UInt32Array = new UInt32Array (batch);
 		return returnBatch;
