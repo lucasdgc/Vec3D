@@ -123,7 +123,7 @@ class Mesh
 		
 		pointColor = utils.Color.white;
 		edgeColor = utils.Color.white;
-		faceColor = utils.Color.white;
+		faceColor = utils.Color.black;
 		
 		/*this.rawVertexData = new Float32Array(vertices);
 		this.rawEdgesData = new Float32Array(edges);
@@ -583,6 +583,11 @@ class Mesh
 	public function addFace(pointA:Int, pointB:Int, pointC:Int){
 		var face:Face = { a : pointA, b : pointB, c : pointC };
 		faces.push(face);
+	}
+	
+	public function addEdge (pointA:Int, pointB:Int) {
+		var edge:Edge = { a : pointA, b : pointB };
+		edges.push (edge);
 	}
 	
 	public static function toggleAllEdges() {

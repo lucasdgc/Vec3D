@@ -15,7 +15,7 @@ class Input extends DisplayObject
 		
 	public function new () {
 		super();
-		addEventListener(Event.ENTER_FRAME, update);
+		//addEventListener(Event.ENTER_FRAME, update);
 	}
 	
 	public function update(e:Event){

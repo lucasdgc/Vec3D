@@ -171,7 +171,7 @@ class Engine
 		}
 		
 		for(gameObject in currentScene.gameObject) { 
-			if ( !gameObject.isStatic && gameObject.isVisible ) {
+			if ( !gameObject.isStatic && gameObject.isVisible && gameObject.mesh != null) {
 				var mesh = gameObject.mesh;
 				
 				var worldMatrix = Matrix.RotationYawPitchRoll(gameObject.rotation.y, gameObject.rotation.x, gameObject.rotation.z) 
@@ -181,6 +181,10 @@ class Engine
 		
 				GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.m));
 				GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (worldViewMatrix.m));
+				
+				if (gameObject.mesh.meshBuffer == null) {
+					throw "Object " + mesh.name +" has undefined vertex buffers...";
+				}
 				
 				drawGeometry(mesh.meshBuffer.vertexBuffer, mesh.vertices.length, mesh.drawPoints,
 						mesh.meshBuffer.edgeIndexBuffer, mesh.edges.length, mesh.drawEdges,
@@ -208,13 +212,13 @@ class Engine
 		GL.enableVertexAttribArray(vertexColorAttribute);
 		GL.vertexAttribPointer(vertexColorAttribute, 4, GL.FLOAT, false, 7 * 4, 3 * 4);
 
-		if (drawVertex) {
+		if (drawVertex && vertexBufferSize > 0) {
 			drawCalls ++;
 			GL.drawArrays(GL.POINTS, 0, vertexBufferSize);
 		}
 		
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, edgeIndexBuffer);
-		if (drawEdges) {
+		if (drawEdges && edgeBufferSize > 0) {
 			drawCalls ++;
 			GL.drawElements(GL.LINES, edgeBufferSize * 2, GL.UNSIGNED_SHORT, 2 * 0);	
 		}
