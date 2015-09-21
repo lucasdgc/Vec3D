@@ -2,6 +2,7 @@ package;
 import input.InputAxis;
 import input.InputButton;
 import objects.GameObject;
+import objects.Terrain;
 import oimohx.math.Vec3;
 import oimohx.physics.collision.shape.BoxShape;
 import oimohx.physics.collision.shape.Shape;
@@ -15,6 +16,7 @@ import openfl.events.Event;
 import com.babylonhx.math.Vector3;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
+import utils.Color;
 /**
  * ...
  * @author Lucas Gonçalves
@@ -67,9 +69,55 @@ class PhysicsScene extends Scene
 		/*var myCube:GameObject = new GameObject ("myCube", Primitives.CUBE);
 		myCube.scale = new Vector3 (3, 3, 3);*/
 		
-		var line:Mesh = Primitives.createCircle(100);
-		var myLine:GameObject = new GameObject ("myLine", line);
+		var line:Mesh = Primitives.createSphere(8, 1);
+		line.translate(new Vector3(0, 2, 0));
 		
+		var tree:Mesh = Primitives.createCube(1);
+		tree.scale(new Vector3(1, 3, 1));
+		tree.merge(line);
+		//line.rotate(new Vector3(0, 0, 15));
+		//line.scale(new Vector3(3, 3, 3));
+		var myLine:GameObject = new GameObject ("myLine", tree);
+		myLine.position = new Vector3 (-4, 0, 1);
+		
+		myLine.mesh.vertexGroups[0].color = Color.green;
+		myLine.mesh.vertexGroups[1].color = Color.yellow;
+		
+		myLine.mesh.bindMeshBuffers();
+		
+		myLine.isStatic = true;
+		
+
+		
+		var monkey:Mesh = Mesh.loadMeshFile("monkey");
+		var monkeyGO:GameObject = new GameObject("monkey", monkey);
+	
+		monkeyGO.isStatic = true;
+		
+		//var cube
+		
+		
+		//myLine.scene.mergeStaticMeshes();
+		
+				
+		var monkey2:Mesh = Mesh.loadMeshFile("monkey");
+		var monkeyGO2:GameObject = new GameObject("monkey2", monkey2);
+		monkeyGO2.position = new Vector3 (2, 0, 2);
+		
+		monkeyGO2.isStatic = true;
+		
+		monkeyGO2.scene.mergeStaticMeshes();
+		
+		
+		//var planeMesh:Mesh = Primitives.createPlane(32);
+		//var plane:GameObject = new GameObject("plane", planeMesh);
+		
+		var plane:Terrain = new Terrain ("heightmap_32.png");
+		
+		plane.position = new Vector3 (0, -4, 0);
+		plane.rotation.x += 15;
+
+		plane.scene.mergeStaticMeshes();
 		
 		world = new World();
 		

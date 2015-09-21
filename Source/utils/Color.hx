@@ -22,12 +22,15 @@ class Color
 	public static var BLUE_HEX:UInt = 0xFF0000FF;
 	public static var BLACK_HEX:UInt = 0xFF000000;
 	public static var WHITE_HEX:UInt = 0xFFFFFFFF;
+	public static var YELLOW_HEX:UInt = 0xFFFFFF00;
+	
 	
 	public static var red:Color = new Color(RED_HEX);
 	public static var green:Color = new Color(GREEN_HEX);
 	public static var blue:Color = new Color(BLUE_HEX);
 	public static var black:Color = new Color (BLACK_HEX);
 	public static var white:Color = new Color(WHITE_HEX);
+	public static var yellow:Color = new Color(YELLOW_HEX);
 	
 	private static var isInitializedColors:Bool = false;
 	
@@ -88,6 +91,8 @@ class Color
 				returnColor = Color.black;
 			case Color.WHITE_NAME:
 				returnColor = Color.white;
+			case Color.YELLOW_NAME:
+				returnColor = Color.yellow;
 			default: 
 				returnColor = Color.white;
 		}

@@ -158,7 +158,7 @@ class Engine
 		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 			
-		if(currentScene.staticVertexSize > 0){
+		/*if(currentScene.staticVertexSize > 0){
 			
 			var worldViewMatrix:Matrix = Matrix.Identity().multiply(viewMatrix);
 		
@@ -168,7 +168,7 @@ class Engine
 			drawGeometry(currentScene.staticMeshBuffer.vertexBuffer, currentScene.staticVertexSize, currentScene.drawStaticPoints,
 						currentScene.staticMeshBuffer.edgeIndexBuffer, currentScene.staticEdgeSize, currentScene.drawStaticEdges,
 						currentScene.staticMeshBuffer.faceIndexBuffer, currentScene.staticFaceSize, currentScene.drawStaticFaces);
-		}
+		}*/
 		
 		for(gameObject in currentScene.gameObject) { 
 			if ( !gameObject.isStatic && gameObject.isVisible && gameObject.mesh != null) {

@@ -16,7 +16,7 @@ class Primitives
 	public static var curve:String = "primitive_curve";
 	
 	public static function createCube (size:Float = 1):Mesh {
-		var cube:Mesh = new Mesh ();
+		var cube:Mesh = new Mesh ("cube_");
 		
 		if ( size <= 0 ){
 			size = 1;
@@ -60,7 +60,7 @@ class Primitives
 	}
 	
 	public static function createSphere (segments:Int = 8, radius:Float = 0.5, horizontalEdges:Bool = true, verticalEdges:Bool = true) {
-		var sphere:Mesh = new Mesh ();
+		var sphere:Mesh = new Mesh ("sphere_");
 		
 		var zRotationSteps = 2 + segments;
 		var yRotationSteps = 2 * zRotationSteps;
@@ -124,7 +124,7 @@ class Primitives
 	}
 	
 	public static function createLine (segments:Int = 1, size:Float = 1) {
-		var line:Mesh = new Mesh ();
+		var line:Mesh = new Mesh ("line_");
 		
 		if (size <= 0) {
 			size = 0;
@@ -146,8 +146,73 @@ class Primitives
 		return line;
 	}
 	
+	public static function createSpiral () {
+		
+	}
+	
+	public static function createRose (segments:Int = 32, n:Float = 3 / 4, radius:Float = 0.5) {
+		var rose:Mesh = new Mesh ("rose_");
+		
+		var theta:Float = 0;
+		var thetaStep:Float = 360 / segments;
+		
+		for (i in 0...segments) {
+			var r = Math.sin (n * theta);
+			var r = r * radius;
+			
+			var x = Math.sin (theta) * r;
+			var y = Math.cos (theta) * r;
+			
+			rose.addVertex (x, y, 0);
+			
+			if (i > 0) {
+				rose.addEdge (i-1, i);
+			}
+			
+			theta += thetaStep;
+		}
+		
+		finishMesh (rose);
+		return rose;
+	}
+	
+	public static function createCannabis (segments:Int = 128, size:Float = 1) {
+		var cannabis:Mesh = new Mesh ("cannabis_");
+		
+		if (size < 0) {
+			size = 0.5;
+		}
+		
+		var theta:Float = 0;
+		var thetaStep:Float = 360 / segments;
+		
+		for (i in 0...segments) {
+			
+			var r:Float = (1 + 0.9 * Math.cos(8 * theta))
+                * (1 + (0.1 * Math.cos(24 * theta)))
+                * (0.9 + (0.1 * Math.cos(200 * theta))) 
+                * (1 + Math.sin(theta));
+			
+			r = r * size;
+			
+			var x:Float = (Math.cos(theta) * r);
+			var y:Float = (Math.sin(theta) * r);
+			
+			cannabis.addVertex (x, y, 0);
+			
+			theta += thetaStep;
+			
+			if( i > 0 ){
+				cannabis.addEdge (i-1, i);
+			}
+		}
+
+		finishMesh (cannabis);
+		return cannabis;
+	}
+	
 	public static function createCircle (segments:Int = 10, radius:Float = 0.5) {
-		var circle:Mesh = new Mesh ();
+		var circle:Mesh = new Mesh ("circle_");
 		if (radius <= 0) {
 			radius = 0.5;
 		}
@@ -175,8 +240,37 @@ class Primitives
 		return circle;
 	}
 	
+	public static function createPlane (segments:Int = 4, size:Float = 1) {
+		var plane:Mesh = new Mesh("plane_");
+		
+		var positionValue = - 0.5 * size * segments * 0.5;
+		var positionStep =  0.5 * size;
+		
+		var vertexCount:Int = 0;
+		
+		var posX:Float = positionValue;
+		for (x in 0...segments) {
+			var posZ:Float = positionValue;
+			for(z in 0...segments) {
+				plane.addVertex(posX, 0, posZ);
+				posZ += Math.abs (positionStep);
+				if(z > 0){
+					plane.addEdge (vertexCount - 1, vertexCount);
+				}
+				if (x > 0) {
+					plane.addEdge (vertexCount, vertexCount - segments);
+				}
+				vertexCount ++;
+			}
+			posX += Math.abs (positionStep);
+		}
+		
+		finishMesh(plane);
+		return plane;
+	}
+	
 	public static function createSquare (size:Float = 1) {
-		var square:Mesh = new Mesh ();
+		var square:Mesh = new Mesh ("square_");
 		
 		if (size <= 0) {
 			size = 1;
@@ -217,6 +311,6 @@ class Primitives
 	
 	private static function finishMesh (mesh:Mesh) {
 		mesh.vertexGroups.push(createVertexGroup(mesh));
-		mesh.bindMeshBuffers();
+		//mesh.bindMeshBuffers();
 	}
 }

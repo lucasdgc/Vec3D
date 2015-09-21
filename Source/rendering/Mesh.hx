@@ -1,6 +1,7 @@
 package rendering;
 
 import com.babylonhx.math.Vector3;
+import com.babylonhx.math.Matrix;
 import lime.graphics.opengl.GLBuffer;
 import objects.GameObject;
 import openfl.Assets;
@@ -10,6 +11,7 @@ import openfl.utils.Float32Array;
 import lime.utils.UInt16Array;
 import rendering.Mesh.MeshBuffer;
 import utils.Color;
+import utils.SimpleMath;
 
 /**
  * ...
@@ -233,7 +235,7 @@ class Mesh
 		meshBuffer = { vertexBuffer : GL.createBuffer(), edgeIndexBuffer : GL.createBuffer(), faceIndexBuffer : GL.createBuffer() } ;
 	}
 	
-	public static function loadMeshFile(filename:String, gameObject:GameObject, _isStatic:Bool = true):Mesh {
+	public static function loadMeshFile(filename:String, _isStatic:Bool = true):Mesh {
 		if(filename != ""){
 			var meshes:Array<Mesh> = new Array();
 			
@@ -266,7 +268,7 @@ class Mesh
 				}*/
 				
 				var mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
-				mesh.gameObject = gameObject;
+				//mesh.gameObject = gameObject;
 				
 				mesh.isStatic = _isStatic;
 				
@@ -347,14 +349,14 @@ class Mesh
 				
 				trace(mesh.name + " Edges Count: " + mesh.edges.length);
 				
-				if (mesh.isStatic) {
+				/*if (mesh.isStatic) {
 					//mesh.setRawData();
 					//mesh.setGroupBatches();
 				}
 				
-				if(mesh != null && gameObject != null && !gameObject.isStatic){
-					mesh.bindMeshBuffers();
-				}
+				if(mesh != null && !gameObject.isStatic){
+					//mesh.bindMeshBuffers();
+				}*/
 				
 				return mesh;
 			}
@@ -590,6 +592,86 @@ class Mesh
 		edges.push (edge);
 	}
 	
+	public function merge (newMesh:Mesh) {
+		var previousVerticesLength:Int = this.vertices.length;
+		
+		for (vert in newMesh.vertices) {
+			var goX:Float = 0;
+			var goY:Float = 0;
+			var goZ:Float = 0;
+			
+			if (newMesh.gameObject != null) {
+				goX = newMesh.gameObject.position.x;
+				goY = newMesh.gameObject.position.y;
+				goZ = newMesh.gameObject.position.z;
+			}
+			
+			this.addVertex (vert.x + goX, vert.y + goY, vert.z + goZ);
+		}
+		
+		for (edge in newMesh.edges) {
+			this.addEdge (edge.a + previousVerticesLength, edge.b + previousVerticesLength);
+		}
+		
+		for (face in newMesh.faces) {
+			this.addFace (face.a + previousVerticesLength, face.b + previousVerticesLength, face.c + previousVerticesLength);
+		}
+		
+		var vGroupIndex:Int = 1;
+		for (vGroup in newMesh.vertexGroups) {
+			vGroup.name += Std.string(vGroupIndex);
+			for (index in 0...vGroup.verticesIndex.length) {
+				vGroup.verticesIndex[index] = vGroup.verticesIndex[index] + previousVerticesLength;
+			}
+			vGroupIndex ++;
+			this.vertexGroups.push(vGroup);
+		}
+		
+		newMesh.destroy(true);
+		
+		this.bindMeshBuffers();
+	}
+	
+	public function translate (value:Vector3) {
+		for (vert in this.vertices) {
+			vert.x += value.x;
+			vert.y += value.y;
+			vert.z += value.z;
+		}
+		this.bindMeshBuffers ();
+	}
+	
+	public function rotate (value:Vector3) {		
+		for (vert in this.vertices) {
+					
+			var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll(value.y, value.x, value.z).multiply(Matrix.Zero());
+			var newRot:Vector3 = SimpleMath.matrixToEulerAngles(rotationMatrix);
+			
+			for (i in 0...rotationMatrix.m.length) {
+				trace ("i: "+i+" value: "+ rotationMatrix.m[i]);
+			}
+			
+			vert.x += newRot.x;
+			vert.y += newRot.y;
+			vert.z += newRot.z;
+			
+			trace(vert);
+		}
+		
+		
+		this.bindMeshBuffers ();
+	}
+	
+	
+	public function scale (value:Vector3) {
+		for (vert in this.vertices) {
+			vert.x *= value.x;
+			vert.y *= value.y;
+			vert.z *= value.z;
+		}
+		this.bindMeshBuffers ();
+	}
+	
 	public static function toggleAllEdges() {
 		Mesh.drawingEdges = !Mesh.drawingEdges;
 		for(go in Engine.instance.currentScene.gameObject){
@@ -602,5 +684,30 @@ class Mesh
 		for(go in Engine.instance.currentScene.gameObject){
 			go.mesh.drawPoints = Mesh.drawingPoints;
 		}
+	}
+	
+	public function destroy (isRecursive:Bool = false) {
+		this.vertices = null;
+		this.edges = null;
+		this.faces = null;
+		
+		this.vertexGroups = null;
+	
+		disposeMeshBuffer();
+		
+		if (gameObject != null) {
+			gameObject.mesh = null;
+			
+			if (isRecursive) {
+				gameObject.destroy();
+			}
+		}
+		
+	}
+	
+	public function disposeMeshBuffer () {
+		GL.deleteBuffer(this.meshBuffer.vertexBuffer);
+		GL.deleteBuffer(this.meshBuffer.edgeIndexBuffer);
+		GL.deleteBuffer(this.meshBuffer.faceIndexBuffer);
 	}
 }

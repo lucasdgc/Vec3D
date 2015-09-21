@@ -53,6 +53,12 @@ class GameObject
 			
 			this.mesh = mesh;
 			
+			if (this.mesh != null) {
+				this.mesh.gameObject = this;
+				
+				this.mesh.bindMeshBuffers();
+			}
+			
 			/*if (mesh != "") {
 				//trace("mesh+string: " + mesh);
 				if (mesh == Primitives.CUBE) {
@@ -71,6 +77,16 @@ class GameObject
 			throw "Scene not instantiated...";
 		}
 		
+	}
+	
+	public function destroy () {
+		scene.gameObject.remove(this);
+		
+		scene = null;
+		
+		if (this.mesh != null) {
+			mesh.destroy();
+		}
 	}
 	
 	public function set_scale (value:Vector3):Vector3 {

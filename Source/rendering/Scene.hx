@@ -26,6 +26,8 @@ class Scene
 	
 	public var staticMeshBuffer:MeshBuffer;
 	
+	public var staticMesh:Mesh;
+	
 	public var staticVertexSize:Int;
 	public var staticEdgeSize:Int;
 	public var staticFaceSize:Int;
@@ -33,6 +35,8 @@ class Scene
 	public var drawStaticPoints:Bool = false;
 	public var drawStaticEdges:Bool = true;
 	public var drawStaticFaces:Bool = false;
+	
+	private var isFirstStaticMerge:Bool = true;
 	
 	public function new(engine:Engine, loadOnCreate:Bool = true ) 
 	{
@@ -45,6 +49,35 @@ class Scene
 		activeCamera = new Camera (new Vector3(0, 0, -10), Vector3.Zero(), "main_camera");
 		
 		staticMeshBuffer = { vertexBuffer : GL.createBuffer(), edgeIndexBuffer : GL.createBuffer(), faceIndexBuffer : GL.createBuffer() };
+		
+		staticMesh = new Mesh("static_mesh");
+		staticMesh.isStatic = true;
+		staticMesh.bindMeshBuffers();
+		
+		var staticGO:GameObject = new GameObject ("static_gameobject", staticMesh);
+		//staticGO.isStatic = true;
+	}
+	
+	public function mergeStaticMeshes () {
+		var staticCount:Int = 0;
+		var notStaticCount:Int = 0;
+		
+		trace ("Merging static meshes...");
+		var i:Int = 1;
+		while (i < gameObject.length) {
+			if (gameObject[i].isStatic) {
+				staticMesh.merge(gameObject[i].mesh);
+				staticCount ++;
+			} else {
+				i ++;
+				notStaticCount ++;
+			}
+		}
+		
+		trace (staticCount+" static meshes merged...");
+		trace (notStaticCount+" NOT static meshes NOT merged...");
+		
+		staticMesh.bindMeshBuffers ();
 	}
 	
 	public function bindStaticMeshBuffer () {
