@@ -16,7 +16,7 @@ class Terrain extends GameObject
 {
 	public static var terrainDirectory:String = "assets/Images/Terrain/";
 	
-	public var heightMap:BitmapData;
+	//public var heightMap:BitmapData;
 	
 	public var height:Float = 3;
 	public var size:Float = 4;
@@ -28,7 +28,7 @@ class Terrain extends GameObject
 		
 		//heightMap = new BitmapData (32, 32);
 		
-		heightMap = Assets.getBitmapData (terrainDirectory + heightMapPath);
+		var heightMap:BitmapData = Assets.getBitmapData (terrainDirectory + heightMapPath);
 		
 		trace(terrainDirectory + heightMapPath);
 		
@@ -37,7 +37,7 @@ class Terrain extends GameObject
 		if(heightMap != null){
 			mesh = Primitives.createPlane (heightMap.width, this.size);
 			
-			shapeTerrain ();
+			shapeTerrain (heightMap);
 			
 			super("terrain_", mesh, true);
 		} else {
@@ -45,7 +45,7 @@ class Terrain extends GameObject
 		}
 	}
 	
-	private function shapeTerrain () {
+	private function shapeTerrain (heightMap:BitmapData) {
 		var pixelData:ByteArray = heightMap.getPixels (new Rectangle (0, 0, heightMap.width, heightMap.height) );
 		
 		var sum:Float = 0;
@@ -59,6 +59,7 @@ class Terrain extends GameObject
 				sum = 0;
 			}
 		}
+		heightMap = null;
 		
 		mesh.bindMeshBuffers();
 	}

@@ -7,29 +7,35 @@ import com.babylonhx.math.Vector3;
  */
 class Camera
 {
-	//public static var camerasList:Array<Camera> = new Array();
-	//public static var mainCamera:
-	
-	public var position:Vector3;
-	public var target:Vector3;
+	public var facingPoint (get, null):Vector3;
 	
 	public var name:String;
+	public var transform:Transform;
 	
 	public function new(position:Vector3, target:Vector3, name:String = "") {
 		if(Engine.instance.currentScene != null){
 			Engine.instance.currentScene.cameras.push(this);
+			
+			transform = new Transform ();
 		
+			this.transform.position = position;
+			
+			transform.rotate(-90, 0, 0);
+			
 			if(name != ""){
 				this.name = name;	
 			} else {
 				this.name = "camera_" + Engine.instance.currentScene.cameras.length;
 			}
 			
-			this.position = position;
-			this.target = target;
+			this.facingPoint = target;
 		} else {
 			throw "Scene not instantiated...";
 		}
 	}
 	
+	private function get_facingPoint ():Vector3 {
+		facingPoint = transform.position.add(transform.forward.multiplyByFloats(10, 10, 10));
+		return facingPoint;
+	}
 }

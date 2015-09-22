@@ -2,6 +2,7 @@ package input;
 
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
+import openfl.events.MouseEvent;
 import openfl.events.Event;
 import utils.SimpleMath;
 
@@ -9,6 +10,17 @@ import utils.SimpleMath;
  * ...
  * @author Lucas Gonçalves
  */
+
+enum InputAxisMethod {
+	KEYBOARD;
+	MOUSE_X;
+	MOUSE_Y;
+	JOYSTICK_X;
+	JOYSTICK_Y;
+	ACCELEROMETER;
+	TOUCHSCREEN_ANALOG;
+}
+ 
 class InputAxis 
 {
 	public static var axis:Array<InputAxis> = new Array();
@@ -27,7 +39,15 @@ class InputAxis
 	private var isPressingNegative:Bool = false;
 	private var isPressingPositive:Bool = false;
 	
-	public function new(name:String, negative:UInt, positive:UInt, speed:Float = 0.5) 
+	private var prevAxisValue:Float;
+	
+	public var inputMethod:InputAxisMethod;
+	
+	private var isUsingInput:Bool = false;
+	
+	private var usingInputFrame:Int = 0;
+	
+	public function new(name:String, method:InputAxisMethod = null, negative:UInt = 0, positive:UInt = 0, speed:Float = 0.5) 
 	{
 		axis.push(this);
 		
@@ -38,12 +58,31 @@ class InputAxis
 		
 		this.speed = speed;
 		
-		Engine.canvas.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-		Engine.canvas.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+		inputMethod = method;
+		
+		if(inputMethod == null){
+			inputMethod = InputAxisMethod.KEYBOARD;
+		}
+		
+		switch (inputMethod){
+			case InputAxisMethod.KEYBOARD:
+				Engine.canvas.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+				Engine.canvas.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+			case InputAxisMethod.MOUSE_X:
+				Engine.canvas.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			case InputAxisMethod.MOUSE_Y:
+				Engine.canvas.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			//case InputAxisMethod.TOUCHSCREEN_ANALOG:
+			
+			default:
+				
+		}
+
 		Engine.canvas.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 	}
 	
 	private function onEnterFrame (event:Event) {
+
 		if(isPressingNegative){
 			targetValue = -1;
 		}
@@ -56,9 +95,32 @@ class InputAxis
 			targetValue = 0;
 		}
 		
+		if ((inputMethod == InputAxisMethod.MOUSE_X || inputMethod == InputAxisMethod.MOUSE_Y) && targetValue != 0) {
+			usingInputFrame ++;
+			
+			if (usingInputFrame >= 15) {
+				usingInputFrame = 0;
+				isPressingPositive = false;
+				isPressingNegative = false;
+			}
+		}
+		
 		value = SimpleMath.Lerp(value, targetValue, speed);
 		
 		roundValue ();
+		
+		if(inputMethod == InputAxisMethod.MOUSE_X || inputMethod == InputAxisMethod.MOUSE_Y) {
+			isUsingInput = false;
+		}
+		
+	}
+	
+	private function setKeyboardValues () {
+
+	}
+	
+	private function setMouseXValues () {
+		//prevAxisValue = MouseEvent.stage
 	}
 	
 	private function roundValue () {
@@ -68,6 +130,25 @@ class InputAxis
 			value = -1;
 		} else if (!isPressingNegative && !isPressingPositive && value > -0.1 && value < 0.1) {
 			value = 0;
+		}
+	}
+	
+	private function onMouseMove (mouse:MouseEvent) {
+		isUsingInput = true;
+		if (inputMethod == InputAxisMethod.MOUSE_X) {
+			if (mouse.stageX > prevAxisValue) {
+				isPressingPositive = true;
+			} else if (mouse.stageX < prevAxisValue) {
+				isPressingNegative = true;
+			}
+			prevAxisValue = mouse.stageX;
+		} else {
+			if (mouse.stageY < prevAxisValue) {
+				isPressingPositive = true;
+			} else if (mouse.stageY > prevAxisValue) {
+				isPressingNegative = true;
+			}
+			prevAxisValue = mouse.stageY;
 		}
 	}
 	
@@ -91,8 +172,8 @@ class InputAxis
 		}
 	}
 	
-	public static function bindAxis (name:String, negative:UInt, positive:UInt, speed:Float = 0.5) {
-		var i = new InputAxis (name, negative, positive, speed);
+	public static function bindAxis (name:String = "",  method:InputAxisMethod = null, negative:UInt = 0, positive:UInt = 0, speed:Float = 0.5) {
+		var i = new InputAxis (name, method, negative, positive, speed);
 	}
 	
 	public static function getValue (axisName:String):Float {
@@ -101,7 +182,6 @@ class InputAxis
 				return inputAxis.value;
 			}
 		}
-		
 		return 0;
 	}
 	

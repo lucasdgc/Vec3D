@@ -1,6 +1,7 @@
 package com.babylonhx.math;
 
 import com.babylonhx.utils.typedarray.Float32Array;
+import com.babylonhx.tools.Tools;
 
 /**
 * ...
@@ -235,7 +236,7 @@ import com.babylonhx.utils.typedarray.Float32Array;
 			this.m[12], this.m[13], this.m[14], this.m[15]);
 	}
 	
-	/*public function decompose(scale:Vector3, rotation:Quaternion, translation:Vector3):Bool {
+	public function decompose(scale:Vector3, rotation:Quaternion, translation:Vector3):Bool {
 		translation.x = this.m[12];
 		translation.y = this.m[13];
 		translation.z = this.m[14];
@@ -265,7 +266,7 @@ import com.babylonhx.utils.typedarray.Float32Array;
 		rotation.fromRotationMatrix(rotationMatrix);
 		
 		return true;
-	}*/
+	}
 
 	// Statics
 	inline public static function FromArray(array:Array<Float>, offset:Int = 0):Matrix {

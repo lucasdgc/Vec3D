@@ -20,6 +20,14 @@ class SimpleMath
 		return Math.round( v * Math.pow(10, precision) ) / Math.pow(10, precision);
 	}
 	
+	public static function toRadVector (degreeVector:Vector3):Vector3 {
+		return new Vector3 (degreeVector.x * (Math.PI / 180), degreeVector.y * (Math.PI / 180), degreeVector.z * (Math.PI / 180));
+	}
+	
+	public static function toDegreeVector (radVector:Vector3):Vector3 {
+		return new Vector3 (radVector.x * (180 / Math.PI), radVector.y * (180 / Math.PI), radVector.z * (180 / Math.PI));
+	}
+	
 	public static function matrixToEulerAngles (value:Matrix):Vector3 {
 		var eulerAngles:Vector3 = new Vector3();
 		
@@ -50,5 +58,11 @@ class SimpleMath
 		eulerAngles.z = z;
 		
 		return eulerAngles;
+	}
+	
+	public static function matrixToPosition (value:Matrix):Vector3 {
+		var position:Vector3 = new Vector3(value.m[3], value.m[7], value.m[11]);
+		
+		return position;
 	}
 }

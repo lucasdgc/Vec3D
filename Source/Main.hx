@@ -85,7 +85,8 @@ class Main extends Sprite {
 		var fpsMem:FPS_Mem= new FPS_Mem (10, 10, 0x00FF00);
 		addChild(fpsMem);
 		
-		stage.mouseEnabled = true;
+		//stage.mouseEnabled = true;
+		//stage.mouseChildren = true;
 		
 		//addEventListener(Event.ENTER_FRAME, update);
 		/*stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyEnter);

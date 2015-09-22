@@ -3,6 +3,7 @@ import input.InputAxis;
 import input.InputButton;
 import objects.GameObject;
 import objects.Terrain;
+import objects.Transform;
 import oimohx.math.Vec3;
 import oimohx.physics.collision.shape.BoxShape;
 import oimohx.physics.collision.shape.Shape;
@@ -14,9 +15,11 @@ import oimohx.physics.dynamics.World;
 import oimohx.physics.dynamics.RigidBody;
 import openfl.events.Event;
 import com.babylonhx.math.Vector3;
+import com.babylonhx.math.Quaternion;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
 import utils.Color;
+import utils.SimpleMath;
 /**
  * ...
  * @author Lucas Gonçalves
@@ -49,12 +52,18 @@ class PhysicsScene extends Scene
 	{
 		super(engine);
 		
-		InputAxis.bindAxis("Horizontal", Keyboard.LEFT, Keyboard.RIGHT);
-		InputAxis.bindAxis("Vertical", Keyboard.DOWN, Keyboard.UP);
+		InputAxis.bindAxis("Horizontal", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
+		InputAxis.bindAxis("Vertical", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
+		
+		InputAxis.bindAxis("CameraX", InputAxisMethod.MOUSE_X, 0, 0, 0.1);
+		InputAxis.bindAxis("CameraY", InputAxisMethod.MOUSE_Y, 0, 0, 0.1);
 		
 		InputButton.bindButton ("Jump", Keyboard.SPACE);
 		
-		activeCamera.position.z -= 30;
+		//activeCamera.transform.position = new Vector3 (0, 0, -10);
+		//activeCamera.transform.eulerAngles = new Vector3 (0, 15, 0);
+		
+		activeCamera.transform.rotate(0, 30, 0);
 		
 		trace("inicia...");
 		
@@ -86,8 +95,6 @@ class PhysicsScene extends Scene
 		myLine.mesh.bindMeshBuffers();
 		
 		myLine.isStatic = true;
-		
-
 		
 		var monkey:Mesh = Mesh.loadMeshFile("monkey");
 		var monkeyGO:GameObject = new GameObject("monkey", monkey);
@@ -144,9 +151,9 @@ class PhysicsScene extends Scene
 		floorBody.isStatic = true;
 		floorBody.isDynamic = false;
 		
-		cameraTargetPosition = activeCamera.position.clone();
+		//cameraTargetPosition = activeCamera.transform.position.clone();
 				
-		startingCameraPos = activeCamera.position.clone();
+		//startingCameraPos = activeCamera.transform.position.clone();
 		
 		Engine.canvas.addEventListener(Event.ENTER_FRAME, update);
 		Engine.canvas.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
@@ -162,17 +169,29 @@ class PhysicsScene extends Scene
 		var h = InputAxis.getValue("Horizontal");
 		var v = InputAxis.getValue("Vertical");
 		
+		var mouseX = InputAxis.getValue("CameraX");
+		var mouseY = InputAxis.getValue("CameraY");
+		
+		activeCamera.transform.rotate(0, h, 0);
+		//trace(v);
+		
+		activeCamera.transform.position = activeCamera.transform.position.add(activeCamera.transform.forward.multiplyByFloats(v, v, v));
+		
+		//activeCamera.position = activeCamera.position.add(new Vector3(mouseX * 1, 0, 0));
+		
+		//activeCamera.target = new Vector3(activeCamera.transform.position.x, activeCamera.transform.position.y, activeCamera.transform.position.z);
+		
 		/*trace("H: " + h);
 		trace("V: " + v);
 		trace ("Jump: " + InputButton.getValue("Jump"));
 		*/
-		var moveDirection:Vector3 = new Vector3 (h, 0, v);
+		//var moveDirection:Vector3 = new Vector3 (h, 0, v);
 		
-		cameraTargetPosition = activeCamera.position.addInPlace(moveDirection.multiplyByFloats(cameraSpeed, cameraSpeed, cameraSpeed));
+		//cameraTargetPosition = activeCamera.position.addInPlace(moveDirection.multiplyByFloats(cameraSpeed, cameraSpeed, cameraSpeed));
 		
-		activeCamera.position = Vector3.Lerp(activeCamera.position, cameraTargetPosition, cameraSmooth);
+		//activeCamera.position = Vector3.Lerp(activeCamera.position, cameraTargetPosition, cameraSmooth);
 		
-		activeCamera.target = new Vector3 (activeCamera.position.x, activeCamera.position.y, activeCamera.position.z + 10);
+		//activeCamera.target = new Vector3 (activeCamera.position.x, activeCamera.position.y, activeCamera.position.z + 10);
 	}
 	
 	private function onKeyPress (key:KeyboardEvent) {

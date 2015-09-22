@@ -16,6 +16,7 @@ import rendering.Mesh;
 import utils.Color;
 import input.Input;
 import objects.GameObject;
+import utils.SimpleMath;
 
 /**
  * ...
@@ -155,7 +156,7 @@ class Engine
 
 	private function render(camera:Camera) {
 		
-		var viewMatrix = Matrix.LookAtLH(camera.position, camera.target, Vector3.Up());
+		var viewMatrix = Matrix.LookAtLH(camera.transform.position, camera.facingPoint, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 			
 		/*if(currentScene.staticVertexSize > 0){
