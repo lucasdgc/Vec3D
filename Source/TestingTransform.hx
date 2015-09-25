@@ -16,24 +16,46 @@ import openfl.events.EventDispatcher;
 class TestingTransform extends Scene
 {
 
+	private var cube:GameObject;
+	
 	public function new(engine:Engine) 
 	{
 		super(engine);
 		
 		var cubeMesh:Mesh = Primitives.createCube();
-		var cube:GameObject = new GameObject ("cube_01", cubeMesh);
 		//cube.mesh.vertexGroups[0].color = Color.blue;
 		
-		var cana:Mesh = Primitives.createRose(1000, 3 / 4);
-		var c:GameObject = new GameObject ("maria", cana);
-		c.isStatic = true;
-		cube.isStatic = true;
+		var rose:Mesh = Primitives.createRose(1000, 3 / 4);
+		cubeMesh.merge(rose);
+		
+		cube = new GameObject ("maria", cubeMesh);
 		
 		cube.mesh.setVetexGroupColor(0, Color.blue);
 		
-		trace(cube.mesh.vertexGroups[0].color);
+		var cube2:GameObject = new GameObject ("cube2", cubeMesh.clone());
+		cube2.transform.position = new Vector3 (-2, 0, 1);
 		
-		mergeStaticMeshes();
+		var cube3:GameObject = new GameObject ("cube3", cubeMesh.clone());
+		cube3.transform.position = new Vector3 (2, 0, 1);
+		//trace(cube.mesh.vertexGroups[0].color);
+		
+		cube3.parent = cube;
+		cube2.parent = cube;
+		
+		var plane:Mesh = Primitives.createPlane(32, 5);
+		var planeObj:GameObject = new GameObject ("plane", plane);
+		planeObj.transform.position = new Vector3 (0, -2, 0);
+		
+		var plane2:Mesh = Primitives.createPlane(32, 5);
+		var planeObj2:GameObject = new GameObject ("plane2", plane2);
+		
+		planeObj2.transform.position = new Vector3 (0, 2, 0);
+		//planeObj2.rotation = new Vector3 (1, 0, 0);
+		
+		planeObj2.mesh.setVetexGroupColor (0, Color.green);
+		
+		cube.transform.position = new Vector3 (-50, 3, 50);
+		//mergeStaticMeshes();
 	}
 	
 	override public function update(event:Event) 
@@ -48,6 +70,7 @@ class TestingTransform extends Scene
 		
 		activeCamera.transform.translate (new Vector3(h, 0, v));
 		activeCamera.transform.rotate (new Vector3(cameraY, cameraX, 0));
+		//activeCamera.transform.rotateAroundPoint(activeCamera.transform.position, Vector3.Up(), cameraX);
 	}
 	
 	

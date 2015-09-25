@@ -311,6 +311,6 @@ class Primitives
 	
 	private static function finishMesh (mesh:Mesh) {
 		mesh.vertexGroups.push(createVertexGroup(mesh));
-		//mesh.bindMeshBuffers();
+		mesh.bindMeshBuffers();
 	}
 }

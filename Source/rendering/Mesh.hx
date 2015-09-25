@@ -692,6 +692,30 @@ class Mesh
 		}
 	}
 	
+	public function clone ():Mesh {
+		var returnMesh:Mesh = new Mesh();
+		
+		for (vert in vertices) {
+			returnMesh.vertices.push(vert);
+		}
+		
+		for (edge in edges) {
+			returnMesh.edges.push(edge);
+		}
+		
+		for (face in faces) {
+			returnMesh.faces.push(face);
+		}
+		
+		returnMesh.isStatic = isStatic;
+		
+		returnMesh.vertexGroups = vertexGroups;
+		
+		returnMesh.bindMeshBuffers();
+		
+		return returnMesh;
+	}
+	
 	public function destroy (isRecursive:Bool = false) {
 		this.vertices = null;
 		this.edges = null;

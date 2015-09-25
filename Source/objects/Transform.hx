@@ -3,6 +3,7 @@ package objects;
 import com.babylonhx.math.Matrix;
 import com.babylonhx.math.Vector3;
 import com.babylonhx.math.Quaternion;
+import objects.GameObject;
 import oimohx.math.Quat;
 import utils.SimpleMath;
 
@@ -12,7 +13,7 @@ import utils.SimpleMath;
  */
 class Transform
 {
-	public var transformMatrix (default, null):Matrix;
+	public var transformMatrix:Matrix;
 	
 	public var position (default, set) :Vector3;
 	
@@ -31,9 +32,16 @@ class Transform
 	private var stepRotation:Vector3;
 	private var stepTranslation:Vector3;
 	
+	public var localPosition:Vector3;
+	public var localRotation:Quaternion;
+	public var localEulerAngles:Vector3;
+	public var localTransformMatrix:Matrix;
+	
 	private var initialized:Bool = false;
 	
-	public function new() 
+	public var gameObject:GameObject;
+	
+	public function new(gameObj:GameObject) 
 	{
 		transformMatrix = Matrix.Identity();
 		
@@ -50,6 +58,13 @@ class Transform
 		
 		stepRotation = new Vector3 ();
 		stepTranslation = new Vector3 ();
+		
+		localRotation = new Quaternion ();
+		localPosition = new Vector3 ();
+		localEulerAngles = new Vector3();
+		localTransformMatrix = Matrix.Identity();
+		
+		this.gameObject = gameObj;
 		
 		initialized = true;
 		decomposeTrasformMatrix();
@@ -100,7 +115,7 @@ class Transform
 	
 	public function translate (translation:Vector3) {
 		
-		trace(translation);
+		//trace(translation);
 		
 		var newPosition:Vector3 = rotation.multVector(translation);
 		
@@ -121,6 +136,27 @@ class Transform
 		//trace(position);
 	}
 	
+	public function rotateAroundPoint (point:Vector3, axis:Vector3, degrees:Float) {
+		
+		var translationMatrix:Matrix = Matrix.Translation(point.x, point.y, point.z);
+		
+		transformMatrix = transformMatrix.multiply(translationMatrix);
+		
+		var multipliedAxis:Vector3 = SimpleMath.toRadVector(axis);
+		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll (multipliedAxis.y, multipliedAxis.x, multipliedAxis.z);
+		rotationMatrix.setTranslation(point);
+		//multipliedAxis = SimpleMath.toRadVector(multipliedAxis);
+		
+		//var tMatrix:Matrix = Matrix.RotationYawPitchRoll (multipliedAxis.y, multipliedAxis.x, multipliedAxis.z);
+		//tMatrix.setTranslation(point);
+		
+		transformMatrix = transformMatrix.multiply(rotationMatrix);
+		//transformMatrix.setTranslation(position);
+		
+		
+		decomposeTrasformMatrix();
+	}
+	
 	private function decomposeTrasformMatrix () {
 		//trace("bfor: "+rotation);
 		transformMatrix.decompose(scale, rotation, position);
@@ -132,6 +168,13 @@ class Transform
 		eulerAnglesRad = rotation.toEulerAngles();
 		//trace(rotation);
 		eulerAngles = SimpleMath.toDegreeVector(rotation.toEulerAngles());
+		//trace (gameObject.name);
+		if (gameObject.children != null) {
+			for (child in gameObject.children) {
+				child.transform.transformMatrix = child.transform.transformMatrix.multiply (transformMatrix);
+				trace(child.name);
+			}
+		}
 
 	}
 	
@@ -142,6 +185,8 @@ class Transform
 	private function set_position (value:Vector3):Vector3 {
 		if (position != null){
 			position = value.clone();
+			composeTransformMatrix();
+			decomposeTrasformMatrix();
 			//composeTransformMatrix();
 			//decomposeTrasformMatrix ();
 		} else {

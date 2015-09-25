@@ -165,24 +165,14 @@ class Engine
 		var viewMatrix = Matrix.LookAtLH(camera.transform.position, camera.facingPoint, Vector3.Up());
 		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 			
-		/*if(currentScene.staticVertexSize > 0){
-			
-			var worldViewMatrix:Matrix = Matrix.Identity().multiply(viewMatrix);
-		
-			GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.m));
-			GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (worldViewMatrix.m));
-
-			drawGeometry(currentScene.staticMeshBuffer.vertexBuffer, currentScene.staticVertexSize, currentScene.drawStaticPoints,
-						currentScene.staticMeshBuffer.edgeIndexBuffer, currentScene.staticEdgeSize, currentScene.drawStaticEdges,
-						currentScene.staticMeshBuffer.faceIndexBuffer, currentScene.staticFaceSize, currentScene.drawStaticFaces);
-		}*/
-		
 		for(gameObject in currentScene.gameObject) { 
 			if ( !gameObject.isStatic && gameObject.isVisible && gameObject.mesh != null) {
 				var mesh = gameObject.mesh;
 				
-				var worldMatrix = Matrix.RotationYawPitchRoll(gameObject.rotation.y, gameObject.rotation.x, gameObject.rotation.z) 
-				.multiply(Matrix.Translation(gameObject.position.x, gameObject.position.y, gameObject.position.z));
+				//var worldMatrix = Matrix.RotationYawPitchRoll(gameObject.rotation.y, gameObject.rotation.x, gameObject.rotation.z) 
+				//.multiply(Matrix.Translation(gameObject.position.x, gameObject.position.y, gameObject.position.z));
+				
+				var worldMatrix:Matrix = gameObject.transform.transformMatrix;
 				
 				var worldViewMatrix:Matrix = worldMatrix.multiply(viewMatrix);
 		

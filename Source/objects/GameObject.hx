@@ -29,7 +29,7 @@ class GameObject
 	
 	public var scene:Scene;
 	
-	public var parent:GameObject;
+	public var parent (default, set):GameObject;
 	
 	public var children:Array<GameObject>;
 	
@@ -49,8 +49,6 @@ class GameObject
 				this.name = "gameObject_"+scene.gameObject.length;
 			}
 			
-			transform = new Transform();
-			
 			position = new Vector3 ();
 			
 			rotation = new Vector3 ();
@@ -62,24 +60,11 @@ class GameObject
 				
 				this.mesh.bindMeshBuffers();
 			}
-			
+
 			parent = null;
 			children = new Array();
 			
-			/*if (mesh != "") {
-				//trace("mesh+string: " + mesh);
-				if (mesh == Primitives.CUBE) {
-					this.mesh = Primitives.buildCube();
-				}
-				else {
-					this.mesh = Mesh.loadMeshFile(mesh, this);
-					if(this.mesh != null && this.isStatic) {
-						this.mesh.drawPoints = true;
-						this.mesh.drawEdges = true;
-						this.mesh.drawFaces = false;
-					}
-				}
-			}*/
+			transform = new Transform(this);
 			
 			Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.UPDATE, update);
 		} else {
@@ -98,12 +83,24 @@ class GameObject
 		}
 	}
 	
+	public function set_parent (value:GameObject):GameObject {
+		
+		parent = value;
+		
+		if(parent != null){
+			parent.children.push(this);		
+		}
+		
+		return value;
+	}
+	
 	public function update (e:Event) {
 		if (parent != null) {
-			var inverseParentMatrix:Matrix = parent.transform.transformMatrix.clone();
-			inverseParentMatrix.invert();
 			
+			//var inverseParentMatrix:Matrix = parent.transform.transformMatrix.clone();
+			//inverseParentMatrix.invertToRef(inverseParentMatrix);
 			
+			//transform.transformMatrix = transform.transformMatrix.multiply(inverseParentMatrix);
 		}
 	}
 	

@@ -8,33 +8,21 @@ import openfl.events.Event;
  * ...
  * @author Lucas Gonçalves
  */
-class Camera
+class Camera extends GameObject
 {
 	public var facingPoint (get, null):Vector3;
 	
-	public var name:String;
-	public var transform:Transform;
-	
 	public function new(position:Vector3, target:Vector3, name:String = "") {
-		if(Engine.instance.currentScene != null){
+		if (Engine.instance.currentScene != null) {
 			Engine.instance.currentScene.cameras.push(this);
-			
-			transform = new Transform ();
-		
-			//this.transform.position = position;
-			
-			this.transform.translate(position);
-			
-			//transform.rotate(new Vector3(-90, 0, 0));
-			//transform.rotation.y -= 0.26;
-			
-			//transform.rotation.
 			
 			if(name != ""){
 				this.name = name;	
 			} else {
 				this.name = "camera_" + Engine.instance.currentScene.cameras.length;
 			}
+			
+			super(name);
 			
 			this.facingPoint = target;
 			
@@ -46,8 +34,8 @@ class Camera
 		
 	}
 	
-	public function update (e:Event) {
-		//transform.update();
+	public override function update (e:Event) {
+		super.update(e);
 	}
 	
 	private function get_facingPoint ():Vector3 {
