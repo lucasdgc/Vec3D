@@ -13,7 +13,7 @@ import utils.SimpleMath;
  */
 class Transform
 {
-	public var transformMatrix:Matrix;
+	public var transformMatrix (default, set):Matrix;
 	
 	public var position (default, set) :Vector3;
 	
@@ -34,6 +34,7 @@ class Transform
 	
 	public var localPosition:Vector3;
 	public var localRotation:Quaternion;
+	public var localScale:Vector3;
 	public var localEulerAngles:Vector3;
 	public var localTransformMatrix:Matrix;
 	
@@ -61,6 +62,7 @@ class Transform
 		
 		localRotation = new Quaternion ();
 		localPosition = new Vector3 ();
+		localScale = new Vector3 ();
 		localEulerAngles = new Vector3();
 		localTransformMatrix = Matrix.Identity();
 		
@@ -117,7 +119,9 @@ class Transform
 		
 		//trace(translation);
 		
-		var newPosition:Vector3 = rotation.multVector(translation);
+		var rotQuaternion:Quaternion = Quaternion.Inverse (rotation);
+		
+		var newPosition:Vector3 = rotQuaternion.multVector(translation);
 		
 		var translationMatrix:Matrix = Matrix.Translation(newPosition.x, newPosition.y, newPosition.z);
 		
@@ -154,6 +158,30 @@ class Transform
 		//transformMatrix.setTranslation(position);
 		
 		
+		//decomposeTrasformMatrix();
+	}
+	
+	public function updateChildTransform () {
+		
+		localRotation = rotation.subtract(gameObject.parent.transform.rotation);
+		localPosition = position.subtract(gameObject.parent.transform.position);
+		localScale = scale.subtract(gameObject.parent.transform.scale);
+		
+		composeLocalTransformMatrix ();
+		
+		trace(gameObject.name);
+		trace(localPosition);
+		
+		//var inverseTransform:Matrix = gameObject.parent.transform.transformMatrix.clone();
+		//inverseTransform.invert();
+		
+		transformMatrix = gameObject.parent.transform.transformMatrix.clone();
+		
+		//transformMatrix = transformMatrix.multiply(localTransformMatrix);
+		//transformMatrix.setTranslation(position);
+		
+		//transformMatrix = localTransformMatrix.multiply ();
+		
 		decomposeTrasformMatrix();
 	}
 	
@@ -171,8 +199,12 @@ class Transform
 		//trace (gameObject.name);
 		if (gameObject.children != null) {
 			for (child in gameObject.children) {
-				child.transform.transformMatrix = child.transform.transformMatrix.multiply (transformMatrix);
-				trace(child.name);
+				
+				child.transform.updateChildTransform ();
+				
+				//child.transform.transformMatrix = transformMatrix.multiply(Matrix.Identity());
+				//child.transform.
+				//trace(child.name);
 			}
 		}
 
@@ -182,13 +214,15 @@ class Transform
 		transformMatrix = Matrix.Compose(scale, rotation, position);
 	}
 	
+	private function composeLocalTransformMatrix () {
+		localTransformMatrix = Matrix.Compose (localScale, localRotation, localPosition);
+	}
+	
 	private function set_position (value:Vector3):Vector3 {
 		if (position != null){
 			position = value.clone();
 			composeTransformMatrix();
 			decomposeTrasformMatrix();
-			//composeTransformMatrix();
-			//decomposeTrasformMatrix ();
 		} else {
 			position = value;
 		}
@@ -204,7 +238,7 @@ class Transform
 	private function set_rotation (value:Quaternion):Quaternion {
 		if (rotation != null) {
 			rotation = value;
-			///composeTransformMatrix();
+			//composeTransformMatrix();
 			//decomposeTrasformMatrix ();
 		} else {
 			rotation = value;
@@ -239,6 +273,16 @@ class Transform
 		}
 		
 		return scale;
+	}
+	
+	private function set_transformMatrix (value:Matrix):Matrix {
+		transformMatrix = value;
+		
+		if (transformMatrix != null && initialized){
+			//decomposeTrasformMatrix ();
+		}
+		
+		return transformMatrix;
 	}
 	
 	private function multiplyByTransformMatrix (vector:Vector3):Vector3 {

@@ -24,6 +24,8 @@ class Camera extends GameObject
 			
 			super(name);
 			
+			transform.position = position;
+			
 			this.facingPoint = target;
 			
 			Vec3DEventDispatcher.instance.addEventListener(Vec3DEvent.UPDATE, update);

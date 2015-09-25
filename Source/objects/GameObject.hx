@@ -88,20 +88,15 @@ class GameObject
 		parent = value;
 		
 		if(parent != null){
-			parent.children.push(this);		
+			parent.children.push(this);	
+			transform.updateChildTransform ();
 		}
 		
 		return value;
 	}
 	
 	public function update (e:Event) {
-		if (parent != null) {
-			
-			//var inverseParentMatrix:Matrix = parent.transform.transformMatrix.clone();
-			//inverseParentMatrix.invertToRef(inverseParentMatrix);
-			
-			//transform.transformMatrix = transform.transformMatrix.multiply(inverseParentMatrix);
-		}
+		
 	}
 	
 	public function set_scale (value:Vector3):Vector3 {

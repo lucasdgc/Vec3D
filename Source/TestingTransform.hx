@@ -17,6 +17,7 @@ class TestingTransform extends Scene
 {
 
 	private var cube:GameObject;
+	private var cameraHost:GameObject;
 	
 	public function new(engine:Engine) 
 	{
@@ -54,7 +55,14 @@ class TestingTransform extends Scene
 		
 		planeObj2.mesh.setVetexGroupColor (0, Color.green);
 		
-		cube.transform.position = new Vector3 (-50, 3, 50);
+		cube.transform.position = new Vector3 (0, 0, 20);
+		
+		var camCube:Mesh = Primitives.createCube();
+		cameraHost = new GameObject ("myCam", camCube);
+		
+		//cube.parent = cameraHost;
+		
+		activeCamera.parent = cameraHost;
 		//mergeStaticMeshes();
 	}
 	
@@ -68,8 +76,9 @@ class TestingTransform extends Scene
 		var cameraX:Float = InputAxis.getValue ("CameraX");
 		var cameraY:Float = InputAxis.getValue ("CameraY");
 		
-		activeCamera.transform.translate (new Vector3(h, 0, v));
-		activeCamera.transform.rotate (new Vector3(cameraY, cameraX, 0));
+		cameraHost.transform.translate (new Vector3(h, 0, v));
+		cameraHost.transform.rotate(new Vector3 (cameraY, cameraX, 0));
+		//activeCamera.transform.rotate (new Vector3(cameraY, cameraX, 0));
 		//activeCamera.transform.rotateAroundPoint(activeCamera.transform.position, Vector3.Up(), cameraX);
 	}
 	
