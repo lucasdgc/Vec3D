@@ -662,6 +662,12 @@ class Mesh
 		this.bindMeshBuffers ();
 	}
 	
+	public function setVetexGroupColor (index:Int = 0, newColor:Color) {
+		
+		vertexGroups[index].color = newColor;
+		
+		bindMeshBuffers ();
+	}
 	
 	public function scale (value:Vector3) {
 		for (vert in this.vertices) {

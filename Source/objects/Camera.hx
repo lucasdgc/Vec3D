@@ -1,5 +1,8 @@
 package objects;
 import com.babylonhx.math.Vector3;
+import events.Vec3DEvent;
+import events.Vec3DEventDispatcher;
+import openfl.events.Event;
 
 /**
  * ...
@@ -18,9 +21,14 @@ class Camera
 			
 			transform = new Transform ();
 		
-			this.transform.position = position;
+			//this.transform.position = position;
 			
-			transform.rotate(-90, 0, 0);
+			this.transform.translate(position);
+			
+			//transform.rotate(new Vector3(-90, 0, 0));
+			//transform.rotation.y -= 0.26;
+			
+			//transform.rotation.
 			
 			if(name != ""){
 				this.name = name;	
@@ -29,13 +37,22 @@ class Camera
 			}
 			
 			this.facingPoint = target;
+			
+			Vec3DEventDispatcher.instance.addEventListener(Vec3DEvent.UPDATE, update);
 		} else {
 			throw "Scene not instantiated...";
 		}
+		
+		
+	}
+	
+	public function update (e:Event) {
+		//transform.update();
 	}
 	
 	private function get_facingPoint ():Vector3 {
-		facingPoint = transform.position.add(transform.forward.multiplyByFloats(10, 10, 10));
+		facingPoint = transform.position.add(transform.forward);
+		//trace("FP: " + transform.forward);
 		return facingPoint;
 	}
 }

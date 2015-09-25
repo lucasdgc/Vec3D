@@ -1,6 +1,9 @@
 package;
 
 import com.babylonhx.math.Vector3;
+import input.Input;
+import input.InputAxis;
+import input.InputButton;
 import objects.Camera;
 import objects.GameObject;
 import rendering.Scene;
@@ -39,8 +42,15 @@ class Main extends Sprite {
 	public function new () {
 		super ();
 		engine = new Engine(this);
-		var scene = new PhysicsScene(engine);
+		var scene = new TestingTransform(engine);
 		
+		InputAxis.bindAxis("Horizontal", InputAxisMethod.KEYBOARD, Keyboard.A, Keyboard.D);
+		InputAxis.bindAxis("Vertical", InputAxisMethod.KEYBOARD, Keyboard.S, Keyboard.W);
+		
+		InputAxis.bindAxis("CameraX", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
+		InputAxis.bindAxis("CameraY", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
+		
+		InputButton.bindButton ("Jump", Keyboard.SPACE);
 		//Vector3.Back()
 		
 		//var 

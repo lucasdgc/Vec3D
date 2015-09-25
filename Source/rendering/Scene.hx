@@ -1,5 +1,7 @@
 package rendering;
 
+import events.Vec3DEvent;
+import events.Vec3DEventDispatcher;
 import lime.utils.UInt16Array;
 import lime.utils.UInt32Array;
 import objects.GameObject;
@@ -10,6 +12,8 @@ import com.babylonhx.math.Vector3;
 import utils.Color;
 import openfl.gl.GL;
 import rendering.Mesh;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
 
 /**
  * ...
@@ -80,6 +84,14 @@ class Scene
 		trace (notStaticCount+" NOT static meshes NOT merged...");
 		
 		staticMesh.bindMeshBuffers ();
+	}
+	
+	public function update (event:Event) {
+		
+		//activeCamera.update();
+		
+		Vec3DEventDispatcher.instance.dispatchUpdateEvent();
+		
 	}
 	
 	public function bindStaticMeshBuffer () {

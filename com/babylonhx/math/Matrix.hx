@@ -554,6 +554,7 @@ import com.babylonhx.tools.Tools;
 
 	public static function LookAtLHToRef(eye:Vector3, target:Vector3, up:Vector3, result:Matrix) {
 		// Z axis
+		//trace("zAxis: "+Matrix._zAxis.normalize());
 		target.subtractToRef(eye, Matrix._zAxis);
 		Matrix._zAxis.normalize();
 		

@@ -17,6 +17,7 @@ import utils.Color;
 import input.Input;
 import objects.GameObject;
 import utils.SimpleMath;
+import openfl.events.Event;
 
 /**
  * ...
@@ -91,6 +92,11 @@ class Engine
 		canvas.addChild(glView);
 		
 		GL.viewport (Std.int (canvas.stage.x), Std.int (canvas.stage.y), Std.int (canvas.stage.stageWidth), Std.int (canvas.stage.stageHeight));
+		canvas.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+	}
+	
+	private function onEnterFrame (event:Event) {
+		currentScene.update(event);
 	}
 	
 	private function createProgram ():Void {

@@ -1,6 +1,10 @@
 package objects;
 
 import com.babylonhx.math.Vector3;
+import com.babylonhx.math.Matrix;
+import events.Vec3DEvent;
+import events.Vec3DEventDispatcher;
+import openfl.events.Event;
 import rendering.Mesh;
 import rendering.primitives.Cube;
 import rendering.primitives.Primitives;
@@ -25,7 +29,13 @@ class GameObject
 	
 	public var scene:Scene;
 	
-	public function new(name:String = "", mesh:Mesh = null, isStatic:Bool = false, position:Vector3 = null, rotation:Vector3 = null) {
+	public var parent:GameObject;
+	
+	public var children:Array<GameObject>;
+	
+	public var transform:Transform;
+	
+	public function new(name:String = "", mesh:Mesh = null, isStatic:Bool = false) {
 		if(Engine.instance.currentScene != null) {
 			Engine.instance.currentScene.gameObject.push(this);
 			
@@ -39,17 +49,11 @@ class GameObject
 				this.name = "gameObject_"+scene.gameObject.length;
 			}
 			
-			if (position != null){
-				this.position = position;
-			} else {
-				this.position = Vector3.Zero();
-			}
+			transform = new Transform();
 			
-			if (rotation != null){
-				this.rotation = rotation;
-			} else {
-				this.rotation = Vector3.Zero();
-			}
+			position = new Vector3 ();
+			
+			rotation = new Vector3 ();
 			
 			this.mesh = mesh;
 			
@@ -58,6 +62,9 @@ class GameObject
 				
 				this.mesh.bindMeshBuffers();
 			}
+			
+			parent = null;
+			children = new Array();
 			
 			/*if (mesh != "") {
 				//trace("mesh+string: " + mesh);
@@ -73,6 +80,8 @@ class GameObject
 					}
 				}
 			}*/
+			
+			Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.UPDATE, update);
 		} else {
 			throw "Scene not instantiated...";
 		}
@@ -86,6 +95,15 @@ class GameObject
 		
 		if (this.mesh != null) {
 			mesh.destroy();
+		}
+	}
+	
+	public function update (e:Event) {
+		if (parent != null) {
+			var inverseParentMatrix:Matrix = parent.transform.transformMatrix.clone();
+			inverseParentMatrix.invert();
+			
+			
 		}
 	}
 	

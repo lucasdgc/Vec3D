@@ -63,7 +63,7 @@ class PhysicsScene extends Scene
 		//activeCamera.transform.position = new Vector3 (0, 0, -10);
 		//activeCamera.transform.eulerAngles = new Vector3 (0, 15, 0);
 		
-		activeCamera.transform.rotate(0, 30, 0);
+		//activeCamera.transform.rotate(0, 30, 0);
 		
 		trace("inicia...");
 		
@@ -155,12 +155,12 @@ class PhysicsScene extends Scene
 				
 		//startingCameraPos = activeCamera.transform.position.clone();
 		
-		Engine.canvas.addEventListener(Event.ENTER_FRAME, update);
+		Engine.canvas.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		Engine.canvas.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		
 	}
 	
-	private function update(event:Event) {
+	private function onEnterFrame(event:Event) {
 		/*world.step(60);
 		cube.position = new Vector3(body.position.x / physicsScale , body.position.y / physicsScale , body.position.z / physicsScale );
 		floor.position = new Vector3(floorBody.position.x / physicsScale , floorBody.position.y / physicsScale, floorBody.position.z / physicsScale);
@@ -172,10 +172,12 @@ class PhysicsScene extends Scene
 		var mouseX = InputAxis.getValue("CameraX");
 		var mouseY = InputAxis.getValue("CameraY");
 		
-		activeCamera.transform.rotate(0, h, 0);
-		//trace(v);
+		activeCamera.transform.rotate(new Vector3(0, h, 0));
+		//trace("v: "+v);
 		
-		activeCamera.transform.position = activeCamera.transform.position.add(activeCamera.transform.forward.multiplyByFloats(v, v, v));
+		activeCamera.transform.translate (new Vector3(0, 0, v * 0.00001));
+		
+		//activeCamera.transform.position = activeCamera.transform.position.add(activeCamera.transform.forward.multiplyByFloats(v, v, v));
 		
 		//activeCamera.position = activeCamera.position.add(new Vector3(mouseX * 1, 0, 0));
 		
@@ -192,6 +194,11 @@ class PhysicsScene extends Scene
 		//activeCamera.position = Vector3.Lerp(activeCamera.position, cameraTargetPosition, cameraSmooth);
 		
 		//activeCamera.target = new Vector3 (activeCamera.position.x, activeCamera.position.y, activeCamera.position.z + 10);
+	}
+	
+	public override function update () {
+		super.update();
+		
 	}
 	
 	private function onKeyPress (key:KeyboardEvent) {

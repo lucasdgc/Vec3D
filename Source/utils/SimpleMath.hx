@@ -21,10 +21,12 @@ class SimpleMath
 	}
 	
 	public static function toRadVector (degreeVector:Vector3):Vector3 {
+		//trace(degreeVector.y);
 		return new Vector3 (degreeVector.x * (Math.PI / 180), degreeVector.y * (Math.PI / 180), degreeVector.z * (Math.PI / 180));
 	}
 	
 	public static function toDegreeVector (radVector:Vector3):Vector3 {
+		//trace(radVector.y);
 		return new Vector3 (radVector.x * (180 / Math.PI), radVector.y * (180 / Math.PI), radVector.z * (180 / Math.PI));
 	}
 	
