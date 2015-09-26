@@ -50,6 +50,8 @@ class Main extends Sprite {
 		InputAxis.bindAxis("CameraX", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
 		InputAxis.bindAxis("CameraY", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
 		
+		
+		
 		InputButton.bindButton ("Jump", Keyboard.SPACE);
 		//Vector3.Back()
 		

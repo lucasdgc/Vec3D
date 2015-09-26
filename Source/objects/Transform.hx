@@ -4,7 +4,6 @@ import com.babylonhx.math.Matrix;
 import com.babylonhx.math.Vector3;
 import com.babylonhx.math.Quaternion;
 import objects.GameObject;
-import oimohx.math.Quat;
 import utils.SimpleMath;
 
 /**
@@ -38,6 +37,8 @@ class Transform
 	public var localEulerAngles:Vector3;
 	public var localTransformMatrix:Matrix;
 	
+	public var pivotPoint:Vector3;
+	
 	private var initialized:Bool = false;
 	
 	public var gameObject:GameObject;
@@ -65,6 +66,8 @@ class Transform
 		localScale = new Vector3 ();
 		localEulerAngles = new Vector3();
 		localTransformMatrix = Matrix.Identity();
+		
+		pivotPoint = new Vector3 ();
 		
 		this.gameObject = gameObj;
 		
@@ -144,50 +147,72 @@ class Transform
 		
 		var translationMatrix:Matrix = Matrix.Translation(point.x, point.y, point.z);
 		
-		transformMatrix = transformMatrix.multiply(translationMatrix);
+		transformMatrix = translationMatrix;
 		
 		var multipliedAxis:Vector3 = SimpleMath.toRadVector(axis);
 		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll (multipliedAxis.y, multipliedAxis.x, multipliedAxis.z);
-		rotationMatrix.setTranslation(point);
+		//rotationMatrix.setTranslation(position);
 		//multipliedAxis = SimpleMath.toRadVector(multipliedAxis);
 		
 		//var tMatrix:Matrix = Matrix.RotationYawPitchRoll (multipliedAxis.y, multipliedAxis.x, multipliedAxis.z);
 		//tMatrix.setTranslation(point);
 		
 		transformMatrix = transformMatrix.multiply(rotationMatrix);
-		//transformMatrix.setTranslation(position);
+		//transformMatrix.setTranslation(position.add(point));
+		//transformMatrix.setTranslation(position.add(point));
 		
+		var relPosition:Vector3 = position.subtract(point);
 		
-		//decomposeTrasformMatrix();
+		var backMatrix:Matrix = Matrix.Translation (relPosition.x, relPosition.y, relPosition.z);
+		
+		transformMatrix = transformMatrix.multiply(backMatrix);
+		
+		//trace("distance to point: "+Vector3.Distance(position, point));
+		decomposeTrasformMatrix();
 	}
 	
 	public function updateChildTransform () {
 		
-		localRotation = rotation.subtract(gameObject.parent.transform.rotation);
-		localPosition = position.subtract(gameObject.parent.transform.position);
-		localScale = scale.subtract(gameObject.parent.transform.scale);
+		//localRotation = rotation.subtract(gameObject.parent.transform.rotation);
+		//localPosition = position.subtract(gameObject.parent.transform.position);
+		//localScale = scale.subtract(gameObject.parent.transform.scale);
 		
-		composeLocalTransformMatrix ();
+		//composeLocalTransformMatrix ();
 		
-		trace(gameObject.name);
-		trace(localPosition);
-		
+		//trace(gameObject.name);
+		//trace(localPosition);
+		//trace(position);
+		//trace(gameObject.parent.position);
 		//var inverseTransform:Matrix = gameObject.parent.transform.transformMatrix.clone();
 		//inverseTransform.invert();
 		
-		transformMatrix = gameObject.parent.transform.transformMatrix.clone();
+		position = localPosition.add(gameObject.parent.transform.position);
+		rotation = localRotation.multiply(gameObject.parent.transform.rotation);
+		scale = localScale.add(gameObject.parent.transform.scale);
 		
-		//transformMatrix = transformMatrix.multiply(localTransformMatrix);
+		composeTransformMatrix();
+		
+		decomposeTrasformMatrix();
+		
+		
+		//transformMatrix = gameObject.parent.transform.transformMatrix.clone();
+		
+		//transformMatrix = localTransformMatrix.multiply(gameObject.parent.transform.transformMatrix);
 		//transformMatrix.setTranslation(position);
 		
 		//transformMatrix = localTransformMatrix.multiply ();
 		
-		decomposeTrasformMatrix();
+		//decomposeTrasformMatrix();
 	}
 	
 	private function decomposeTrasformMatrix () {
 		//trace("bfor: "+rotation);
 		transformMatrix.decompose(scale, rotation, position);
+		
+		if(gameObject.parent != null) {
+			localTransformMatrix.decompose(localScale, localRotation, localPosition);
+		}
+		
 		//trace("afet: "+rotation);
 		forward = new Vector3 (transformMatrix.m[2], transformMatrix.m[6], transformMatrix.m[10]).normalize();
 		right = new Vector3 (transformMatrix.m[0], transformMatrix.m[4], transformMatrix.m[8]).normalize();
@@ -196,6 +221,8 @@ class Transform
 		eulerAnglesRad = rotation.toEulerAngles();
 		//trace(rotation);
 		eulerAngles = SimpleMath.toDegreeVector(rotation.toEulerAngles());
+		
+		pivotPoint = position.clone();
 		//trace (gameObject.name);
 		if (gameObject.children != null) {
 			for (child in gameObject.children) {
@@ -208,6 +235,14 @@ class Transform
 			}
 		}
 
+	}
+	
+	public function initiateLocalTransform () {
+		localPosition = position.subtract(gameObject.parent.transform.position);
+		localScale = scale.subtract(gameObject.parent.transform.scale);
+		localRotation = rotation.multiply(gameObject.parent.transform.rotation);
+		
+		composeLocalTransformMatrix ();
 	}
 	
 	private function composeTransformMatrix () {
@@ -264,7 +299,8 @@ class Transform
 	private function set_scale (value:Vector3):Vector3 {
 		if (scale != null) {
 			scale = value;
-			//composeTransformMatrix();
+			composeTransformMatrix();
+			decomposeTrasformMatrix ();
 		} else {
 			scale = value;
 		}

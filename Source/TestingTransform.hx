@@ -1,5 +1,7 @@
 package;
 import input.InputAxis;
+import input.VirtualAnalogStick;
+import openfl.geom.Rectangle;
 import openfl.events.Event;
 import objects.GameObject;
 import rendering.Mesh;
@@ -60,9 +62,14 @@ class TestingTransform extends Scene
 		var camCube:Mesh = Primitives.createCube();
 		cameraHost = new GameObject ("myCam", camCube);
 		
+		cameraHost.transform.position = activeCamera.transform.position.clone();
+		
 		//cube.parent = cameraHost;
 		
 		activeCamera.parent = cameraHost;
+		
+		var analog:VirtualAnalogStick = new VirtualAnalogStick (new Rectangle(Engine.canvas.stage.x, Engine.canvas.stage.y, 
+											Engine.canvas.stage.stageWidth / 2, Engine.canvas.stage.stageHeight), "analogX", "analogY");
 		//mergeStaticMeshes();
 	}
 	
@@ -76,10 +83,18 @@ class TestingTransform extends Scene
 		var cameraX:Float = InputAxis.getValue ("CameraX");
 		var cameraY:Float = InputAxis.getValue ("CameraY");
 		
-		cameraHost.transform.translate (new Vector3(h, 0, v));
-		cameraHost.transform.rotate(new Vector3 (cameraY, cameraX, 0));
+		var analogX:Float = InputAxis.getValue ("analogX");
+		var analogY:Float = InputAxis.getValue ("analogY");
+		
+		trace (analogX);
+		trace (analogY);
+		
+		cameraHost.transform.translate (new Vector3(analogX, 0, -analogY));
+		cameraHost.transform.rotate(new Vector3 (-cameraY, cameraX, 0));
 		//activeCamera.transform.rotate (new Vector3(cameraY, cameraX, 0));
 		//activeCamera.transform.rotateAroundPoint(activeCamera.transform.position, Vector3.Up(), cameraX);
+		
+		cube.transform.rotateAroundPoint(new Vector3(0, 0, 0), Vector3.Up(), 2);
 	}
 	
 	

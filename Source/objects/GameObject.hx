@@ -89,7 +89,7 @@ class GameObject
 		
 		if(parent != null){
 			parent.children.push(this);	
-			transform.updateChildTransform ();
+			transform.initiateLocalTransform ();
 		}
 		
 		return value;

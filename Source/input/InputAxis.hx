@@ -18,7 +18,7 @@ enum InputAxisMethod {
 	JOYSTICK_X;
 	JOYSTICK_Y;
 	ACCELEROMETER;
-	TOUCHSCREEN_ANALOG;
+	VIRTUAL_ANALOG_STICK;
 }
  
 class InputAxis 
@@ -47,6 +47,8 @@ class InputAxis
 	
 	private var usingInputFrame:Int = 0;
 	
+	private var isAnalog:Bool = false;
+	
 	public function new(name:String, method:InputAxisMethod = null, negative:UInt = 0, positive:UInt = 0, speed:Float = 0.5) 
 	{
 		axis.push(this);
@@ -72,7 +74,8 @@ class InputAxis
 				Engine.canvas.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			case InputAxisMethod.MOUSE_Y:
 				Engine.canvas.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			//case InputAxisMethod.TOUCHSCREEN_ANALOG:
+			case InputAxisMethod.VIRTUAL_ANALOG_STICK:
+				isAnalog = true;
 			
 			default:
 				
@@ -82,18 +85,23 @@ class InputAxis
 	}
 	
 	private function onEnterFrame (event:Event) {
-
-		if(isPressingNegative){
-			targetValue = -1;
+		if(!isAnalog){
+			if(isPressingNegative){
+				targetValue = -1;
+			}
+			
+			if(isPressingPositive){
+				targetValue = 1;
+			}
+			
+			if (!isPressingNegative && !isPressingPositive) {
+				targetValue = 0;
+			}
+			
+			value = SimpleMath.Lerp(value, targetValue, speed);
 		}
 		
-		if(isPressingPositive){
-			targetValue = 1;
-		}
-		
-		if (!isPressingNegative && !isPressingPositive) {
-			targetValue = 0;
-		}
+		roundValue ();
 		
 		if ((inputMethod == InputAxisMethod.MOUSE_X || inputMethod == InputAxisMethod.MOUSE_Y) && targetValue != 0) {
 			usingInputFrame ++;
@@ -104,10 +112,6 @@ class InputAxis
 				isPressingNegative = false;
 			}
 		}
-		
-		value = SimpleMath.Lerp(value, targetValue, speed);
-		
-		roundValue ();
 		
 		if(inputMethod == InputAxisMethod.MOUSE_X || inputMethod == InputAxisMethod.MOUSE_Y) {
 			isUsingInput = false;
@@ -174,6 +178,14 @@ class InputAxis
 	
 	public static function bindAxis (name:String = "",  method:InputAxisMethod = null, negative:UInt = 0, positive:UInt = 0, speed:Float = 0.5) {
 		var i = new InputAxis (name, method, negative, positive, speed);
+	}
+	
+	public static function setAxisValue (axisName:String, value:Float) {
+		for (inputAxis in axis) {
+			if (inputAxis.name == axisName) {
+				inputAxis.value = value;
+			}
+		}
 	}
 	
 	public static function getValue (axisName:String):Float {
