@@ -10,6 +10,7 @@ import rendering.Scene;
 import utils.Color;
 import com.babylonhx.math.Vector3;
 import openfl.events.EventDispatcher;
+import utils.Time;
 
 /**
  * ...
@@ -86,15 +87,16 @@ class TestingTransform extends Scene
 		var analogX:Float = InputAxis.getValue ("analogX");
 		var analogY:Float = InputAxis.getValue ("analogY");
 		
-		trace (analogX);
-		trace (analogY);
+		var speed:Float = Time.deltaTime * 5;
 		
-		cameraHost.transform.translate (new Vector3(analogX, 0, -analogY));
+		cameraHost.transform.translate (new Vector3(analogX, 0, -analogY).multiplyByFloats(speed, speed, speed));
 		cameraHost.transform.rotate(new Vector3 (-cameraY, cameraX, 0));
 		//activeCamera.transform.rotate (new Vector3(cameraY, cameraX, 0));
 		//activeCamera.transform.rotateAroundPoint(activeCamera.transform.position, Vector3.Up(), cameraX);
 		
 		cube.transform.rotateAroundPoint(new Vector3(0, 0, 0), Vector3.Up(), 2);
+		
+		//trace(Time.deltaTime);
 	}
 	
 	

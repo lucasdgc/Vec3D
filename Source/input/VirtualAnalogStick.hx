@@ -15,6 +15,8 @@ import input.InputAxis;
 class VirtualAnalogStick
 {
 
+	public static var analogSticks:Array<VirtualAnalogStick> = new Array ();
+	
 	public var usableArea:Rectangle;
 	public var analogImage:Bitmap;
 	public var analogSpot:Bitmap;
@@ -34,6 +36,7 @@ class VirtualAnalogStick
 	public function new(usableArea:Rectangle, xAxisName:String, yAxisName:String) 
 	{
 		if (Engine.instance.currentScene != null) {
+			analogSticks.push(this);
 			
 			var bmpData:BitmapData = Assets.getBitmapData("assets/Images/Input/Analog_Stick.png");
 			
@@ -134,6 +137,25 @@ class VirtualAnalogStick
 	private function setBoundAxisValues () {
 		InputAxis.setAxisValue(bindAxisXName, xAxisValue);
 		InputAxis.setAxisValue(bindAxisYName, yAxisValue);
+	}
+	
+	public static function removeAllAnalogButtons () {
+		for (analog in analogSticks) {
+			analog.destroy();
+		}
+	}
+	
+	public function destroy () {
+		analogSticks.remove(this);
+		
+		Engine.canvas.stage.removeEventListener(MouseEvent.MOUSE_DOWN, onTouchScreen);
+		Engine.canvas.stage.removeEventListener(MouseEvent.MOUSE_UP, onReleaseScreen);
+		Engine.canvas.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onTouchMove);
+		
+		Engine.canvas.stage.removeChild(analogImage);
+		Engine.canvas.stage.removeChild(analogSpot);
+		
+		
 	}
 	
 	private function toggleVisibility () {

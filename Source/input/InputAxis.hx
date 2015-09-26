@@ -188,6 +188,33 @@ class InputAxis
 		}
 	}
 	
+	public static function unbindAxis (axisName:String) {
+		for (inputAxis in axis) {
+			if (inputAxis.name == axisName) {
+				inputAxis.destroy();
+			}
+		}
+	}
+	
+	public function destroy () {
+		axis.remove(this);
+		
+		switch (inputMethod){
+			case InputAxisMethod.KEYBOARD:
+				Engine.canvas.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+				Engine.canvas.stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+			case InputAxisMethod.MOUSE_X:
+				Engine.canvas.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			case InputAxisMethod.MOUSE_Y:
+				Engine.canvas.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			case InputAxisMethod.VIRTUAL_ANALOG_STICK:
+				isAnalog = true;
+			default:
+		}
+		
+		Engine.canvas.stage.removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+	}
+	
 	public static function getValue (axisName:String):Float {
 		for (inputAxis in axis) {
 			if(inputAxis.name == axisName){
