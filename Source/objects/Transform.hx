@@ -3,6 +3,7 @@ package objects;
 import com.babylonhx.math.Matrix;
 import com.babylonhx.math.Vector3;
 import com.babylonhx.math.Quaternion;
+import math.Vec3D;
 import objects.GameObject;
 import utils.SimpleMath;
 
@@ -81,34 +82,13 @@ class Transform
 		
 		var anglesRad:Vector3 = SimpleMath.toRadVector(angles.negate());
 		
-		//stepRotation = SimpleMath.toRadVector(angles);
-		//var convertedAngles:Vector3 = new Vector3 (anglesRad.y, anglesRad.x, anglesRad.z);
-		//trace(anglesQuat);
-		
-		//var anglesQuat:Quaternion = anglesRad.toQuaternion();
-		
-		//var rotationMatrix:Matrix = new Matrix();
-		//anglesQuat.toRotationMatrix(rotationMatrix);
-		
-		//var rotationMatrix:Matrix = Matrix.Compose(scale, anglesQuat, Vector3.One().negate());
-		
 		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll(anglesRad.y, anglesRad.x, anglesRad.z);
 		
-		rotationMatrix.setTranslation(position);
+		//rotationMatrix.setTranslation(position);
 		
 		var newRotation:Quaternion = eulerAngles.toQuaternion();
 		
 		rotation = rotation.add(newRotation);
-		
-		if(angles.y >= 5){
-			for (i in 0...16) {
-				//trace("transM: " + i + " - " + transformMatrix.m[i] );
-			}
-		}
-		
-		//anglesQuat.toRotationMatrix(rotationMatrix);
-		
-		//var newMat:Matrix = transformMatrix.multiply(rotationMatrix);
 		
 		transformMatrix = transformMatrix.multiply(rotationMatrix);
 		transformMatrix.setTranslation(position);
@@ -145,30 +125,20 @@ class Transform
 	
 	public function rotateAroundPoint (point:Vector3, axis:Vector3, degrees:Float) {
 		
-		var translationMatrix:Matrix = Matrix.Translation(point.x, point.y, point.z);
+		//trace("RAP");
 		
-		transformMatrix = translationMatrix;
+		//var translationMatrix:Matrix = Matrix.Translation(point.x, point.y, point.z);
+		var previousPosition = position.clone ();		
 		
-		var multipliedAxis:Vector3 = SimpleMath.toRadVector(axis);
-		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll (multipliedAxis.y, multipliedAxis.x, multipliedAxis.z);
-		//rotationMatrix.setTranslation(position);
-		//multipliedAxis = SimpleMath.toRadVector(multipliedAxis);
-		
-		//var tMatrix:Matrix = Matrix.RotationYawPitchRoll (multipliedAxis.y, multipliedAxis.x, multipliedAxis.z);
-		//tMatrix.setTranslation(point);
-		
-		transformMatrix = transformMatrix.multiply(rotationMatrix);
-		//transformMatrix.setTranslation(position.add(point));
-		//transformMatrix.setTranslation(position.add(point));
-		
-		var relPosition:Vector3 = position.subtract(point);
-		
-		var backMatrix:Matrix = Matrix.Translation (relPosition.x, relPosition.y, relPosition.z);
-		
-		transformMatrix = transformMatrix.multiply(backMatrix);
-		
-		//trace("distance to point: "+Vector3.Distance(position, point));
+		transformMatrix.setTranslation(point);
 		decomposeTrasformMatrix();
+		//translate(point);
+		
+		rotate(SimpleMath.toRadVector (axis.multiplyByFloats(degrees, degrees, degrees)));
+		
+		translate(previousPosition.subtract(point));
+		
+		//decomposeTrasformMatrix();
 	}
 	
 	public function updateChildTransform () {

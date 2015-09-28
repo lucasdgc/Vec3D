@@ -21,6 +21,9 @@ class TestingTransform extends Scene
 
 	private var cube:GameObject;
 	private var cameraHost:GameObject;
+	private var monkey:GameObject;
+	
+	private var monkey2:GameObject;
 	
 	public function new(engine:Engine) 
 	{
@@ -67,10 +70,20 @@ class TestingTransform extends Scene
 		
 		//cube.parent = cameraHost;
 		
+		var monkeyMesh:Mesh = Mesh.loadMeshFile("monkey");
+		monkey = new GameObject ("monkey", monkeyMesh);
+		monkey.transform.position = new Vector3 (-5, 0, 8);
+		
+		monkey2 = new GameObject ("monkey2", monkeyMesh.clone());
+		monkey2.transform.position = new Vector3 (5, 0, 8);
+		
 		activeCamera.parent = cameraHost;
 		
 		var analog:VirtualAnalogStick = new VirtualAnalogStick (new Rectangle(Engine.canvas.stage.x, Engine.canvas.stage.y, 
 											Engine.canvas.stage.stageWidth / 2, Engine.canvas.stage.stageHeight), "analogX", "analogY");
+											
+		var analog2:VirtualAnalogStick = new VirtualAnalogStick (new Rectangle(Engine.canvas.stage.x + Engine.canvas.stage.stageWidth / 2, Engine.canvas.stage.y, 
+											Engine.canvas.stage.stageWidth / 2, Engine.canvas.stage.stageHeight), "analog2X", "analog2Y");
 		//mergeStaticMeshes();
 	}
 	
@@ -87,16 +100,26 @@ class TestingTransform extends Scene
 		var analogX:Float = InputAxis.getValue ("analogX");
 		var analogY:Float = InputAxis.getValue ("analogY");
 		
+		var analog2X:Float = InputAxis.getValue ("analog2X");
+		var analog2Y:Float = InputAxis.getValue ("analog2Y");
+		
 		var speed:Float = Time.deltaTime * 5;
 		
 		cameraHost.transform.translate (new Vector3(analogX, 0, -analogY).multiplyByFloats(speed, speed, speed));
-		cameraHost.transform.rotate(new Vector3 (-cameraY, cameraX, 0));
+		//cameraHost.transform.rotate(new Vector3 (-cameraY, cameraX, 0));
+		cameraHost.transform.rotate(new Vector3 (0, analog2X, 0).multiplyByFloats(speed, speed, speed));
+		activeCamera.transform.rotate(new Vector3 (analog2Y, 0, 0).multiplyByFloats(speed, speed, speed));
+		
+		
 		//activeCamera.transform.rotate (new Vector3(cameraY, cameraX, 0));
 		//activeCamera.transform.rotateAroundPoint(activeCamera.transform.position, Vector3.Up(), cameraX);
 		
-		cube.transform.rotateAroundPoint(new Vector3(0, 0, 0), Vector3.Up(), 2);
+		cube.transform.rotateAroundPoint(new Vector3(2, 2, 0), Vector3.Up(), 15);
 		
-		//trace(Time.deltaTime);
+		
+		monkey.transform.rotate(new Vector3 (0, 0.5, 0));
+		monkey2.transform.rotate(new Vector3 (0, -0.5, 0));
+		//trace(cube.transform.rotation);
 	}
 	
 	

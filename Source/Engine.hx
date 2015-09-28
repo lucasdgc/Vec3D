@@ -202,7 +202,7 @@ class Engine
 									facesIndexBuffer:GLBuffer, faceBufferSize:Int, drawFaces:Bool) {
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
-			
+		
 		GL.enableVertexAttribArray(vertexAttribute);
 		GL.vertexAttribPointer(vertexAttribute, 3, GL.FLOAT, false, 7 * 4, 0);
 
