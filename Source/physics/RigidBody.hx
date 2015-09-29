@@ -6,6 +6,7 @@ import events.Vec3DEventDispatcher;
 import events.Vec3DEvent;
 import openfl.events.Event;
 import com.babylonhx.math.Vector3;
+import physics.BoundingVolume;
 
 /**
  * ...
@@ -35,7 +36,9 @@ class RigidBody
 	
 	public var gameObject:GameObject;
 	
-	public var isGrounded:Bool = false;
+	public var isGrounded (default, null):Bool = false;
+	
+	public var isSimulating (default, null):Bool = false;
 	
 	public function new(gameObject:GameObject = null) 
 	{			
@@ -47,6 +50,9 @@ class RigidBody
 			if (this.gameObject != null) {
 				transform = new Transform (this.gameObject);
 				gameObject.attachRigidBody(this);
+				
+				transform.transformMatrix = gameObject.transform.transformMatrix.clone();
+				transform.decomposeTrasformMatrix ();
 			}
 			
 			
@@ -61,27 +67,62 @@ class RigidBody
 	
 	private function step (r:Event) {
 		if (gameObject != null) {
-			updatePosition();
+			//updatePosition();
 
-			gameObject.physicsUpdate ();
+			//gameObject.physicsUpdate ();
 		}
 	}
 	
 	public function simulate () {
+		updateTransform ();
 		
+		updateBoundingVolumesTransform ();
 	}
 	
-	private function checkCollisions () {
-		
+	public function checkCollisions () {
+		for (thisCollider in boundingVolumes) {
+			for (otherCollider in World.boundingVolumes) {
+				if (otherCollider.rigidBody != this) {
+					switch (otherCollider.type) {
+						case BoundingVolumeType.SPHERE:
+							thisCollider.checkSphereCollision(cast(otherCollider, BoundingSphere));
+						case BoundingVolumeType.BOX:
+							
+						case BoundingVolumeType.MESH:
+							
+						case BoundingVolumeType.PLANE:
+							
+						default:
+							
+					}
+				}
+			}
+		}
 	}
 	
-	private function updatePosition () {
+	private function updateTransform () {
 		var stepForce:Vector3 = velocity.add(World.gravity);
 		
-		transform.translate(stepForce);		
+		transform.translate(stepForce);
+	}
+	
+	private function updateBoundingVolumesTransform () {
+		for (bVolume in boundingVolumes) {
+			//bVolume.center.addInPlace(transform.position);
+			//bVolume.center = bVolume.center.add (transform.position);
+			bVolume.center = transform.position.add(bVolume.relativeCenter);
+		}
 	}
 	
 	private function decayVelocity () {
 		
+	}
+	
+	public function attachBoundingVolume (boundingVolume:BoundingVolume) {
+		boundingVolumes.push(boundingVolume);
+	}
+	
+	public function startSimulation () {
+		isSimulating = true;
 	}
 }

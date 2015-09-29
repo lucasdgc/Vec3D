@@ -9,9 +9,9 @@ import com.babylonhx.math.Vector3;
  */
 class BoundingBox extends BoundingVolume
 {
-	public function new(rigidBody:RigidBody) 
+	public function new( 
 	{
-		super(rigidBody);
+		super();
 		createBoundingBox ();
 	}
 	

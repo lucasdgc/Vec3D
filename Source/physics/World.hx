@@ -13,9 +13,10 @@ import utils.Time;
 class World
 {
 	public static var instance:World;
+	public static var boundingVolumes:Array<BoundingVolume> = new Array ();
 	public static var rigidBodies:Array<RigidBody> = new Array ();
 	
-	public static var gravity:Vector3;
+	public static var gravity:Vector3 = new Vector3 (0, 0, 0);
 	
 	public static var stepTime:Float = 1000 / 59.9;
 	
@@ -30,7 +31,7 @@ class World
 	public function new () 
 	{
 		if (Engine.instance != null && instance == null) {
-			gravity = new Vector3 (0, -0.01, 0);
+			//gravity = new Vector3 (0, 0, 0);
 			instance = this;
 			
 			#if html5
@@ -40,7 +41,7 @@ class World
 			#if !html5
 			//Engine.canvas.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			timer = new Timer (stepTime);
-			timer.addEventListener (TimerEvent.TIMER, onPhysicsStep);
+			timer.addEventListener (TimerEvent.TIMER, onCountedStep);
 			#end
 			
 			ppsTimer = new Timer (1000);
@@ -51,22 +52,44 @@ class World
 			#end
 			
 			ppsTimer.start ();
-
-			
-			trace(stepTime);
 		} else {
 			throw "Cannot instantiate physics world before Engine Device...";
 		}
 	}
 	
-	private function onPhysicsStep (e:TimerEvent) {
-		stepCount ++;
-		Vec3DEventDispatcher.instance.dispatchPhysicsUpdateEvent();
+	private function onCountedStep (e:TimerEvent) {
+		step ();
 	}
 	
 	private function onEnterFrame (e:Event) {
+		step ();
+	}
+	
+	private function step () {
 		stepCount ++;
 		Vec3DEventDispatcher.instance.dispatchPhysicsUpdateEvent();
+		
+		simulateRigidBodies ();
+		
+		checkCollisions ();
+	}
+	
+	private static function simulateRigidBodies () {
+		for (rb in rigidBodies) {
+			if (rb.isSimulating && !rb.isKinematic) {
+				rb.simulate ();
+			}
+		}
+	}
+	
+	private static function checkCollisions () {
+		for (bVolume in boundingVolumes) {
+			
+		}
+		
+		for (rb in rigidBodies) {
+			rb.checkCollisions ();
+		}
 	}
 	
 	private function onSecondCount (e:TimerEvent) {
@@ -78,9 +101,17 @@ class World
 		rigidBodies.remove(rigidBody);
 	}
 	
+	public static function removeBoundingVolume (boundingVolume:BoundingVolume) {
+		boundingVolumes.remove(boundingVolume);
+	}
+	
 	public static function clearWorld () {
 		while (rigidBodies.length > 0) {
 			rigidBodies.pop();
+		}
+		
+		while (boundingVolumes.length > 0) {
+			boundingVolumes.pop();
 		}
 	}
 }
