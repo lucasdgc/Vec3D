@@ -39,6 +39,8 @@ class Engine
 {
 	public static var canvas:Sprite;
 	public static var instance:Engine;
+	public static var bakeOnCompile:Bool = true;
+	public static var drawBoundingVolumes:Bool = false;
 	
 	public var currentScene:Scene;
 	
@@ -187,6 +189,10 @@ class Engine
 						mesh.meshBuffer.edgeIndexBuffer, mesh.edges.length, mesh.drawEdges,
 						mesh.meshBuffer.faceIndexBuffer, mesh.faces.length, mesh.drawFaces);
 			}
+		}
+		
+		if (drawBoundingVolumes) {
+			//drawGeometry ();
 		}
 		
 		GL.disableVertexAttribArray(vertexAttribute);

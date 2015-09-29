@@ -4,6 +4,8 @@ import input.VirtualAnalogStick;
 import openfl.geom.Rectangle;
 import openfl.events.Event;
 import objects.GameObject;
+import physics.RigidBody;
+import physics.World;
 import rendering.Mesh;
 import rendering.primitives.Primitives;
 import rendering.Scene;
@@ -41,9 +43,11 @@ class TestingTransform extends Scene
 		
 		var cube2:GameObject = new GameObject ("cube2", cubeMesh.clone());
 		cube2.transform.position = new Vector3 (-2, 0, 1);
+		cube2.mesh.setVetexGroupColor(0, Color.yellow);
 		
 		var cube3:GameObject = new GameObject ("cube3", cubeMesh.clone());
 		cube3.transform.position = new Vector3 (2, 0, 1);
+		cube3.mesh.setVetexGroupColor(0, Color.red);
 		//trace(cube.mesh.vertexGroups[0].color);
 		
 		cube3.parent = cube;
@@ -85,6 +89,47 @@ class TestingTransform extends Scene
 		var analog2:VirtualAnalogStick = new VirtualAnalogStick (new Rectangle(Engine.canvas.stage.x + Engine.canvas.stage.stageWidth / 2, Engine.canvas.stage.y, 
 											Engine.canvas.stage.stageWidth / 2, Engine.canvas.stage.stageHeight), "analog2X", "analog2Y");
 		//mergeStaticMeshes();
+		
+		var canaMesh:Mesh = Primitives.createCannabis(512, 7);
+		canaMesh.drawPoints = true;
+		var cana:GameObject = new GameObject ("cannabis", canaMesh);
+		cana.transform.position = new Vector3 (0, 0, -30);
+		cana.isStatic = false;
+		
+		var mesh2:Mesh = Primitives.createCircle(100, 1);
+		var circle:GameObject = new GameObject ("cannabis", mesh2);
+		circle.transform.position = new Vector3 (3, 0, -30);
+		circle.isStatic = true;
+		
+		var mesh3:Mesh = Primitives.createSquare();
+		var square:GameObject = new GameObject ("cannabis", mesh3);
+		square.transform.position = new Vector3 (-3, 0, -30);
+		square.isStatic = true;
+		
+		var mesh4:Mesh = Primitives.createRose(256, Math.PI);
+		var rose1:GameObject = new GameObject ("cannabis", mesh4);
+		rose1.transform.position = new Vector3 (-6, 0, -30);
+		rose1.isStatic = true;
+		
+		var mesh5:Mesh = Primitives.createRose(256, 1 / 2);
+		var rose2:GameObject = new GameObject ("cannabis", mesh5);
+		rose2.transform.position = new Vector3 (6, 0, -30);
+		rose2.isStatic = true;
+		
+		planeObj.isStatic = true;
+		planeObj2.isStatic = true;
+		mergeStaticMeshes();
+		
+		//trace(Type.getClassName());
+		var physicsWorld:World = new World ();
+		
+		var pCube:Mesh = Primitives.createCube ();
+		var physicsGo:GameObject = new GameObject ("physics_cube", pCube);
+		physicsGo.transform.position = new Vector3 (0, 3, 5);
+		
+		var rb:RigidBody = new RigidBody (physicsGo);
+		
+		
 	}
 	
 	override public function update(event:Event) 
@@ -104,21 +149,26 @@ class TestingTransform extends Scene
 		var analog2Y:Float = InputAxis.getValue ("analog2Y");
 		
 		var speed:Float = Time.deltaTime * 5;
+		var rotationSpeed:Float = Time.deltaTime * 20;
 		
 		cameraHost.transform.translate (new Vector3(analogX, 0, -analogY).multiplyByFloats(speed, speed, speed));
 		//cameraHost.transform.rotate(new Vector3 (-cameraY, cameraX, 0));
-		cameraHost.transform.rotate(new Vector3 (0, analog2X, 0).multiplyByFloats(speed, speed, speed));
-		activeCamera.transform.rotate(new Vector3 (analog2Y, 0, 0).multiplyByFloats(speed, speed, speed));
+		cameraHost.transform.rotate(new Vector3 (analog2Y, analog2X, 0).multiplyByFloats(rotationSpeed, rotationSpeed, rotationSpeed));
+		//camera
+		//cameraHost.transform.rotateAroundPoint(cameraHost.transform.position, Vector3.Right(), analog2Y * 5);
 		
 		
 		//activeCamera.transform.rotate (new Vector3(cameraY, cameraX, 0));
 		//activeCamera.transform.rotateAroundPoint(activeCamera.transform.position, Vector3.Up(), cameraX);
 		
-		cube.transform.rotateAroundPoint(new Vector3(2, 2, 0), Vector3.Up(), 15);
+		//trace(monkey.mesh.height);
 		
+		cube.transform.rotateAroundPoint(new Vector3(0, 0, 0), Vector3.Up(), 2);
+		//cube.transform.rotate(new Vector3 (0, 2, 0));
+		//cube.transform.rotate(new Vector3(3, 5, 7));
 		
-		monkey.transform.rotate(new Vector3 (0, 0.5, 0));
-		monkey2.transform.rotate(new Vector3 (0, -0.5, 0));
+		monkey.transform.rotate(new Vector3 (0, 50 * Time.deltaTime, 0));
+		monkey2.transform.rotate(new Vector3 (0, -50 * Time.deltaTime, 0));
 		//trace(cube.transform.rotation);
 	}
 	

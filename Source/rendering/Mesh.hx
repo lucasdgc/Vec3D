@@ -92,7 +92,11 @@ class Mesh
 	
 	public var meshBuffer:MeshBuffer;
 	
-	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = true, drawEdges:Bool = true, drawFaces:Bool = true) {
+	public var width:Float;
+	public var height:Float;
+	public var depth:Float;
+	
+	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = false, drawEdges:Bool = true, drawFaces:Bool = true) {
 		//meshes.push(this);
 		
 		relPosition = new Vector3();
@@ -166,6 +170,47 @@ class Mesh
 		}
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
+		
+		getMeshSize ();
+	}
+	
+	private function getMeshSize () {
+		var minX:Float = 0;
+		var maxX:Float = 0;
+		var minY:Float = 0;
+		var maxY:Float = 0;
+		var minZ:Float = 0;
+		var maxZ:Float = 0;
+		
+		for (vert in vertices) {
+			if (vert.x < minX) {
+				minX = vert.x;
+			}
+			
+			if (vert.x > maxX) {
+				maxX = vert.x;
+			}
+			
+			if (vert.y < minY) {
+				minY = vert.y;
+			}
+			
+			if (vert.y > maxY) {
+				maxY = vert.y;
+			}
+			
+			if (vert.z < minZ) {
+				minZ = vert.z;
+			}
+			
+			if (vert.z > maxZ) {
+				maxZ = vert.z;
+			}
+		}
+		
+		width = Math.abs(maxX - minX);
+		height = Math.abs(maxY - minY);
+		depth = Math.abs(maxZ - minZ);
 		
 	}
 	
@@ -601,9 +646,9 @@ class Mesh
 			var goZ:Float = 0;
 			
 			if (newMesh.gameObject != null) {
-				goX = newMesh.gameObject.position.x;
-				goY = newMesh.gameObject.position.y;
-				goZ = newMesh.gameObject.position.z;
+				goX = newMesh.gameObject.transform.position.x;
+				goY = newMesh.gameObject.transform.position.y;
+				goZ = newMesh.gameObject.transform.position.z;
 			}
 			
 			this.addVertex (vert.x + goX, vert.y + goY, vert.z + goZ);

@@ -176,7 +176,7 @@ class Primitives
 		return rose;
 	}
 	
-	public static function createCannabis (segments:Int = 128, size:Float = 1) {
+	public static function createCannabis (segments:Int = 128, leaves:Float = 8, size:Float = 1) {
 		var cannabis:Mesh = new Mesh ("cannabis_");
 		
 		if (size < 0) {
@@ -188,7 +188,7 @@ class Primitives
 		
 		for (i in 0...segments) {
 			
-			var r:Float = (1 + 0.9 * Math.cos(8 * theta))
+			var r:Float = (1 + 0.9 * Math.cos(leaves * theta))
                 * (1 + (0.1 * Math.cos(24 * theta)))
                 * (0.9 + (0.1 * Math.cos(200 * theta))) 
                 * (1 + Math.sin(theta));
@@ -203,7 +203,7 @@ class Primitives
 			theta += thetaStep;
 			
 			if( i > 0 ){
-				cannabis.addEdge (i-1, i);
+				//cannabis.addEdge (i-1, i);
 			}
 		}
 

@@ -16,21 +16,14 @@ class Transform
 	public var transformMatrix (default, set):Matrix;
 	
 	public var position (default, set) :Vector3;
-	
 	public var rotation (default, set):Quaternion;
-
 	public var eulerAngles (default, default):Vector3;
-
 	private var eulerAnglesRad:Vector3;
-	
 	public var scale (default, set):Vector3;
 	
 	public var forward (default, null):Vector3;
 	public var up (default, null):Vector3;
 	public var right (default, null):Vector3;
-	
-	private var stepRotation:Vector3;
-	private var stepTranslation:Vector3;
 	
 	public var localPosition:Vector3;
 	public var localRotation:Quaternion;
@@ -59,9 +52,6 @@ class Transform
 		up = new Vector3 ();
 		right = new Vector3 ();
 		
-		stepRotation = new Vector3 ();
-		stepTranslation = new Vector3 ();
-		
 		localRotation = new Quaternion ();
 		localPosition = new Vector3 ();
 		localScale = new Vector3 ();
@@ -78,29 +68,24 @@ class Transform
 	
 	public function rotate (angles:Vector3) {
 		
-		//trace(angles);
+		var previousPosition = position.clone();
+		
+		//translate(position.negate());
+		transformMatrix.setTranslation(Vector3.Zero());
 		
 		var anglesRad:Vector3 = SimpleMath.toRadVector(angles.negate());
 		
 		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll(anglesRad.y, anglesRad.x, anglesRad.z);
 		
-		//rotationMatrix.setTranslation(position);
-		
-		var newRotation:Quaternion = eulerAngles.toQuaternion();
-		
-		rotation = rotation.add(newRotation);
-		
 		transformMatrix = transformMatrix.multiply(rotationMatrix);
-		transformMatrix.setTranslation(position);
-
 		
+		transformMatrix.setTranslation(previousPosition);
+
 		decomposeTrasformMatrix();
 	
 	}
 	
 	public function translate (translation:Vector3) {
-		
-		//trace(translation);
 		
 		var rotQuaternion:Quaternion = Quaternion.Inverse (rotation);
 		
@@ -125,36 +110,32 @@ class Transform
 	
 	public function rotateAroundPoint (point:Vector3, axis:Vector3, degrees:Float) {
 		
-		//trace("RAP");
-		
-		//var translationMatrix:Matrix = Matrix.Translation(point.x, point.y, point.z);
 		var previousPosition = position.clone ();		
+		var previousRotation = rotation.clone();
 		
 		transformMatrix.setTranslation(point);
+		
+		var rotationInRad:Vector3 = SimpleMath.toRadVector (axis.multiplyByFloats(degrees, degrees, degrees));
+		
+		//rotate(rotationInRad);
+		
+		var rotMatrix:Matrix = Matrix.RotationYawPitchRoll (rotationInRad.y, rotationInRad.x, rotationInRad.z);
+		
+		rotMatrix.setTranslation (previousPosition);
+		
+		transformMatrix = transformMatrix.multiply(rotMatrix);
+		
+		//translate(previousPosition.subtract(point).negate());
+		//transformMatrix.setTranslation(previousPosition);
+		//translate.setRotation
+		//transformMatrix = Matrix.Compose(scale, previousRotation, position);
+		
+		//trace(Vector3.Distance(point, previousPosition));
+		
 		decomposeTrasformMatrix();
-		//translate(point);
-		
-		rotate(SimpleMath.toRadVector (axis.multiplyByFloats(degrees, degrees, degrees)));
-		
-		translate(previousPosition.subtract(point));
-		
-		//decomposeTrasformMatrix();
 	}
 	
 	public function updateChildTransform () {
-		
-		//localRotation = rotation.subtract(gameObject.parent.transform.rotation);
-		//localPosition = position.subtract(gameObject.parent.transform.position);
-		//localScale = scale.subtract(gameObject.parent.transform.scale);
-		
-		//composeLocalTransformMatrix ();
-		
-		//trace(gameObject.name);
-		//trace(localPosition);
-		//trace(position);
-		//trace(gameObject.parent.position);
-		//var inverseTransform:Matrix = gameObject.parent.transform.transformMatrix.clone();
-		//inverseTransform.invert();
 		
 		position = localPosition.add(gameObject.parent.transform.position);
 		rotation = localRotation.multiply(gameObject.parent.transform.rotation);
@@ -163,48 +144,33 @@ class Transform
 		composeTransformMatrix();
 		
 		decomposeTrasformMatrix();
-		
-		
-		//transformMatrix = gameObject.parent.transform.transformMatrix.clone();
-		
-		//transformMatrix = localTransformMatrix.multiply(gameObject.parent.transform.transformMatrix);
-		//transformMatrix.setTranslation(position);
-		
-		//transformMatrix = localTransformMatrix.multiply ();
-		
-		//decomposeTrasformMatrix();
 	}
 	
-	private function decomposeTrasformMatrix () {
-		//trace("bfor: "+rotation);
+	public function decomposeTrasformMatrix () {
 		transformMatrix.decompose(scale, rotation, position);
 		
 		if(gameObject.parent != null) {
 			localTransformMatrix.decompose(localScale, localRotation, localPosition);
 		}
 		
-		//trace("afet: "+rotation);
 		forward = new Vector3 (transformMatrix.m[2], transformMatrix.m[6], transformMatrix.m[10]).normalize();
 		right = new Vector3 (transformMatrix.m[0], transformMatrix.m[4], transformMatrix.m[8]).normalize();
 		up = new Vector3 (transformMatrix.m[1], transformMatrix.m[5], transformMatrix.m[9]).normalize();
-		//trace("FW: "+forward);
 		eulerAnglesRad = rotation.toEulerAngles();
-		//trace(rotation);
 		eulerAngles = SimpleMath.toDegreeVector(rotation.toEulerAngles());
 		
 		pivotPoint = position.clone();
-		//trace (gameObject.name);
+
 		if (gameObject.children != null) {
 			for (child in gameObject.children) {
-				
 				child.transform.updateChildTransform ();
-				
-				//child.transform.transformMatrix = transformMatrix.multiply(Matrix.Identity());
-				//child.transform.
-				//trace(child.name);
 			}
 		}
-
+		
+		var inverseTransform:Matrix = transformMatrix.clone();
+		inverseTransform.invert();
+		
+		//localTransformMatrix = transformMatrix.multiply(inverseTransform);
 	}
 	
 	public function initiateLocalTransform () {

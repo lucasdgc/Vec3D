@@ -94,7 +94,7 @@ class Scene
 		
 	}
 	
-	public function bindStaticMeshBuffer () {
+	/*public function bindStaticMeshBuffer () {
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, staticMeshBuffer.vertexBuffer);
 		GL.bufferData(GL.ARRAY_BUFFER, getVertexColorBatch(), GL.STATIC_DRAW);
@@ -234,5 +234,5 @@ class Scene
 		var returnBatch = new Float32Array (batch);
 		
 		return returnBatch;
-	}
+	}*/
 }

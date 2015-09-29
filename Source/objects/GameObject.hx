@@ -5,6 +5,7 @@ import com.babylonhx.math.Matrix;
 import events.Vec3DEvent;
 import events.Vec3DEventDispatcher;
 import openfl.events.Event;
+import physics.RigidBody;
 import rendering.Mesh;
 import rendering.primitives.Cube;
 import rendering.primitives.Primitives;
@@ -34,6 +35,8 @@ class GameObject
 	public var children:Array<GameObject>;
 	
 	public var transform:Transform;
+	
+	public var rigidBody (get, null):RigidBody;
 	
 	public function new(name:String = "", mesh:Mesh = null, isStatic:Bool = false) {
 		if(Engine.instance.currentScene != null) {
@@ -71,6 +74,7 @@ class GameObject
 			throw "Scene not instantiated...";
 		}
 		
+		rigidBody = null;
 	}
 	
 	public function destroy () {
@@ -96,7 +100,14 @@ class GameObject
 	}
 	
 	public function update (e:Event) {
-		
+
+	}
+	
+	public function physicsUpdate () {
+		if (this.rigidBody != null) {
+			this.transform.transformMatrix = rigidBody.transform.transformMatrix.clone();
+			this.transform.decomposeTrasformMatrix ();
+		}
 	}
 	
 	public function set_scale (value:Vector3):Vector3 {
@@ -129,4 +140,11 @@ class GameObject
 		mesh.bindMeshBuffers();
 	}
 	
+	public function attachRigidBody (rigidBody:RigidBody) {
+		this.rigidBody = rigidBody;
+	}
+	
+	private function get_rigidBody ():RigidBody {
+		return this.rigidBody;
+	}
 }

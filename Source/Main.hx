@@ -42,6 +42,8 @@ class Main extends Sprite {
 	public function new () {
 		super ();
 		engine = new Engine(this);
+		Engine.bakeOnCompile = true;
+		
 		var scene = new TestingTransform(engine);
 		
 		InputAxis.bindAxis("Horizontal", InputAxisMethod.KEYBOARD, Keyboard.A, Keyboard.D);
