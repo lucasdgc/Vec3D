@@ -10,6 +10,8 @@ import rendering.Mesh;
 import rendering.primitives.Cube;
 import rendering.primitives.Primitives;
 import rendering.Scene;
+import physics.BoundingVolume;
+
 /**
  * ...
  * @author Lucas Gonçalves
@@ -37,6 +39,8 @@ class GameObject
 	public var transform:Transform;
 	
 	public var rigidBody (get, null):RigidBody;
+	
+	public var boundingVolumes:Array<BoundingVolume>;
 	
 	public function new(name:String = "", mesh:Mesh = null, isStatic:Bool = false) {
 		if(Engine.instance.currentScene != null) {
@@ -69,6 +73,8 @@ class GameObject
 			
 			transform = new Transform(this);
 			
+			boundingVolumes = new Array ();
+			
 			Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.UPDATE, update);
 		} else {
 			throw "Scene not instantiated...";
@@ -100,7 +106,9 @@ class GameObject
 	}
 	
 	public function update (e:Event) {
-
+		for (bVolue in boundingVolumes) {
+			bVolue.updateCenterPosition (transform.position);
+		}
 	}
 	
 	public function physicsUpdate () {
@@ -146,5 +154,9 @@ class GameObject
 	
 	private function get_rigidBody ():RigidBody {
 		return this.rigidBody;
+	}
+	
+	public function attachBoundingVolume (bVolume:BoundingVolume) {
+		boundingVolumes.push(bVolume);
 	}
 }

@@ -24,7 +24,7 @@ class BoundingVolume
 	public function new() 
 	{
 		if (World.instance != null) {
-			//World.boundingVolumes.push(this);
+			World.boundingVolumes.push(this);
 			
 			center = new Vector3 ();
 			relativeCenter = new Vector3 ();
@@ -41,9 +41,13 @@ class BoundingVolume
 		rigidBody.attachBoundingVolume(this);
 	}
 	
+	public function updateCenterPosition (referencePosition:Vector3) {}
+	
+	public function onCollision () {}
+	
 	public function checkSphereCollision (other:BoundingSphere):Collision { return new Collision (false); }
 
-	public function checkBoxCollision () { }
+	public function checkBoxCollision (other:BoundingBox):Collision { return new Collision (false); }
 
 	public function checkPlaneCollision () { }
 

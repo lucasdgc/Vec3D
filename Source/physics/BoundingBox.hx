@@ -1,7 +1,10 @@
 package physics;
+import math.Vec3D;
 import objects.GameObject;
+import rendering.Mesh;
 import rendering.primitives.Primitives;
 import com.babylonhx.math.Vector3;
+import physics.BoundingVolume;
 
 /**
  * ...
@@ -9,53 +12,80 @@ import com.babylonhx.math.Vector3;
  */
 class BoundingBox extends BoundingVolume
 {
-	public function new( 
+	public var vertices:Array<Vector3>;
+	
+	public var minExtents:Vector3;
+	public var maxExtents:Vector3;
+	
+	public var worldMinExtents:Vector3;
+	public var worldMaxExtents:Vector3;
+	
+	public function new(minExt:Vector3, maxExt:Vector3)
 	{
 		super();
-		createBoundingBox ();
+		
+		type = BoundingVolumeType.BOX;
+		
+		minExtents = minExt;
+		maxExtents = maxExt;
+		
+		worldMaxExtents = new Vector3 ();
+		worldMinExtents = new Vector3 ();
 	}
 	
-	private function createBoundingBox () {
-		var minX:Float = 0;
-		var maxX:Float = 0;
-		var minY:Float = 0;
-		var maxY:Float = 0;
-		var minZ:Float = 0;
-		var maxZ:Float = 0;
+	public override function updateCenterPosition (refPosition:Vector3) {
+		center = refPosition.add(relativeCenter);
 		
-		for (vert in gameObject.mesh.vertices) {
-			if (vert.x < minX) {
-				minX = vert.x;
+		worldMinExtents = center.add(minExtents);
+		worldMaxExtents = center.add(maxExtents);
+	}
+	
+	public override function checkBoxCollision (other:BoundingBox):Collision {
+		
+		var differenceA:Vector3 = this.worldMinExtents.subtract(other.worldMaxExtents);
+		var differenceB:Vector3 = other.worldMinExtents.subtract(this.worldMaxExtents);
+		var maxDistances:Vector3 = Vec3D.maxValues(differenceA, differenceB);
+		var maxDistance:Float;
+		
+		if (maxDistances.x > maxDistances.y) {
+			maxDistance = maxDistances.x;
+		} else {
+			maxDistance = maxDistances.y;
+		}
+		
+		if (maxDistances.z > maxDistance) {
+			maxDistance = maxDistances.z;
+		}
+		
+		trace (maxDistance < 0);
+		
+		return new Collision (maxDistance < 0, maxDistance);
+	}
+	
+	public static function getMeshExtents (mesh:Mesh):BoundingBox {
+		var minExt:Vector3;
+		var maxExt:Vector3;
+		
+		minExt = mesh.vertices[0].clone();
+		maxExt = mesh.vertices[0].clone();
+		
+		for (vert in mesh.vertices) {
+			
+			var vertPos:Vector3 = vert.clone ();
+			
+			if (mesh.gameObject != null) {
+				vertPos = vert.multiplyByFloats(mesh.gameObject.transform.scale.x, mesh.gameObject.transform.scale.y, mesh.gameObject.transform.scale.z);
 			}
 			
-			if (vert.x > maxX) {
-				maxX = vert.x;
+			if (vertPos.x < minExt.x && vertPos.y < minExt.y && vertPos.z < minExt.z) {
+				minExt = vertPos.clone();
 			}
 			
-			if (vert.y < minY) {
-				minY = vert.y;
-			}
-			
-			if (vert.y > maxY) {
-				maxY = vert.y;
-			}
-			
-			if (vert.z < minZ) {
-				minZ = vert.z;
-			}
-			
-			if (vert.z > maxZ) {
-				maxZ = vert.z;
+			if (vertPos.x > maxExt.x && vertPos.y > maxExt.y && vertPos.z > maxExt.z) {
+				maxExt = vertPos.clone();
 			}
 		}
 		
-		vertices.push (new Vector3 (minX, minY, minZ));
-		vertices.push (new Vector3 (minX, minY, maxZ));
-		vertices.push (new Vector3 (minX, maxY, minZ));
-		vertices.push (new Vector3 (minX, maxY, maxZ));
-		vertices.push (new Vector3 (maxX, minY, minZ));
-		vertices.push (new Vector3 (maxX, minY, maxZ));
-		vertices.push (new Vector3 (maxX, maxY, minZ));
-		vertices.push (new Vector3 (maxX, maxY, maxZ));
+		return new BoundingBox (minExt, maxExt);
 	}
 }

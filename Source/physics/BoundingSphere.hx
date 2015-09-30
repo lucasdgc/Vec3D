@@ -16,8 +16,6 @@ class BoundingSphere extends BoundingVolume
 	public function new(radius:Float = 1) 
 	{
 		super();
-		
-		World.boundingVolumes.push(this);
 		this.radius = radius;
 		
 		type = BoundingVolumeType.SPHERE;
@@ -25,19 +23,15 @@ class BoundingSphere extends BoundingVolume
 		//this.radius = radius;
 	}
 	
+	public override function updateCenterPosition (referencePosition:Vector3) {
+		center = referencePosition.add(relativeCenter);
+	}
+	
 	public override function checkSphereCollision (other:BoundingSphere):Collision {
 		//var collision:Collision = new Collision ();
 		var radiusDistance:Float = radius + other.radius;
 		var centerDistance:Float = Vector3.Distance (center, other.center);
 		
-		trace(centerDistance < radiusDistance);
-		
-		if (centerDistance < radiusDistance) {
-			return new Collision (true, centerDistance - radiusDistance);
-		} else {
-			return new Collision (false, centerDistance - radiusDistance);
-		}
-		
-		//return null;
+		return new Collision (centerDistance < radiusDistance, centerDistance - radiusDistance);
 	}
 }

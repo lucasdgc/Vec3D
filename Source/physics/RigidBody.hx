@@ -87,7 +87,7 @@ class RigidBody
 						case BoundingVolumeType.SPHERE:
 							thisCollider.checkSphereCollision(cast(otherCollider, BoundingSphere));
 						case BoundingVolumeType.BOX:
-							
+							thisCollider.checkBoxCollision(cast(otherCollider, BoundingBox));
 						case BoundingVolumeType.MESH:
 							
 						case BoundingVolumeType.PLANE:
@@ -108,9 +108,7 @@ class RigidBody
 	
 	private function updateBoundingVolumesTransform () {
 		for (bVolume in boundingVolumes) {
-			//bVolume.center.addInPlace(transform.position);
-			//bVolume.center = bVolume.center.add (transform.position);
-			bVolume.center = transform.position.add(bVolume.relativeCenter);
+			bVolume.updateCenterPosition (transform.position);
 		}
 	}
 	
