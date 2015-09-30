@@ -3,6 +3,7 @@ package;
 import openfl.events.Event;
 import objects.GameObject;
 import physics.BoundingBox;
+import physics.BoundingPlane;
 import physics.BoundingSphere;
 import physics.RigidBody;
 import physics.World;
@@ -27,7 +28,7 @@ class MyPhysics extends Scene
 		
 		var world:World = new World ();
 		
-		/*var sphereMesh:Mesh = Primitives.createSphere();
+		var sphereMesh:Mesh = Primitives.createSphere();
 		sphere1 = new GameObject ("sphere1", sphereMesh);
 		
 		sphere2 = new GameObject ("sphere2", sphereMesh.clone());
@@ -35,7 +36,7 @@ class MyPhysics extends Scene
 		sphere1.mesh.setVetexGroupColor(0, Color.red);
 		sphere2.mesh.setVetexGroupColor(0, Color.blue);
 		
-		sphere1.transform.position = new Vector3 (0.1, 0, 0);
+		sphere1.transform.position = new Vector3 (0.1, 1, 0);
 		sphere2.transform.position = new Vector3 (0.2, 0, 0);
 		
 		var bs1:BoundingSphere = new BoundingSphere (sphere1.mesh.width / 2);
@@ -47,9 +48,19 @@ class MyPhysics extends Scene
 		bs2.setRigidBody(rb2);
 		
 		rb1.startSimulation();
-		rb2.startSimulation();*/
+		rb2.startSimulation();
 		
-		var cubeMesh:Mesh = Primitives.createCube();
+		var planeMesh:Mesh = Primitives.createPlane();
+		var plane:GameObject = new GameObject ("plane", planeMesh);
+		plane.transform.position = new Vector3 (0, -2, 0);
+		
+		var bp:BoundingPlane = new BoundingPlane (Vector3.Up());
+		var rb3:RigidBody = new RigidBody(plane);
+		bp.setRigidBody(rb3);
+		
+		rb3.startSimulation ();
+		
+		/*var cubeMesh:Mesh = Primitives.createCube();
 		var cube1 = new GameObject ("cube1", cubeMesh);
 		
 		var cube2 = new GameObject ("cube2", cubeMesh.clone());
@@ -69,7 +80,7 @@ class MyPhysics extends Scene
 		bb2.setRigidBody(rb2);
 		
 		rb1.startSimulation();
-		rb2.startSimulation();
+		rb2.startSimulation();*/
 	}
 	
 	public override function update (e:Event) {

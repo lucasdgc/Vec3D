@@ -57,8 +57,6 @@ class BoundingBox extends BoundingVolume
 			maxDistance = maxDistances.z;
 		}
 		
-		trace (maxDistance < 0);
-		
 		return new Collision (maxDistance < 0, maxDistance);
 	}
 	

@@ -11,7 +11,7 @@ import physics.BoundingVolume;
 class BoundingSphere extends BoundingVolume
 {
 	//private var center:Vector3;
-	private var radius:Float;
+	public var radius:Float;
 	
 	public function new(radius:Float = 1) 
 	{

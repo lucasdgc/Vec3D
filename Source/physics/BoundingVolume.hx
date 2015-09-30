@@ -21,6 +21,8 @@ class BoundingVolume
 	public var relativeCenter:Vector3;
 	public var type:BoundingVolumeType;
 	
+	public var isTrigger:Bool = false;
+	
 	public function new() 
 	{
 		if (World.instance != null) {
@@ -49,7 +51,7 @@ class BoundingVolume
 
 	public function checkBoxCollision (other:BoundingBox):Collision { return new Collision (false); }
 
-	public function checkPlaneCollision () { }
+	public function checkPlaneCollision (other:BoundingPlane):Collision { return new Collision (false);  }
 
-	public function checkMeshCollision () {}
+	public function checkMeshCollision (other:BoundingMesh):Collision { return new Collision (false); }
 }

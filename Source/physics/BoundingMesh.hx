@@ -1,5 +1,7 @@
 package physics;
 import objects.GameObject;
+import rendering.Mesh;
+import com.babylonhx.math.Vector3;
 
 /**
  * ...
@@ -7,15 +9,22 @@ import objects.GameObject;
  */
 class BoundingMesh extends BoundingVolume
 {
-
-	public function new(rigidBody:RigidBody) 
+	var vertices:Array<Vector3>;
+	
+	public function new() 
 	{
-		super(rigidBody);
+		super();
+		
+		vertices = new Array ();
 	}
 	
-	private function createBoundingMesh () {
-		for (vert in gameObject.mesh.vertices) {
-			vertices.push (vert);
+	private function createBoundingMesh (mesh:Mesh):BoundingMesh {
+		var bMesh:BoundingMesh = new BoundingMesh ();
+		
+		for (vert in mesh.vertices) {
+			bMesh.vertices.push (vert.clone());
 		}
+		
+		return bMesh;
 	}
 }
