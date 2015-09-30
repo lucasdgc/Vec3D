@@ -1,7 +1,7 @@
-package physics;
+package physics.bounding;
 
 import com.babylonhx.math.Vector3;
-import physics.BoundingVolume;
+import physics.bounding.BoundingVolume;
 /**
  * ...
  * @author Lucas Gonçalves
@@ -31,9 +31,6 @@ class BoundingPlane extends BoundingVolume
 		centerDistance = Math.abs(centerDistance);
 		var distanceFromObj = centerDistance - other.radius;
 		
-		
-		trace ("planeCheck");
-		
-		return new Collision (distanceFromObj < 0, distanceFromObj, other);
+		return new Collision (distanceFromObj < 0, normal.multiplyByFloats(distanceFromObj, distanceFromObj, distanceFromObj), other);
 	}
 }

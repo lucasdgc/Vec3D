@@ -37,7 +37,7 @@ class Transform
 	
 	public var gameObject:GameObject;
 	
-	public function new(gameObj:GameObject) 
+	public function new(gameObj:GameObject = null) 
 	{
 		transformMatrix = Matrix.Identity();
 		
@@ -149,8 +149,10 @@ class Transform
 	public function decomposeTrasformMatrix () {
 		transformMatrix.decompose(scale, rotation, position);
 		
-		if(gameObject.parent != null) {
-			localTransformMatrix.decompose(localScale, localRotation, localPosition);
+		if (gameObject != null) {
+			if(gameObject.parent != null) {
+				localTransformMatrix.decompose(localScale, localRotation, localPosition);
+			}
 		}
 		
 		forward = new Vector3 (transformMatrix.m[2], transformMatrix.m[6], transformMatrix.m[10]).normalize();
@@ -161,10 +163,14 @@ class Transform
 		
 		pivotPoint = position.clone();
 
-		if (gameObject.children != null) {
-			for (child in gameObject.children) {
-				child.transform.updateChildTransform ();
+		if (gameObject != null) {
+			if (gameObject.children != null) {
+				for (child in gameObject.children) {
+					child.transform.updateChildTransform ();
+				}
 			}
+			
+			gameObject.updateBoundingVolumesTransform ();
 		}
 		
 		var inverseTransform:Matrix = transformMatrix.clone();
@@ -209,8 +215,8 @@ class Transform
 	private function set_rotation (value:Quaternion):Quaternion {
 		if (rotation != null) {
 			rotation = value;
-			//composeTransformMatrix();
-			//decomposeTrasformMatrix ();
+			composeTransformMatrix();
+			decomposeTrasformMatrix ();
 		} else {
 			rotation = value;
 		}

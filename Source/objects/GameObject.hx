@@ -10,7 +10,7 @@ import rendering.Mesh;
 import rendering.primitives.Cube;
 import rendering.primitives.Primitives;
 import rendering.Scene;
-import physics.BoundingVolume;
+import physics.bounding.BoundingVolume;
 
 /**
  * ...
@@ -75,6 +75,8 @@ class GameObject
 			
 			boundingVolumes = new Array ();
 			
+			//trace("bounding array ok for: "+name);
+			
 			Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.UPDATE, update);
 		} else {
 			throw "Scene not instantiated...";
@@ -118,6 +120,14 @@ class GameObject
 		}
 	}
 	
+	public function updateBoundingVolumesTransform () {
+		if (boundingVolumes != null) {
+			for (bVolume in boundingVolumes) {
+				bVolume.updateCenterPosition (transform.position);
+			}
+		}
+	}
+	
 	public function set_scale (value:Vector3):Vector3 {
 		if (value.x < 1) {
 			value.x = 1;
@@ -148,8 +158,10 @@ class GameObject
 		mesh.bindMeshBuffers();
 	}
 	
-	public function attachRigidBody (rigidBody:RigidBody) {
-		this.rigidBody = rigidBody;
+	public function attachRigidBody () {
+		this.rigidBody = new RigidBody ();
+		
+		this.rigidBody.attachGameObject(this);
 	}
 	
 	private function get_rigidBody ():RigidBody {
@@ -158,5 +170,7 @@ class GameObject
 	
 	public function attachBoundingVolume (bVolume:BoundingVolume) {
 		boundingVolumes.push(bVolume);
+		
+		bVolume.setGameObject(this);
 	}
 }

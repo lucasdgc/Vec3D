@@ -4,6 +4,7 @@ import events.Vec3DEventDispatcher;
 import com.babylonhx.math.Vector3;
 import openfl.utils.Timer;
 import openfl.events.TimerEvent;
+import physics.bounding.BoundingVolume;
 import utils.Time;
 
 /**

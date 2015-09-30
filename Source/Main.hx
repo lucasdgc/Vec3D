@@ -44,7 +44,7 @@ class Main extends Sprite {
 		engine = new Engine(this);
 		Engine.bakeOnCompile = true;
 		
-		var scene = new MyPhysics(engine);
+		var scene = new MyPhysics2(engine);
 		
 		InputAxis.bindAxis("Horizontal", InputAxisMethod.KEYBOARD, Keyboard.A, Keyboard.D);
 		InputAxis.bindAxis("Vertical", InputAxisMethod.KEYBOARD, Keyboard.S, Keyboard.W);

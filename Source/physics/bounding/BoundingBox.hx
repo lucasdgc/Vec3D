@@ -1,10 +1,10 @@
-package physics;
+package physics.bounding;
 import math.Vec3D;
 import objects.GameObject;
 import rendering.Mesh;
 import rendering.primitives.Primitives;
 import com.babylonhx.math.Vector3;
-import physics.BoundingVolume;
+import physics.bounding.BoundingVolume;
 
 /**
  * ...
@@ -57,7 +57,7 @@ class BoundingBox extends BoundingVolume
 			maxDistance = maxDistances.z;
 		}
 		
-		return new Collision (maxDistance < 0, maxDistance, other);
+		return new Collision (maxDistance < 0, maxDistances, other);
 	}
 	
 	public static function getMeshExtents (mesh:Mesh):BoundingBox {

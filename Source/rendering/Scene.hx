@@ -67,16 +67,18 @@ class Scene
 		var notStaticCount:Int = 0;
 		
 		trace ("Merging static meshes...");
-		var i:Int = 1;
+		var i:Int = 2;
 		while (i < gameObject.length) {
 			if (gameObject[i].isStatic) {
-				if(gameObject[i].mesh != null) {
+				if (gameObject[i].mesh != null) {
 					staticMesh.merge(gameObject[i].mesh);
 					staticCount ++;
 				}
 			} else {
+				if (gameObject[i].mesh != null) {
+					notStaticCount ++;
+				}
 				i ++;
-				notStaticCount ++;
 			}
 		}
 		

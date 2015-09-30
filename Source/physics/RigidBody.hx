@@ -6,7 +6,10 @@ import events.Vec3DEventDispatcher;
 import events.Vec3DEvent;
 import openfl.events.Event;
 import com.babylonhx.math.Vector3;
-import physics.BoundingVolume;
+import physics.bounding.BoundingBox;
+import physics.bounding.BoundingSphere;
+import physics.bounding.BoundingVolume;
+import physics.bounding.BoundingPlane;
 
 /**
  * ...
@@ -30,7 +33,7 @@ class RigidBody
 	public var lockPositionY:Bool = false;
 	public var lockPositionZ:Bool = false;
 	
-	public var boundingVolumes:Array<BoundingVolume>;
+	//public var boundingVolumes:Array<BoundingVolume>;
 	
 	public var transform:Transform;
 	
@@ -45,14 +48,11 @@ class RigidBody
 		if (World.instance != null) {
 			World.rigidBodies.push(this);
 			
-			boundingVolumes = new Array ();
-			this.gameObject = gameObject;
-			if (this.gameObject != null) {
-				transform = new Transform (this.gameObject);
-				gameObject.attachRigidBody(this);
-				
-				transform.transformMatrix = gameObject.transform.transformMatrix.clone();
-				transform.decomposeTrasformMatrix ();
+			//boundingVolumes = new Array ();
+			//this.gameObject = gameObject;
+			if (gameObject != null) {
+				attachGameObject(gameObject);
+				//gameObject.attachRigidBody(this);
 			}
 			
 			
@@ -76,15 +76,15 @@ class RigidBody
 	public function simulate () {
 		updateTransform ();
 		
-		updateBoundingVolumesTransform ();
+		//updateBoundingVolumesTransform ();
 		
 		gameObject.physicsUpdate();
 	}
 	
 	public function checkCollisions () {
-		for (thisCollider in boundingVolumes) {
+		for (thisCollider in gameObject.boundingVolumes) {
 			for (otherCollider in World.boundingVolumes) {
-				if (otherCollider.rigidBody != this) {
+				if (otherCollider.gameObject != this.gameObject) {
 					var col:Collision = new Collision();
 					switch (otherCollider.type) {
 						case BoundingVolumeType.SPHERE:
@@ -94,15 +94,14 @@ class RigidBody
 						case BoundingVolumeType.MESH:
 							
 						case BoundingVolumeType.PLANE:
-							
+							col = thisCollider.checkPlaneCollision(cast(otherCollider, BoundingPlane));
 						default:
 							col = thisCollider.checkBoxCollision(cast(otherCollider, BoundingBox));
 					}
 					
 					if (col.isColliding) {
-						
-						thisCollider.rigidBody.velocity = Vector3.Zero ();
-						otherCollider.rigidBody.velocity = Vector3.Zero ();
+						thisCollider.gameObject.rigidBody.velocity = Vector3.Zero();
+						//otherCollider.gameObject.rigidBody.velocity = col.direction.negate();
 						
 						World.collisionsToHandle.push(col);
 						thisCollider.onCollision(col);
@@ -125,9 +124,9 @@ class RigidBody
 	}
 	
 	private function updateBoundingVolumesTransform () {
-		for (bVolume in boundingVolumes) {
-			bVolume.updateCenterPosition (transform.position);
-		}
+		//for (bVolume in boundingVolumes) {
+		//	bVolume.updateCenterPosition (transform.position);
+		//}
 	}
 	
 	private function decayVelocity () {
@@ -135,10 +134,25 @@ class RigidBody
 	}
 	
 	public function attachBoundingVolume (boundingVolume:BoundingVolume) {
-		boundingVolumes.push(boundingVolume);
+		//boundingVolumes.push(boundingVolume);
+	}
+	
+	public function attachGameObject (gameObject:GameObject) {
+		this.gameObject = gameObject;
+		
+		transform = new Transform ();
+				
+		transform.transformMatrix = gameObject.transform.transformMatrix.clone();
+		transform.decomposeTrasformMatrix ();
 	}
 	
 	public function startSimulation () {
 		isSimulating = true;
+	}
+	
+	public static function startAllRigidBodies () {
+		for (rb in World.rigidBodies) {
+			rb.startSimulation ();
+		}
 	}
 }

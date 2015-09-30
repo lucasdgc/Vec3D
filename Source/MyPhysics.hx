@@ -2,9 +2,9 @@ package;
 
 import openfl.events.Event;
 import objects.GameObject;
-import physics.BoundingBox;
-import physics.BoundingPlane;
-import physics.BoundingSphere;
+import physics.bounding.BoundingBox;
+import physics.bounding.BoundingPlane;
+import physics.bounding.BoundingSphere;
 import physics.RigidBody;
 import physics.World;
 import rendering.Mesh;
@@ -37,33 +37,38 @@ class MyPhysics extends Scene
 		sphere2.mesh.setVetexGroupColor(0, Color.blue);
 		
 		sphere1.transform.position = new Vector3 (-0.7, 2, 0);
-		sphere2.transform.position = new Vector3 (0.2, 5, 0);
+		sphere2.transform.position = new Vector3 (0.5, 2, 0);
 		
-		var bs1:BoundingSphere = new BoundingSphere (sphere1.mesh.width / 2);
-		var rb1:RigidBody = new RigidBody(sphere1);
-		bs1.setRigidBody(rb1);
+		sphere1.attachBoundingVolume(new BoundingSphere (sphere1.mesh.width / 2));
+		sphere1.attachRigidBody(new RigidBody());
 		
-		var bs2:BoundingSphere = new BoundingSphere (sphere2.mesh.width / 2);
+		sphere2.attachBoundingVolume(new BoundingSphere(sphere2.mesh.width / 2));
+		
+		//var bs1:BoundingSphere = new BoundingSphere (sphere1.mesh.width / 2);
+		//var rb1:RigidBody = new RigidBody(sphere1);
+		//bs1.setRigidBody(rb1);
+		
+		/*var bs2:BoundingSphere = new BoundingSphere (sphere2.mesh.width / 2);
 		var rb2:RigidBody = new RigidBody(sphere2);
-		bs2.setRigidBody(rb2);
+		bs2.setRigidBody(rb2);*/
 		
-		rb1.startSimulation();
-		rb2.startSimulation();
+		sphere1.rigidBody.startSimulation();
+		//rb2.startSimulation();
 		
-		var planeMesh:Mesh = Primitives.createPlane();
+		/*var planeMesh:Mesh = Primitives.createPlane();
 		var plane:GameObject = new GameObject ("plane", planeMesh);
 		plane.transform.position = new Vector3 (0, 0, 0);
 		
 		var bp:BoundingPlane = new BoundingPlane (Vector3.Up());
 		var rb3:RigidBody = new RigidBody(plane);
-		bp.setRigidBody(rb3);
+		bp.setRigidBody(rb3);*/
 		
-		rb1.velocity = new Vector3 (0, -.1, 0);
-		rb2.velocity = new Vector3 (0, -.1, 0);
+		//sphere1.rigidBody.velocity = new Vector3 (0, -.1, 0);
+		//rb2.velocity = new Vector3 (0, -.1, 0);
 		
-		rb3.isKinematic = true;
+		//rb3.isKinematic = true;
 		
-		rb3.startSimulation ();
+		//rb3.startSimulation ();
 		
 		//sphere1.rigidBody.velocity = new Vector3 (0.1, 0, 0);
 		
