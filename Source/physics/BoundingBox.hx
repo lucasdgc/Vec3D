@@ -57,7 +57,7 @@ class BoundingBox extends BoundingVolume
 			maxDistance = maxDistances.z;
 		}
 		
-		return new Collision (maxDistance < 0, maxDistance);
+		return new Collision (maxDistance < 0, maxDistance, other);
 	}
 	
 	public static function getMeshExtents (mesh:Mesh):BoundingBox {

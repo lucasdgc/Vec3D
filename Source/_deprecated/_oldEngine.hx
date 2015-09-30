@@ -1,4 +1,4 @@
-package;
+package _deprecated;
 import rendering.Scene;
 import objects.Camera;
 import openfl.display.OpenGLView;

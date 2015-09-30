@@ -77,23 +77,35 @@ class RigidBody
 		updateTransform ();
 		
 		updateBoundingVolumesTransform ();
+		
+		gameObject.physicsUpdate();
 	}
 	
 	public function checkCollisions () {
 		for (thisCollider in boundingVolumes) {
 			for (otherCollider in World.boundingVolumes) {
 				if (otherCollider.rigidBody != this) {
+					var col:Collision = new Collision();
 					switch (otherCollider.type) {
 						case BoundingVolumeType.SPHERE:
-							thisCollider.checkSphereCollision(cast(otherCollider, BoundingSphere));
+							col = thisCollider.checkSphereCollision(cast(otherCollider, BoundingSphere));
 						case BoundingVolumeType.BOX:
-							thisCollider.checkBoxCollision(cast(otherCollider, BoundingBox));
+							col = thisCollider.checkBoxCollision(cast(otherCollider, BoundingBox));
 						case BoundingVolumeType.MESH:
 							
 						case BoundingVolumeType.PLANE:
 							
 						default:
-							
+							col = thisCollider.checkBoxCollision(cast(otherCollider, BoundingBox));
+					}
+					
+					if (col.isColliding) {
+						
+						thisCollider.rigidBody.velocity = Vector3.Zero ();
+						otherCollider.rigidBody.velocity = Vector3.Zero ();
+						
+						World.collisionsToHandle.push(col);
+						thisCollider.onCollision(col);
 					}
 				}
 			}
@@ -101,9 +113,15 @@ class RigidBody
 	}
 	
 	private function updateTransform () {
-		var stepForce:Vector3 = velocity.add(World.gravity);
+		//var stepForce:Vector3 = velocity.add(World.gravity);
+		
+		var stepForce:Vector3 = velocity.clone ();
+		
+		//trace (velocity);
 		
 		transform.translate(stepForce);
+		
+		decayVelocity();
 	}
 	
 	private function updateBoundingVolumesTransform () {
@@ -113,7 +131,7 @@ class RigidBody
 	}
 	
 	private function decayVelocity () {
-		
+		//velocity = velocity.multiplyByFloats ();
 	}
 	
 	public function attachBoundingVolume (boundingVolume:BoundingVolume) {

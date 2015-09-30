@@ -36,8 +36,8 @@ class MyPhysics extends Scene
 		sphere1.mesh.setVetexGroupColor(0, Color.red);
 		sphere2.mesh.setVetexGroupColor(0, Color.blue);
 		
-		sphere1.transform.position = new Vector3 (0.1, 1, 0);
-		sphere2.transform.position = new Vector3 (0.2, 0, 0);
+		sphere1.transform.position = new Vector3 (-0.7, 2, 0);
+		sphere2.transform.position = new Vector3 (0.2, 5, 0);
 		
 		var bs1:BoundingSphere = new BoundingSphere (sphere1.mesh.width / 2);
 		var rb1:RigidBody = new RigidBody(sphere1);
@@ -52,13 +52,20 @@ class MyPhysics extends Scene
 		
 		var planeMesh:Mesh = Primitives.createPlane();
 		var plane:GameObject = new GameObject ("plane", planeMesh);
-		plane.transform.position = new Vector3 (0, -2, 0);
+		plane.transform.position = new Vector3 (0, 0, 0);
 		
 		var bp:BoundingPlane = new BoundingPlane (Vector3.Up());
 		var rb3:RigidBody = new RigidBody(plane);
 		bp.setRigidBody(rb3);
 		
+		rb1.velocity = new Vector3 (0, -.1, 0);
+		rb2.velocity = new Vector3 (0, -.1, 0);
+		
+		rb3.isKinematic = true;
+		
 		rb3.startSimulation ();
+		
+		//sphere1.rigidBody.velocity = new Vector3 (0.1, 0, 0);
 		
 		/*var cubeMesh:Mesh = Primitives.createCube();
 		var cube1 = new GameObject ("cube1", cubeMesh);

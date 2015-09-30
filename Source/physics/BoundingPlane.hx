@@ -31,8 +31,9 @@ class BoundingPlane extends BoundingVolume
 		centerDistance = Math.abs(centerDistance);
 		var distanceFromObj = centerDistance - other.radius;
 		
-		trace (distanceFromObj < 0);
 		
-		return new Collision (distanceFromObj < 0, distanceFromObj);
+		trace ("planeCheck");
+		
+		return new Collision (distanceFromObj < 0, distanceFromObj, other);
 	}
 }

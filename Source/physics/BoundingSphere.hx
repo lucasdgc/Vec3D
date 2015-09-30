@@ -32,6 +32,6 @@ class BoundingSphere extends BoundingVolume
 		var radiusDistance:Float = radius + other.radius;
 		var centerDistance:Float = Vector3.Distance (center, other.center);
 		
-		return new Collision (centerDistance < radiusDistance, centerDistance - radiusDistance);
+		return new Collision (centerDistance < radiusDistance, centerDistance - radiusDistance, other);
 	}
 }

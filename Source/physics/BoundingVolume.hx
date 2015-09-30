@@ -45,7 +45,10 @@ class BoundingVolume
 	
 	public function updateCenterPosition (referencePosition:Vector3) {}
 	
-	public function onCollision () {}
+	public function onCollision (collision:Collision) { 
+		//trace (collision.other.rigidBody.gameObject.name);
+		//rigidBody.velocity = Vector3.Zero();
+	}
 	
 	public function checkSphereCollision (other:BoundingSphere):Collision { return new Collision (false); }
 

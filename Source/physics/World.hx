@@ -16,7 +16,9 @@ class World
 	public static var boundingVolumes:Array<BoundingVolume> = new Array ();
 	public static var rigidBodies:Array<RigidBody> = new Array ();
 	
-	public static var gravity:Vector3 = new Vector3 (0, 0, 0);
+	public static var collisionsToHandle:Array<Collision> = new Array ();
+	
+	public static var gravity:Vector3 = new Vector3 (0, -.1, 0);
 	
 	public static var stepTime:Float = 1000 / 59.9;
 	
@@ -72,6 +74,8 @@ class World
 		simulateRigidBodies ();
 		
 		checkCollisions ();
+		
+		handleCollisions ();
 	}
 	
 	private static function simulateRigidBodies () {
@@ -89,6 +93,13 @@ class World
 		
 		for (rb in rigidBodies) {
 			rb.checkCollisions ();
+		}
+	}
+	
+	
+	private function handleCollisions () {
+		for (col in collisionsToHandle) {
+			collisionsToHandle.remove(col);
 		}
 	}
 	

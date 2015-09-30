@@ -14,7 +14,7 @@ import rendering.Mesh;
  * ...
  * @author Lucas Gonçalves
  */
-class Device
+class __Device
 {
 	public var backBuffer:BitmapData;
 	public var bmp:BitmapData;

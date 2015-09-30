@@ -6,14 +6,17 @@ package physics;
  */
 class Collision
 {
-
-	private var distance:Float = 0;
-	private var isColliding:Bool = false;
+	public var distance:Float = 0;
+	public var isColliding:Bool = false;
 	
-	public function new(isColliding:Bool = true, distance:Float = 0) 
+	public var other:BoundingVolume;
+	
+	public function new(isColliding:Bool = false, distance:Float = 0, other:BoundingVolume = null) 
 	{
 		this.isColliding = isColliding;
 		this.distance = distance;
+		
+		this.other = other;
 	}
 	
 }
