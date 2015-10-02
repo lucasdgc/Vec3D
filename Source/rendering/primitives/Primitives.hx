@@ -265,6 +265,8 @@ class Primitives
 			posX += Math.abs (positionStep);
 		}
 		
+		trace("plane verts: "+plane.vertices.length);
+		
 		finishMesh(plane);
 		return plane;
 	}

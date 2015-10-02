@@ -42,11 +42,16 @@ class GameObject
 	
 	public var boundingVolumes:Array<BoundingVolume>;
 	
-	public function new(name:String = "", mesh:Mesh = null, isStatic:Bool = false) {
-		if(Engine.instance.currentScene != null) {
-			Engine.instance.currentScene.gameObject.push(this);
-			
+	public function new(name:String = "", mesh:Mesh = null, scene:Scene = null, isStatic:Bool = false) {
+		if (scene == null && Engine.instance.currentScene != null) {
 			scene = Engine.instance.currentScene;
+		}
+		
+		if (scene != null) {
+			
+			this.scene = scene;
+			
+			this.scene.gameObject.push(this);
 			
 			this.isStatic = isStatic;
 			
@@ -79,7 +84,8 @@ class GameObject
 			
 			Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.UPDATE, update);
 		} else {
-			throw "Scene not instantiated...";
+			
+			throw name +" Scene not instantiated...";
 		}
 		
 		rigidBody = null;

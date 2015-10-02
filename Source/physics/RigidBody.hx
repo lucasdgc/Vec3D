@@ -1,5 +1,6 @@
 package physics;
 
+import haxe.ds.Vector;
 import objects.GameObject;
 import objects.Transform;
 import events.Vec3DEventDispatcher;
@@ -17,12 +18,14 @@ import physics.bounding.BoundingPlane;
  */
 class RigidBody
 {
-	public var mass:Float;
-	public var drag:Float;
+	public var mass:Float = 1;
+	public var drag:Float = 1;
 	
 	public var massCenter:Vector3;
 	
 	public var velocity:Vector3;
+	
+	private var previousPosition:Vector3;
 	
 	public var isKinematic:Bool = false;
 	public var lockRotationX:Bool = false;
@@ -58,6 +61,8 @@ class RigidBody
 			
 			massCenter = new Vector3 ();
 			velocity = new Vector3 ();
+			
+			previousPosition = new Vector3 ();
 			
 			Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.PHYSICS_UPDATE, step);
 		} else {
@@ -100,7 +105,30 @@ class RigidBody
 					}
 					
 					if (col.isColliding) {
-						thisCollider.gameObject.rigidBody.velocity = Vector3.Zero();
+						var newPos:Vector3 = new Vector3 ();
+						
+						if (col.direction.x != 0) {
+							newPos.x = previousPosition.x;
+						} else {
+							newPos.x = transform.position.x;
+						}
+						
+						if (col.direction.y != 0) {
+							newPos.y = previousPosition.y;
+						} else {
+							newPos.y = transform.position.y;
+						}
+						
+						if (col.direction.z != 0) {
+							newPos.z = previousPosition.z;
+						} else {
+							newPos.z = transform.position.z;
+						}
+
+						this.transform.position = newPos.clone();
+						
+						//this.transform.position = 
+						//thisCollider.gameObject.rigidBody.velocity = Vector3.Zero();
 						//otherCollider.gameObject.rigidBody.velocity = col.direction.negate();
 						
 						World.collisionsToHandle.push(col);
@@ -109,14 +137,17 @@ class RigidBody
 				}
 			}
 		}
+		
+		//gameObject.physicsUpdate();
+	}
+	
+	public function addForce (force:Vector3) {
+		velocity.addInPlace(force);
 	}
 	
 	private function updateTransform () {
-		//var stepForce:Vector3 = velocity.add(World.gravity);
-		
-		var stepForce:Vector3 = velocity.clone ();
-		
-		//trace (velocity);
+		previousPosition = transform.position.clone ();
+		var stepForce:Vector3 = velocity.add(World.gravity);
 		
 		transform.translate(stepForce);
 		
@@ -130,7 +161,10 @@ class RigidBody
 	}
 	
 	private function decayVelocity () {
-		//velocity = velocity.multiplyByFloats ();
+		//trace(v);
+		
+		var decay:Float = drag / 10;
+		velocity = velocity.multiplyByFloats (decay, decay, decay);
 	}
 	
 	public function attachBoundingVolume (boundingVolume:BoundingVolume) {

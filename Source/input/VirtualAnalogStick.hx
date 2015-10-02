@@ -136,7 +136,7 @@ class VirtualAnalogStick
 	
 	private function setBoundAxisValues () {
 		InputAxis.setAxisValue(bindAxisXName, xAxisValue);
-		InputAxis.setAxisValue(bindAxisYName, yAxisValue);
+		InputAxis.setAxisValue(bindAxisYName, -yAxisValue);
 	}
 	
 	public static function removeAllAnalogButtons () {

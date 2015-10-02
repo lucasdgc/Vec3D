@@ -1,4 +1,7 @@
 package;
+import events.Vec3DEvent;
+import loading.AsyncLoad;
+import loading.LoadingScene;
 import rendering.Scene;
 import objects.Camera;
 import openfl.display.OpenGLView;
@@ -14,10 +17,10 @@ import openfl.utils.Float32Array;
 import openfl.Assets;
 import rendering.Mesh;
 import utils.Color;
-import input.Input;
 import objects.GameObject;
 import utils.SimpleMath;
 import openfl.events.Event;
+import events.Vec3DEventDispatcher;
 
 /**
  * ...
@@ -42,7 +45,8 @@ class Engine
 	public static var bakeOnCompile:Bool = true;
 	public static var drawBoundingVolumes:Bool = false;
 	
-	public var currentScene:Scene;
+	public var currentScene (default, null):Scene;
+	private var nextScene (default, set):Scene;
 	
 	private var glView:OpenGLView;
 
@@ -74,7 +78,12 @@ class Engine
 	
 	private var vertexAttributesEnabled:Bool = false;
 	
-	var staticGambi:Float32Array;
+	private var loadingScene:loading.LoadingScene;
+	
+	private var renderLoopCount:Int = 0;
+	private var enterFrameCount:Int = 0;
+	
+	private var started:Bool = false;
 	
 	public function new(_canvas:Sprite) 
 	{
@@ -88,17 +97,81 @@ class Engine
 		
 		glView.render = renderLoop;
 		backgroundColor = Color.black;
-		var input:Input = new Input();
+
 		
-		canvas.addChild(input);
+		//glView.addEventListener(Event.ADDED_TO_STAGE, onViewAdded);
 		canvas.addChild(glView);
 		
 		GL.viewport (Std.int (canvas.stage.x), Std.int (canvas.stage.y), Std.int (canvas.stage.stageWidth), Std.int (canvas.stage.stageHeight));
+		
+		loadingScene = new loading.LoadingScene();
+		
+		currentScene = loadingScene;
+		
 		canvas.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+		
+		//Vec3DEventDispatcher.instance.dispatchEngineReadyEvent();
+		//glView.addEventListener(Event.ADDED_TO_STAGE, onViewAdded);
 	}
 	
 	private function onEnterFrame (event:Event) {
-		currentScene.update(event);
+		//trace(currentScene.name);
+		if (currentScene != null) {
+			currentScene.update(event);
+		}
+		Vec3DEventDispatcher.instance.dispatchUpdateEvent();
+		
+		if (!started) {
+			started = true;
+			Vec3DEventDispatcher.instance.dispatchEngineReadyEvent();
+		}
+	}
+	
+	private function onViewAdded (event:Event) {
+		glView.removeEventListener(Event.ADDED_TO_STAGE, onViewAdded);
+		
+		//Vec3DEventDispatcher.instance.dispatchEngineReadyEvent();
+	}
+	
+	public function loadScene (sceneClass:Class<Scene>) {
+		if (currentScene != loadingScene) {
+			//loadingScene
+			currentScene = loadingScene;
+		}
+		
+		//AsyncLoad.loadScene(sceneClass);
+		
+		
+		Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.SCENE_LOADED, onSceneLoaded);		
+		
+		//nextScene = AsyncLoad.loadScene (sceneClass);
+		nextScene = Type.createInstance(sceneClass, []);
+		
+		//currentScene.dispose();
+		//
+		//currentScene = nextScene;
+		
+		//trace(nextScene);
+		
+	}
+	
+	private function set_nextScene (value:Scene):Scene {
+		nextScene = value;
+
+		Vec3DEventDispatcher.instance.dispatchSceneInstantiatedEvent();
+		
+		return nextScene;
+	}
+	
+	private function onSceneLoaded (e:Event) {
+		Vec3DEventDispatcher.instance.removeEventListener (Vec3DEvent.SCENE_LOADED, onSceneLoaded);
+		//
+		//trace("remove");
+		
+		currentScene.dispose();
+		
+		currentScene = nextScene;
+		//nextScene.
 	}
 	
 	private function createProgram ():Void {
@@ -164,10 +237,13 @@ class Engine
 
 	private function render(camera:Camera) {
 		
-		var viewMatrix = Matrix.LookAtLH(camera.transform.position, camera.facingPoint, Vector3.Up());
-		var projectionMatrix = Matrix.PerspectiveFovLH(.78, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
+		//var viewMatrix = Matrix.LookAtLH(camera.transform.position, camera.facingPoint, Vector3.Up());
+		//var projectionMatrix = Matrix.PerspectiveFovLH(.70, canvas.stage.stageWidth / canvas.stage.stageHeight, .01, 1000);
 			
-		for(gameObject in currentScene.gameObject) { 
+		var viewMatrix = camera.viewMatrix.clone ();
+		var projectionMatrix = camera.projectionMatrix.clone ();
+		
+		for (gameObject in currentScene.gameObject) { 
 			if ( !gameObject.isStatic && gameObject.isVisible && gameObject.mesh != null) {
 				var mesh = gameObject.mesh;
 				

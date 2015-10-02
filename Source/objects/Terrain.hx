@@ -7,6 +7,7 @@ import rendering.Mesh;
 import openfl.Assets;
 import rendering.primitives.Primitives;
 import openfl.gl.GL;
+import rendering.Scene;
 
 /**
  * ...
@@ -21,25 +22,16 @@ class Terrain extends GameObject
 	public var height:Float = 3;
 	public var size:Float = 4;
 	
-	public function new(heightMapPath:String) 
+	public function new(heightMapPath:String, scene:Scene) 
 	{
-
-		//heightMap = Assets.loadBitmapData(terrainDirectory + heightMapPath);
-		
-		//heightMap = new BitmapData (32, 32);
-		
 		var heightMap:BitmapData = Assets.getBitmapData (terrainDirectory + heightMapPath);
-		
-		trace(terrainDirectory + heightMapPath);
-		
-		//Assets.loadBitmapData (terrainDirectory + heightMapPath);
 		
 		if(heightMap != null){
 			mesh = Primitives.createPlane (heightMap.width, this.size);
 			
 			shapeTerrain (heightMap);
 			
-			super("terrain_", mesh, true);
+			super("terrain_", mesh, scene);
 		} else {
 			throw "Error loading heightmap...";
 		}
@@ -51,7 +43,7 @@ class Terrain extends GameObject
 		var sum:Float = 0;
 		for (i in 0...Std.int(heightMap.width * heightMap.width * 4)) {
 			var height:Float = pixelData.readUnsignedByte();
-			height *= .01;
+			height *= .05;
 			sum += height;
 			
 			if (i % 4 == 0) {

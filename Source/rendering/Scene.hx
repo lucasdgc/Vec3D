@@ -42,15 +42,17 @@ class Scene
 	
 	private var isFirstStaticMerge:Bool = true;
 	
-	public function new(engine:Engine, loadOnCreate:Bool = true ) 
+	public var name (default, null):String;
+	
+	public function new() 
 	{
-		this.engine = engine;
+		//this.engine = engine;
 		
 		gameObject = new Array();
 		cameras = new Array();
 		
-		engine.currentScene = this;
-		activeCamera = new Camera (new Vector3(0, 0, -10), Vector3.Zero(), "main_camera");
+		//engine.currentScene = this;
+		activeCamera = new Camera (new Vector3(0, 0, -10), Vector3.Zero(), "main_camera", this);
 		
 		staticMeshBuffer = { vertexBuffer : GL.createBuffer(), edgeIndexBuffer : GL.createBuffer(), faceIndexBuffer : GL.createBuffer() };
 		
@@ -58,8 +60,18 @@ class Scene
 		staticMesh.isStatic = true;
 		staticMesh.bindMeshBuffers();
 		
-		var staticGO:GameObject = new GameObject ("static_gameobject", staticMesh);
+		var staticGO:GameObject = new GameObject ("static_gameobject", staticMesh, this);
+		
+		Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.SCENE_INSTANTIATED, onSceneInstantiated);
 		//staticGO.isStatic = true;
+	}
+	
+	private function sceneLoaded () {
+		//Vec3DEventDispatcher.instance.dispatchSceneLoadedEvent();
+	}
+	
+	public function onSceneInstantiated (e:Event) {
+		Vec3DEventDispatcher.instance.dispatchSceneLoadedEvent();
 	}
 	
 	public function mergeStaticMeshes () {
@@ -92,10 +104,20 @@ class Scene
 		
 		//activeCamera.update();
 		
-		Vec3DEventDispatcher.instance.dispatchUpdateEvent();
+		
 		
 	}
 	
+	public function dispose () {
+		while (gameObject.length > 0) {
+			gameObject[0].destroy();
+		}
+	}
+	
+	
+	public function reset () {
+		
+	}
 	/*public function bindStaticMeshBuffer () {
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, staticMeshBuffer.vertexBuffer);
