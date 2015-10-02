@@ -38,6 +38,6 @@ class Main extends Sprite {
 	private function onEngineReady (e:Event) {
 		Vec3DEventDispatcher.instance.removeEventListener (Vec3DEvent.ENGINE_READY, onEngineReady);
 		
-		Engine.instance.loadScene (MyPhysics2);
+		//Engine.instance.loadScene (MyPhysics2);
 	}
 }

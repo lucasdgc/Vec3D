@@ -141,8 +141,10 @@ class Mesh
 		
 		if(name != ""){
 			this.name = name;
-		} else {
+		} else if (Engine.instance.currentScene != null) {
 			this.name = defaultMeshName+Engine.instance.currentScene.gameObject.length;
+		} else {
+			this.name = "no_name";
 		}
 		
 		isStatic = true;

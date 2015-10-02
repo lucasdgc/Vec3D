@@ -140,13 +140,13 @@ import com.babylonhx.utils.typedarray.Float32Array;
 		return (otherVector != null && this.x == otherVector.x && this.y == otherVector.y && this.z == otherVector.z && this.w == otherVector.w);
 	}
 
-	inline public function equalsWithEpsilon(otherVector:Vector4, epsilon:Float = Engine.Epsilon):Bool {
+	/*inline public function equalsWithEpsilon(otherVector:Vector4, epsilon:Float = Engine.Epsilon):Bool {
 		return otherVector != null  
 		&& Tools.WithinEpsilon(this.x, otherVector.x, epsilon) 
 		&& Tools.WithinEpsilon(this.y, otherVector.y, epsilon) 
 		&& Tools.WithinEpsilon(this.z, otherVector.z, epsilon)
 		&& Tools.WithinEpsilon(this.w, otherVector.w, epsilon);
-	}
+	}*/
 
 	inline public function equalsToFloats(x:Float, y:Float, z:Float, w:Float):Bool {
 		return this.x == x && this.y == y && this.z == z && this.w == w;

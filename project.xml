@@ -5,7 +5,10 @@
 	<app main="Main" path="Export" file="Vec3D" />
 	
 	<!-- <window vsync="true" fps="60" width="720" heigth="480" unless="html5" /> -->
-	<window heigth="480" width="720" unless="html5" />	<window orientation="landscape" fullscreen="true" if="mobile" />
+	<window heigth="480" width="720" unless="html5" />	
+	
+	<window orientation="landscape" fullscreen="true" if="mobile" />
+	
 	<window fps="150" vsync="false" hardware="true" shaders="true" depth-buffer="false" stencil-buffer="false" antialiasing="0" />
 	
 	<android target-sdk-version="22" />

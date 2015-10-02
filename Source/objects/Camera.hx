@@ -1,9 +1,13 @@
 package objects;
+import com.babylonhx.math.Vector2;
 import com.babylonhx.math.Vector3;
+import com.babylonhx.math.Vector4;
 import com.babylonhx.math.Matrix;
 import events.Vec3DEvent;
 import events.Vec3DEventDispatcher;
+import math.Vec4D;
 import openfl.events.Event;
+import physics.Ray;
 import rendering.Scene;
 
 /**
@@ -51,7 +55,46 @@ class Camera extends GameObject
 	public override function update (e:Event) {
 		super.update(e);
 		
-		viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, Vector3.Up());
+		if (scene != null) {
+			if (scene.activeCamera == this) {
+				viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, Vector3.Up());
+			}
+		}
+	}
+	
+	public function viewportToWorldCoordinates (viewPortX:Float, viewPortY:Float):Vector3 {
+		var vpMatrix:Matrix = viewMatrix.multiply(projectionMatrix);
+		vpMatrix.invert();
+		
+		var x:Float = (2.0 * (viewPortX / Engine.canvas.stage.stageWidth)) - 1.0;
+		var y:Float = 1.0 - (2.0 * (viewPortY / Engine.canvas.stage.stageHeight));
+		var z:Float = 1.0;
+		var w:Float = 1;
+		
+        var vIn:Vector4 = new Vector4 (x, y, z, w);
+		
+		var pos:Vector4 = Vec4D.MultiplyByMatrix(vIn, vpMatrix);
+		
+		var worldPosition:Vector3 = new Vector3 (pos.x * pos.w, pos.y * pos.w, pos.z * pos.w);
+		return worldPosition;
+	}
+	
+	public function worldCoordinatesToViewpost (worldCoordinates:Vector3):Vector2 {
+		
+		
+		
+		var resultVector:Vector2 = new Vector2 (0, 0);
+		return resultVector;
+	}
+	
+	public function screenPointToRay (screenX:Float, screenY:Float, screenZ:Float):Ray {
+		var eyePoint:Vector3 = this.transform.position.clone ();
+		var worldPoint:Vector3 = this.viewportToWorldCoordinates(screenX, screenY);
+		
+		var relWorldPoint:Vector3 = worldPoint.subtract(eyePoint);
+		
+		var ray:Ray = new Ray(eyePoint, relWorldPoint.normalize(), zFar);
+		return ray;
 	}
 	
 	private function set_fov (value:Float):Float {
