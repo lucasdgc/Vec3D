@@ -9,7 +9,7 @@
 	
 	<window orientation="landscape" fullscreen="true" if="mobile" />
 	
-	<window fps="150" vsync="false" hardware="true" shaders="true" depth-buffer="false" stencil-buffer="false" antialiasing="0" />
+	<window fps="150" vsync="false" hardware="true" shaders="true" depth-buffer="true" stencil-buffer="false" antialiasing="0" />
 	
 	<android target-sdk-version="22" />
 	

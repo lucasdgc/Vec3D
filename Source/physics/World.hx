@@ -55,8 +55,10 @@ class World
 			#end
 			
 			ppsTimer.start ();
-		} else {
+		} else if (Engine.instance == null) {
 			throw "Cannot instantiate physics world before Engine Device...";
+		} else if (instance != null) {
+			throw "Cannot instantiate world twice...";
 		}
 	}
 	
@@ -118,11 +120,11 @@ class World
 	}
 	
 	public static function clearWorld () {
-		while (rigidBodies.length > 0) {
+		for(i in 0...rigidBodies.length) {
 			rigidBodies.pop();
 		}
 		
-		while (boundingVolumes.length > 0) {
+		for (i in 0...boundingVolumes.length) {
 			boundingVolumes.pop();
 		}
 	}

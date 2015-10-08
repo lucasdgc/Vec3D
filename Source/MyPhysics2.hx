@@ -39,6 +39,8 @@ class MyPhysics2 extends Scene
 		
 		name = "My Psysics 2";
 		
+		backgroundColor = Color.black;
+		
 		var w:World = new World ();
 		var analogRect:Rectangle = new Rectangle (Engine.canvas.stage.x, Engine.canvas.stage.y, 
 												   Engine.canvas.stage.stageWidth / 2, Engine.canvas.stage.stageHeight);
@@ -81,6 +83,8 @@ class MyPhysics2 extends Scene
 		var relPosition:Vector3 = playerSphere.transform.position.subtract(activeCamera.transform.position);
 		targetCameraRotation = Quaternion.LookRotation (relPosition);
 		
+		
+		
 		//mergeStaticMeshes();
 		
 		RigidBody.startAllRigidBodies();
@@ -118,9 +122,11 @@ class MyPhysics2 extends Scene
 		//playerSphere.transform.translate (new Vector3 (h, 0, v).normalize().multiplyByFloats(speed, speed, speed));
 		//playerSphere.transform.translate (new Vector3 (inputX, 0, inputY).normalize().multiplyByFloats(speed, speed, speed));
 		
-		//playerSphere.rigidBody.velocity = new Vector3 (inputX, 0, inputY).normalize().multiplyByFloats(speed, speed, speed);
+		playerSphere.rigidBody.velocity = new Vector3 (inputX, 0, inputY).normalize().multiplyByFloats(speed, speed, speed);
 		
-		playerSphere.rigidBody.addForce(moveDirection);
+		//trace (playerSphere.transform.position);
+		
+		//playerSphere.rigidBody.addForce(moveDirection);
 		
 		setCameraTarget ();
 		setCameraTransform();

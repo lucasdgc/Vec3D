@@ -58,6 +58,8 @@ class Camera extends GameObject
 		if (scene != null) {
 			if (scene.activeCamera == this) {
 				viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, Vector3.Up());
+				
+				projectionMatrix =  Matrix.PerspectiveFovLH(fov, Engine.canvas.stage.stageWidth / Engine.canvas.stage.stageHeight, zNear, zFar);
 			}
 		}
 	}
@@ -66,16 +68,21 @@ class Camera extends GameObject
 		var vpMatrix:Matrix = viewMatrix.multiply(projectionMatrix);
 		vpMatrix.invert();
 		
-		var x:Float = (2.0 * (viewPortX / Engine.canvas.stage.stageWidth)) - 1.0;
+		//var x:Float = ((2.0 * viewPortX) / (Engine.canvas.stage.stageWidth - 1.0)) - 1.0;
+		
+		var x:Float = ((viewPortX  * 2 )/ (Engine.canvas.stage.stageWidth - 0)) - 1.0;
+		//NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin
+		//var x:Float = ((viewPortX + 1) / 2 ) * Engine.canvas.stage.stageWidth  ;
 		var y:Float = 1.0 - (2.0 * (viewPortY / Engine.canvas.stage.stageHeight));
 		var z:Float = 1.0;
-		var w:Float = 1;
-		
+		var w:Float = 1.0;
+
         var vIn:Vector4 = new Vector4 (x, y, z, w);
 		
 		var pos:Vector4 = Vec4D.MultiplyByMatrix(vIn, vpMatrix);
 		
 		var worldPosition:Vector3 = new Vector3 (pos.x * pos.w, pos.y * pos.w, pos.z * pos.w);
+
 		return worldPosition;
 	}
 	

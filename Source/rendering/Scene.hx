@@ -9,6 +9,7 @@ import objects.Camera;
 import openfl.geom.Vector3D;
 import openfl.utils.Float32Array;
 import com.babylonhx.math.Vector3;
+import physics.World;
 import utils.Color;
 import openfl.gl.GL;
 import rendering.Mesh;
@@ -29,6 +30,8 @@ class Scene
 	public var activeCamera:Camera;
 	
 	public var staticMeshBuffer:MeshBuffer;
+	
+	public var backgroundColor:Color = Color.black;
 	
 	public var staticMesh:Mesh;
 	
@@ -112,6 +115,10 @@ class Scene
 		while (gameObject.length > 0) {
 			gameObject[0].destroy();
 		}
+		
+		trace("Disposing scene: " + name);
+		
+		World.clearWorld();
 	}
 	
 	

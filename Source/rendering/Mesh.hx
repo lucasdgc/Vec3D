@@ -2,6 +2,8 @@ package rendering;
 
 import com.babylonhx.math.Vector3;
 import com.babylonhx.math.Matrix;
+import device.Device;
+import device.ShaderProgram;
 import lime.graphics.opengl.GLBuffer;
 import objects.GameObject;
 import openfl.Assets;
@@ -82,6 +84,8 @@ class Mesh
 	
 	public var isStatic:Bool = true;
 	
+	public var shaderProgram:ShaderProgram;
+	
 	/*public var rawVertexData:Float32Array;
 	public var rawEdgesData:Float32Array;
 	public var rawFacesData:Float32Array;*/
@@ -146,6 +150,8 @@ class Mesh
 		} else {
 			this.name = "no_name";
 		}
+		
+		shaderProgram = ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME);
 		
 		isStatic = true;
 	}

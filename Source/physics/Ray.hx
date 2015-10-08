@@ -32,8 +32,8 @@ class Ray {
 
 	// Methods
 	public function intersectsBoxMinMax(box:BoundingBox):Collision {
-		var maximum:Vector3 = box.maxExtents.add(box.center);
-		var minimum:Vector3 = box.minExtents.add(box.center);
+		var maximum:Vector3 = box.worldMaxExtents;
+		var minimum:Vector3 = box.minExtents;
 		var d:Float = 0.0;
 		var maxValue:Float = Math.POSITIVE_INFINITY;
 		
@@ -133,7 +133,7 @@ class Ray {
 		}
 		
 		
-		return new Collision (true, new Vector3 (dx, dy, dz),box);
+		return new Collision (true, new Vector3 (dx, dy, dz), box);
 	}
 
 	inline public function intersectsBox(box:BoundingBox):Collision {
