@@ -25,6 +25,15 @@ class ShaderProgram
 {
 	private static var shaderPrograms:Array<ShaderProgram> = new Array ();
 	private static var shadersPath:String = "assets/Shaders/" ;
+	private static var vertExtension:String = ".vert";
+	private static var fragExtension:String = ".frag";
+	
+	#if !desktop
+	private static var defineES:String = "#define MOBILE \n";
+	#else 
+	private static var defineES:String = "";
+	#end
+	
 	#if !html5
 	private static var glType:String = "_OpenGL";
 	#else
@@ -49,13 +58,14 @@ class ShaderProgram
 		var fragmentShader = GL.createShader(GL.FRAGMENT_SHADER);
 		
 		var platform:String = (differPlatformShaders) ? glType : "";
+		var defEs:String = (differPlatformShaders) ? defineES : "";
 		
 		this.name = name;
 		
 		if (vertexShaderName != ""){
-			var vertexShaderSource:String = Assets.getText(shadersPath + vertexShaderName + platform + shadersExtension);
+			var vertexShaderSource:String = Assets.getText(shadersPath + vertexShaderName + vertExtension);
+			vertexShaderSource = defEs + vertexShaderSource;
 			
-			//vertexShader = GL.createShader (GL.VERTEX_SHADER);
 			GL.shaderSource (vertexShader, vertexShaderSource);
 			GL.compileShader (vertexShader);
 			
@@ -66,14 +76,15 @@ class ShaderProgram
 		}
 		
 		if (fragmentShaderName != "") {
-			var fragmentShaderSource:String = Assets.getText(shadersPath + fragmentShaderName + platform + shadersExtension);
+			var fragmentShaderSource:String = Assets.getText(shadersPath + fragmentShaderName + fragExtension);
+			fragmentShaderSource = defEs + fragmentShaderSource;
 			
-			//fragmentShader = GL.createShader (GL.FRAGMENT_SHADER);
+			
 			GL.shaderSource (fragmentShader, fragmentShaderSource);
 			GL.compileShader (fragmentShader);
 			
 			if (GL.getShaderParameter (fragmentShader, GL.COMPILE_STATUS) == 0) {
-				trace(GL.getShaderInfoLog(fragmentShader));
+				trace(name + " - " + GL.getShaderInfoLog(fragmentShader));
 				throw "Error compiling fragment shader";
 			}
 		}

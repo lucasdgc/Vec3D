@@ -7,6 +7,8 @@ import utils.Color;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;
 import com.babylonhx.math.Matrix;
+import haxe.Timer;
+import utils.Time;
 
 /**
  * ...
@@ -91,6 +93,29 @@ class Renderer
 			GL.drawElements(GL.LINES, edgeBufferSize * 2, GL.UNSIGNED_SHORT, 2 * 0);	
 		}
 		
+	}
+	
+	public function drawFrameBuffer (frameBuffer:FrameBuffer) {
+		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
+		//GL.clear(GL.COLOR_BUFFER_BIT);
+		GL.bindBuffer(GL.ARRAY_BUFFER, frameBuffer.vertexBuffer);
+		
+		//GL.disable(GL.DEPTH_TEST);
+		//GL.disable(GL.STENCIL_TEST);
+		
+		GL.useProgram(frameBuffer.shaderProgram.program);
+		
+		GL.activeTexture(GL.TEXTURE0);
+		GL.bindTexture(GL.TEXTURE_2D, frameBuffer.texture);
+
+		GL.enableVertexAttribArray(frameBuffer.shaderProgram.attributes[0].index);
+		GL.vertexAttribPointer(frameBuffer.shaderProgram.attributes[0].index, 2, GL.FLOAT, false, 2 * 4, 0);
+		
+		GL.uniform4fv(frameBuffer.shaderProgram.uniforms[1].index, Engine.instance.currentScene.backgroundColor.toFloat32Array());
+		
+		//GL.uniform1f(frameBuffer.shaderProgram.uniforms[1].index, Time.deltaTime * 2 * 3.14159 * .75 * 10);
+		
+		GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4);
 	}
 	
 	private function setDefaultShaderParams () {

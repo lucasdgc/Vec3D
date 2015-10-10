@@ -12,6 +12,8 @@ import openfl.utils.Float32Array;
 import objects.GameObject;
 import openfl.events.Event;
 import events.Vec3DEventDispatcher;
+import utils.Color;
+import utils.SimpleMath;
 
 /**
  * ...
@@ -21,12 +23,16 @@ import events.Vec3DEventDispatcher;
 class Device
 {	
 	public static var DEFAULT_SHADER_NAME:String = "defaultShader";
+	public static var DEFAULT_FRAMEBUFFER_SHADER_NAME:String = "defaultFrameBufferShader";
 	
 	private var glView:OpenGLView;
 	
 	private var frameCount:Int = 0;
 	
 	private var renderer:Renderer;
+	
+	//private var sceneFrameBuffer:FrameBuffer;
+	private var blurFrameBuffer:FrameBuffer;
 	
 	public function new() 
 	{
@@ -41,7 +47,17 @@ class Device
 			
 			Engine.canvas.addChild(glView);
 			
-			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "DefaultVertexShader", "DefaultFragmentShader", ["aVertexPosition", "aVertexColor"], ["uProjectionMatrix", "uModelViewMatrix"]);
+			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexColor"], ["uProjectionMatrix", "uModelViewMatrix"]);
+			var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "offset"]);
+			var bloomShader = new ShaderProgram ("bloomShader", "frameBuffer", "bloom", ["a_position"], ["u_sampler", "backgroundColor"]);
+
+			//var rect:Rectangle = new Rectangle (Engine.canvas.stage.stageWidth / 4, Engine.canvas.stage.stageHeight / 2, Engine.canvas.stage.stageWidth / 4, Engine.canvas.stage.stageHeight / 4);
+			var rect:Rectangle = new Rectangle (Engine.canvas.stage.x, Engine.canvas.stage.y, Engine.canvas.stage.stageWidth, Engine.canvas.stage.stageHeight);
+			//sceneFrameBuffer = new FrameBuffer (2048, 1024, defaultFrameBufferShader, rect);
+			
+			blurFrameBuffer = new FrameBuffer (SimpleMath.getCloserPow2(Engine.canvas.stage.stageWidth), SimpleMath.getCloserPow2(Engine.canvas.stage.stageHeight), bloomShader, rect);
+			
+			//trace ();
 			
 		} else {
 			throw "Cannot instantiate Device without Engine...";
@@ -58,27 +74,28 @@ class Device
 	
 	
 	private function renderLoop(rect:Rectangle) {
-		/*frameCount ++;
-		
-		if (frameCount % 10 == 0) {
-			renderer.drawCallCount = Std.int(drawCalls / frameCount);
-			drawCalls = 0;
-			frameCount = 0;
-		}*/
-		
-		GL.enable(GL.DEPTH_TEST);
-		//GL.enable(GL.STENCIL_TEST);		
-		
-		GL.enable(GL.BLEND);
-		GL.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
-		GL.blendEquation(GL.FUNC_ADD);
-		
-		renderer.clear(Engine.instance.currentScene.backgroundColor);
 		if (Engine.instance.currentScene != null) {
-			//renderFrameBuffer ();
-			renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject);
-			//clear();
-			//renderFrameBuffer();
+			#if mobile
+				lowPerformanceRender();
+				//highPerformanceRender();
+			#else
+				highPerformanceRender();
+			#end
 		}
-	}	
+	}
+	
+	private function lowPerformanceRender () {
+		renderer.clear(Engine.instance.currentScene.backgroundColor);
+		renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject);
+		
+	}
+	
+	private function highPerformanceRender () {
+		blurFrameBuffer.bind();
+		renderer.clear(Engine.instance.currentScene.backgroundColor);
+		GL.enable(GL.DEPTH_TEST);
+		renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject);
+		GL.disable(GL.DEPTH_TEST);
+		renderer.drawFrameBuffer(blurFrameBuffer);
+	}
 }

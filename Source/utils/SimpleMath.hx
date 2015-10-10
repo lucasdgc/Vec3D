@@ -15,6 +15,16 @@ class SimpleMath
 		return value;
 	}
 	
+	public static function getCloserPow2 (value:Float):Int {
+		var pow2 = 2;
+		
+		while ( pow2 < value ) {
+			pow2 *= 2;
+		}
+		
+		return pow2;
+	}
+	
 	public static function fixedFloat(v:Float, precision:Int = 2):Float
 	{
 		return Math.round( v * Math.pow(10, precision) ) / Math.pow(10, precision);

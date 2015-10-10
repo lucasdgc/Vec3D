@@ -1,4 +1,7 @@
+#ifdef MOBILE
 precision mediump float;
+#endif
+
 varying vec2 v_texcoord;
 uniform sampler2D u_sampler;
 

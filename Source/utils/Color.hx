@@ -1,4 +1,5 @@
 package utils;
+import openfl.utils.Float32Array;
 
 /**
  * ...
@@ -61,6 +62,17 @@ class Color
 		r = hexValue >> 16 & 255;
 		g = hexValue >> 8 & 255;
 		b = hexValue >> 0 & 255;
+	}
+	
+	public function toFloat32Array ():Float32Array {
+		var array:Array<Float> = new Array();
+		
+		array.push(r);
+		array.push(g);
+		array.push(b);
+		array.push(a);
+		
+		return new Float32Array (array);
 	}
 	
 	private static function initializeColors() {

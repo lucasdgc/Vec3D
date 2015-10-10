@@ -1,3 +1,7 @@
+#ifdef MOBILE
+precision mediump float;
+#endif
+
 attribute vec4 a_position;
 varying vec2 v_texcoord;
 

@@ -10,6 +10,7 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import com.kircode.debug.FPS_Mem;
 import openfl.ui.Keyboard;
+import utils.SimpleMath;
 
 class Main extends Sprite {
 	
@@ -37,6 +38,8 @@ class Main extends Sprite {
 	
 	private function onEngineReady (e:Event) {
 		Vec3DEventDispatcher.instance.removeEventListener (Vec3DEvent.ENGINE_READY, onEngineReady);
+		
+		//trace (SimpleMath.getCloserPow2(360));
 		
 		Engine.instance.loadScene (MyPhysics2);
 	}

@@ -1,3 +1,7 @@
+#ifdef MOBILE
+precision mediump float;
+#endif
+
 attribute vec3 aVertexPosition;
 attribute vec4 aVertexColor;
 

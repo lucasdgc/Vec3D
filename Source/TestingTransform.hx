@@ -27,9 +27,9 @@ class TestingTransform extends Scene
 	
 	private var monkey2:GameObject;
 	
-	public function new(engine:Engine) 
+	public function new() 
 	{
-		super(engine);
+		super();
 		
 		var cubeMesh:Mesh = Primitives.createCube();
 		//cube.mesh.vertexGroups[0].color = Color.blue;
@@ -41,11 +41,11 @@ class TestingTransform extends Scene
 		
 		cube.mesh.setVetexGroupColor(0, Color.blue);
 		
-		var cube2:GameObject = new GameObject ("cube2", cubeMesh.clone());
+		var cube2:GameObject = new GameObject ("cube2", cubeMesh.clone(), this);
 		cube2.transform.position = new Vector3 (-2, 0, 1);
 		cube2.mesh.setVetexGroupColor(0, Color.yellow);
 		
-		var cube3:GameObject = new GameObject ("cube3", cubeMesh.clone());
+		var cube3:GameObject = new GameObject ("cube3", cubeMesh.clone(), this);
 		cube3.transform.position = new Vector3 (2, 0, 1);
 		cube3.mesh.setVetexGroupColor(0, Color.red);
 		//trace(cube.mesh.vertexGroups[0].color);
@@ -53,12 +53,14 @@ class TestingTransform extends Scene
 		cube3.parent = cube;
 		cube2.parent = cube;
 		
-		var plane:Mesh = Primitives.createPlane(32, 5);
-		var planeObj:GameObject = new GameObject ("plane", plane);
+		var plane:Mesh = Primitives.createPlane(128, 5);
+		var planeObj:GameObject = new GameObject ("plane", plane, this);
 		planeObj.transform.position = new Vector3 (0, -2, 0);
+		planeObj.mesh.drawEdges = false;
+		planeObj.mesh.drawPoints = true;
 		
 		var plane2:Mesh = Primitives.createPlane(32, 5);
-		var planeObj2:GameObject = new GameObject ("plane2", plane2);
+		var planeObj2:GameObject = new GameObject ("plane2", plane2, this);
 		
 		planeObj2.transform.position = new Vector3 (0, 2, 0);
 		//planeObj2.rotation = new Vector3 (1, 0, 0);
@@ -75,10 +77,10 @@ class TestingTransform extends Scene
 		//cube.parent = cameraHost;
 		
 		var monkeyMesh:Mesh = Mesh.loadMeshFile("monkey");
-		monkey = new GameObject ("monkey", monkeyMesh);
+		monkey = new GameObject ("monkey", monkeyMesh, this);
 		monkey.transform.position = new Vector3 (-5, 0, 8);
 		
-		monkey2 = new GameObject ("monkey2", monkeyMesh.clone());
+		monkey2 = new GameObject ("monkey2", monkeyMesh.clone(), this);
 		monkey2.transform.position = new Vector3 (5, 0, 8);
 		
 		activeCamera.parent = cameraHost;
@@ -92,39 +94,39 @@ class TestingTransform extends Scene
 		
 		var canaMesh:Mesh = Primitives.createCannabis(512, 7);
 		canaMesh.drawPoints = true;
-		var cana:GameObject = new GameObject ("cannabis", canaMesh);
+		var cana:GameObject = new GameObject ("cannabis", canaMesh, this);
 		cana.transform.position = new Vector3 (0, 0, -30);
-		cana.isStatic = false;
+		//cana.isStatic = false;
 		
 		var mesh2:Mesh = Primitives.createCircle(100, 1);
-		var circle:GameObject = new GameObject ("cannabis", mesh2);
+		var circle:GameObject = new GameObject ("cannabis", mesh2, this);
 		circle.transform.position = new Vector3 (3, 0, -30);
-		circle.isStatic = true;
+		//circle.isStatic = true;
 		
 		var mesh3:Mesh = Primitives.createSquare();
-		var square:GameObject = new GameObject ("cannabis", mesh3);
+		var square:GameObject = new GameObject ("cannabis", mesh3, this);
 		square.transform.position = new Vector3 (-3, 0, -30);
-		square.isStatic = true;
+		//square.isStatic = true;
 		
 		var mesh4:Mesh = Primitives.createRose(256, Math.PI);
-		var rose1:GameObject = new GameObject ("cannabis", mesh4);
+		var rose1:GameObject = new GameObject ("cannabis", mesh4, this);
 		rose1.transform.position = new Vector3 (-6, 0, -30);
-		rose1.isStatic = true;
+		//rose1.isStatic = true;
 		
 		var mesh5:Mesh = Primitives.createRose(256, 1 / 2);
-		var rose2:GameObject = new GameObject ("cannabis", mesh5);
-		rose2.transform.position = new Vector3 (6, 0, -30);
-		rose2.isStatic = true;
+		var rose2:GameObject = new GameObject ("cannabis", mesh5, this);
+		//rose2.transform.position = new Vector3 (6, 0, -30);
+		//rose2.isStatic = true;
 		
-		planeObj.isStatic = true;
-		planeObj2.isStatic = true;
-		mergeStaticMeshes();
+		//planeObj.isStatic = true;
+		////planeObj2.isStatic = true;
+		//mergeStaticMeshes();
 		
 		//trace(Type.getClassName());
 		var physicsWorld:World = new World ();
 		
 		var pCube:Mesh = Primitives.createCube ();
-		var physicsGo:GameObject = new GameObject ("physics_cube", pCube);
+		var physicsGo:GameObject = new GameObject ("physics_cube", pCube, this);
 		physicsGo.transform.position = new Vector3 (0, 3, 5);
 		
 		var rb:RigidBody = new RigidBody (physicsGo);
@@ -167,8 +169,8 @@ class TestingTransform extends Scene
 		//cube.transform.rotate(new Vector3 (0, 2, 0));
 		//cube.transform.rotate(new Vector3(3, 5, 7));
 		
-		monkey.transform.rotate(new Vector3 (0, 50 * Time.deltaTime, 0));
-		monkey2.transform.rotate(new Vector3 (0, -50 * Time.deltaTime, 0));
+		monkey.transform.rotate(new Vector3 (7 * Time.deltaTime, 50 * Time.deltaTime, 3 * Time.deltaTime));
+		monkey2.transform.rotate(new Vector3 (-7 * Time.deltaTime, -50 * Time.deltaTime, -3 * Time.deltaTime));
 		//trace(cube.transform.rotation);
 	}
 	
