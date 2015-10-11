@@ -2,7 +2,7 @@ package;
 
 import objects.GameObject;
 import rendering.Scene;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import rendering.Mesh;

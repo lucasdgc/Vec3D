@@ -14,8 +14,8 @@ import physics.World;
 import rendering.Mesh;
 import rendering.primitives.Primitives;
 import rendering.Scene;
-import com.babylonhx.math.Vector3;
-import com.babylonhx.math.Quaternion;
+import math.Vector3;
+import math.Quaternion;
 import utils.Color;
 import utils.Time;
 

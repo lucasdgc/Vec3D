@@ -6,9 +6,8 @@ import lime.utils.UInt16Array;
 import lime.utils.UInt32Array;
 import objects.GameObject;
 import objects.Camera;
-import openfl.geom.Vector3D;
 import openfl.utils.Float32Array;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import physics.World;
 import utils.Color;
 import openfl.gl.GL;
@@ -55,7 +54,7 @@ class Scene
 		cameras = new Array();
 		
 		//engine.currentScene = this;
-		activeCamera = new Camera (new Vector3(0, 0, -10), Vector3.Zero(), "main_camera", this);
+		activeCamera = new Camera (new Vector3(0, 0, -10), "main_camera", this);
 		
 		staticMeshBuffer = { vertexBuffer : GL.createBuffer(), edgeIndexBuffer : GL.createBuffer(), faceIndexBuffer : GL.createBuffer() };
 		

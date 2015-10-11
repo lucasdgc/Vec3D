@@ -1,6 +1,6 @@
-package com.babylonhx.math;
+package math;
 
-import com.babylonhx.utils.typedarray.Float32Array;
+import openfl.utils.Float32Array;
 
 /**
 * ...
@@ -8,7 +8,7 @@ import com.babylonhx.utils.typedarray.Float32Array;
 */
 
 //Vector4 class created for EulerAngle class conversion to Quaternion
-@:expose('BABYLON.Vector4') class Vector4 {
+class Vector4 {
 	
 	public var x:Float;
 	public var y:Float;

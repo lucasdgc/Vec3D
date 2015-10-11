@@ -1,16 +1,17 @@
 package;
 
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import events.Vec3DEvent;
 import events.Vec3DEventDispatcher;
 import input.InputAxis;
 import input.InputButton;
 import rendering.Scene;
 import openfl.display.Sprite;
-import openfl.events.Event;
-import com.kircode.debug.FPS_Mem;
+import utils.debug.FPS_Mem;
 import openfl.ui.Keyboard;
+import ship_game.ShipRace;
 import utils.SimpleMath;
+import openfl.events.Event;
 
 class Main extends Sprite {
 	
@@ -27,8 +28,8 @@ class Main extends Sprite {
 		InputAxis.bindAxis("Horizontal", InputAxisMethod.KEYBOARD, Keyboard.A, Keyboard.D);
 		InputAxis.bindAxis("Vertical", InputAxisMethod.KEYBOARD, Keyboard.S, Keyboard.W);
 		
-		InputAxis.bindAxis("CameraX", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
-		InputAxis.bindAxis("CameraY", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
+		//InputAxis.bindAxis("CameraX", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
+		//InputAxis.bindAxis("CameraY", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
 		
 		InputButton.bindButton ("Jump", Keyboard.SPACE);
 		
@@ -41,6 +42,6 @@ class Main extends Sprite {
 		
 		//trace (SimpleMath.getCloserPow2(360));
 		
-		Engine.instance.loadScene (MyPhysics2);
+		Engine.instance.loadScene (ship_game.ShipRace);
 	}
 }

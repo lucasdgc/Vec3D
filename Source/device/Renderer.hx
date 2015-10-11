@@ -6,7 +6,7 @@ import openfl.utils.Float32Array;
 import utils.Color;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;
-import com.babylonhx.math.Matrix;
+import math.Matrix;
 import haxe.Timer;
 import utils.Time;
 
@@ -97,11 +97,8 @@ class Renderer
 	
 	public function drawFrameBuffer (frameBuffer:FrameBuffer) {
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
-		//GL.clear(GL.COLOR_BUFFER_BIT);
+
 		GL.bindBuffer(GL.ARRAY_BUFFER, frameBuffer.vertexBuffer);
-		
-		//GL.disable(GL.DEPTH_TEST);
-		//GL.disable(GL.STENCIL_TEST);
 		
 		GL.useProgram(frameBuffer.shaderProgram.program);
 		
@@ -110,8 +107,9 @@ class Renderer
 
 		GL.enableVertexAttribArray(frameBuffer.shaderProgram.attributes[0].index);
 		GL.vertexAttribPointer(frameBuffer.shaderProgram.attributes[0].index, 2, GL.FLOAT, false, 2 * 4, 0);
-		
-		GL.uniform4fv(frameBuffer.shaderProgram.uniforms[1].index, Engine.instance.currentScene.backgroundColor.toFloat32Array());
+
+		GL.uniform1i(frameBuffer.shaderProgram.uniforms[1].index, Engine.canvas.stage.stageWidth);
+		GL.uniform1i(frameBuffer.shaderProgram.uniforms[2].index, Engine.canvas.stage.stageHeight);
 		
 		//GL.uniform1f(frameBuffer.shaderProgram.uniforms[1].index, Time.deltaTime * 2 * 3.14159 * .75 * 10);
 		

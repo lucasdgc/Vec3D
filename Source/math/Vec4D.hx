@@ -1,7 +1,7 @@
 package math;
 
-import com.babylonhx.math.Vector4;
-import com.babylonhx.math.Matrix;
+import math.Vector4;
+import math.Matrix;
 
 /**
  * ...

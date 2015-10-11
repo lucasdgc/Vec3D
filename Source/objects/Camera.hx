@@ -1,11 +1,12 @@
 package objects;
-import com.babylonhx.math.Vector2;
-import com.babylonhx.math.Vector3;
-import com.babylonhx.math.Vector4;
-import com.babylonhx.math.Matrix;
+
+import math.Vector2;
+import math.Vector3;
+import math.Vector4;
+import math.Vec4D;
+import math.Matrix;
 import events.Vec3DEvent;
 import events.Vec3DEventDispatcher;
-import math.Vec4D;
 import openfl.events.Event;
 import physics.Ray;
 import rendering.Scene;
@@ -25,7 +26,7 @@ class Camera extends GameObject
 	public var zNear (default, set):Float = .01;
 	public var zFar (default, set):Float = 1000;
 	
-	public function new(position:Vector3, target:Vector3, name:String = "", scene:Scene = null) {
+	public function new(position:Vector3, name:String = "", scene:Scene = null) {
 		if (scene == null && Engine.instance.currentScene != null) {
 			scene = Engine.instance.currentScene;
 		}
@@ -41,7 +42,7 @@ class Camera extends GameObject
 			super(name, null, scene);
 			scene.cameras.push(this);
 			transform.position = position;
-			this.facingPoint = target;
+			//this.facingPoint = target;
 			
 			viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, Vector3.Up());
 			projectionMatrix =  Matrix.PerspectiveFovLH(fov, Engine.canvas.stage.stageWidth / Engine.canvas.stage.stageHeight, zNear, zFar);

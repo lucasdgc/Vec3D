@@ -1,6 +1,6 @@
 package physics;
 
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import physics.bounding.BoundingVolume;
 /**
  * ...

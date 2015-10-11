@@ -1,7 +1,7 @@
-package com.babylonhx.math;
+package math;
 
-import com.babylonhx.utils.typedarray.Float32Array;
-import com.babylonhx.tools.Tools;
+import openfl.utils.Float32Array;
+import tools.Tools;
 
 /**
 * ...

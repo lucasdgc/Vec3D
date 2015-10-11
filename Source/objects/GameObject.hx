@@ -1,7 +1,7 @@
 package objects;
 
-import com.babylonhx.math.Vector3;
-import com.babylonhx.math.Matrix;
+import math.Vector3;
+import math.Matrix;
 import events.Vec3DEvent;
 import events.Vec3DEventDispatcher;
 import openfl.events.Event;

@@ -1,4 +1,4 @@
-package com.kircode.debug;
+package utils.debug;
 
 import haxe.Timer;
 import openfl.display.FPS;

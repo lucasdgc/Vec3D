@@ -16,6 +16,7 @@ class FrameBuffer
 {
 	public var frameBuffer:GLFramebuffer;
 	public var texture (default, null):GLTexture;
+	public var subTexture (default, null):GLTexture;
 	public var vertexBuffer (default, null):GLBuffer;
 	private var renderBuffer:GLRenderbuffer;
 	
@@ -29,7 +30,7 @@ class FrameBuffer
 	public function new(width:Int, height:Int, shader:ShaderProgram = null, renderTarget:Rectangle = null) 
 	{
 		if (Engine.instance == null) {
-			throw "Cannot create framebyffer without Engine instance...";
+			throw "Cannot create framebuffer without Engine instance...";
 		}
 		
 		this.width = width;
@@ -39,6 +40,7 @@ class FrameBuffer
 		
 		frameBuffer = GL.createFramebuffer();
 		texture = GL.createTexture();
+		//subTexture = GL.createTexture();
 		vertexBuffer = GL.createBuffer();
 		renderBuffer = GL.createRenderbuffer();
 
@@ -49,23 +51,18 @@ class FrameBuffer
 		GL.renderbufferStorage(GL.RENDERBUFFER, GL.RGBA4, width, height);
 		GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.RENDERBUFFER, renderBuffer);
 		
-		
 		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, width, height, 0, GL.RGB, GL.UNSIGNED_BYTE, null);
-		//GL.texImage2D(GL.TEXTURE_2D, 0, GL.DEPTH_COMPONENT16, width, height, 0, GL.DEPTH_COMPONENT16, GL.UNSIGNED_BYTE, null);
-
+		//GL.texSubImage2D(GL.TEXTURE_2D, 0, 0, 0, Engine.canvas.stage.stageWidth, Engine.canvas.stage.stageHeight, GL.RGB, GL.UNSIGNED_BYTE, null);
+		//GL.texImage2D(GL.TEXTURE_2D, 0, GL.DEPTH_COMPONENT16, width, height, 0, GL.DEPTH_COMPONENT16, GL.UNSIGNED_BYTE, null)
+		
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
 		
 		GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
 		
-		
-
-		
 		GL.bindTexture(GL.TEXTURE_2D, null);
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 		GL.bindRenderbuffer(GL.RENDERBUFFER, null);
-		
-		
 		
 		this.renderTarget = renderTarget;
 		

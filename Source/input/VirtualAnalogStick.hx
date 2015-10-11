@@ -1,6 +1,6 @@
 package input;
 
-import com.babylonhx.math.Vector2;
+import math.Vector2;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.events.MouseEvent;

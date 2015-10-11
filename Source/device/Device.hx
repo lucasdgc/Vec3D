@@ -31,7 +31,6 @@ class Device
 	
 	private var renderer:Renderer;
 	
-	//private var sceneFrameBuffer:FrameBuffer;
 	private var blurFrameBuffer:FrameBuffer;
 	
 	public function new() 
@@ -48,14 +47,14 @@ class Device
 			Engine.canvas.addChild(glView);
 			
 			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexColor"], ["uProjectionMatrix", "uModelViewMatrix"]);
-			var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "offset"]);
-			var bloomShader = new ShaderProgram ("bloomShader", "frameBuffer", "bloom", ["a_position"], ["u_sampler", "backgroundColor"]);
+			var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "u_screenWidth", "u_screenHeight"]);
+			//var bloomShader = new ShaderProgram ("bloomShader", "frameBuffer", "bloom", ["a_position"], ["u_sampler", "u_backgroundColor", ]);
 
 			//var rect:Rectangle = new Rectangle (Engine.canvas.stage.stageWidth / 4, Engine.canvas.stage.stageHeight / 2, Engine.canvas.stage.stageWidth / 4, Engine.canvas.stage.stageHeight / 4);
 			var rect:Rectangle = new Rectangle (Engine.canvas.stage.x, Engine.canvas.stage.y, Engine.canvas.stage.stageWidth, Engine.canvas.stage.stageHeight);
 			//sceneFrameBuffer = new FrameBuffer (2048, 1024, defaultFrameBufferShader, rect);
 			
-			blurFrameBuffer = new FrameBuffer (SimpleMath.getCloserPow2(Engine.canvas.stage.stageWidth), SimpleMath.getCloserPow2(Engine.canvas.stage.stageHeight), bloomShader, rect);
+			blurFrameBuffer = new FrameBuffer (SimpleMath.getCloserPow2(Engine.canvas.stage.stageWidth), SimpleMath.getCloserPow2(Engine.canvas.stage.stageHeight), defaultFrameBufferShader, rect);
 			
 			//trace ();
 			
@@ -79,7 +78,8 @@ class Device
 				lowPerformanceRender();
 				//highPerformanceRender();
 			#else
-				highPerformanceRender();
+				//highPerformanceRender();
+				lowPerformanceRender();
 			#end
 		}
 	}

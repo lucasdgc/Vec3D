@@ -1,4 +1,5 @@
 package;
+
 import input.InputAxis;
 import input.VirtualAnalogStick;
 import openfl.geom.Rectangle;
@@ -10,7 +11,7 @@ import rendering.Mesh;
 import rendering.primitives.Primitives;
 import rendering.Scene;
 import utils.Color;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import openfl.events.EventDispatcher;
 import utils.Time;
 

@@ -5,7 +5,7 @@ import input.InputAxis;
 import input.InputButton;
 import openfl.events.Event;
 import objects.GameObject;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import physics.bounding.BoundingBox;
 import physics.Collision;
 import physics.Physics;

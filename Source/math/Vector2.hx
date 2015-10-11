@@ -1,10 +1,10 @@
-package com.babylonhx.math;
+package math;
 
 /**
  * ...
  * @author Krtolica Vujadin
  */
-@:expose('BABYLON.Vector2') class Vector2 {
+class Vector2 {
 	
 	public var x:Float;
 	public var y:Float;

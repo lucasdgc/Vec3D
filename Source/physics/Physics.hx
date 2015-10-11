@@ -4,7 +4,7 @@ import physics.bounding.BoundingBox;
 import physics.bounding.BoundingSphere;
 import physics.bounding.BoundingVolume;
 import physics.Ray;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 
 /**
  * ...

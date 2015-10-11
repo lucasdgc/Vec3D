@@ -1,6 +1,6 @@
 package physics.bounding;
 
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import objects.GameObject;
 import physics.bounding.BoundingBox;
 import physics.bounding.BoundingMesh;

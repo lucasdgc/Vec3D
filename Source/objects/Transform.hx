@@ -1,8 +1,8 @@
 package objects;
 
-import com.babylonhx.math.Matrix;
-import com.babylonhx.math.Vector3;
-import com.babylonhx.math.Quaternion;
+import math.Matrix;
+import math.Vector3;
+import math.Quaternion;
 import math.Vec3D;
 import objects.GameObject;
 import utils.SimpleMath;
@@ -73,7 +73,7 @@ class Transform
 		//translate(position.negate());
 		transformMatrix.setTranslation(Vector3.Zero());
 		
-		var anglesRad:Vector3 = SimpleMath.toRadVector(angles.negate());
+		var anglesRad:Vector3 = SimpleMath.toRadVector(angles);
 		
 		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll(anglesRad.y, anglesRad.x, anglesRad.z);
 		
@@ -87,9 +87,16 @@ class Transform
 	
 	public function translate (translation:Vector3) {
 		
+		if ( translation.equals( Vector3.Zero() ) ) {
+			return;
+		}
+		
 		var rotQuaternion:Quaternion = Quaternion.Inverse (rotation);
+		//var rotQuaternion:Quaternion = rotation.clone();
 		
 		var newPosition:Vector3 = rotQuaternion.multVector(translation);
+		
+		trace(newPosition);
 		
 		var translationMatrix:Matrix = Matrix.Translation(newPosition.x, newPosition.y, newPosition.z);
 		

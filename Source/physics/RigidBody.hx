@@ -6,7 +6,7 @@ import objects.Transform;
 import events.Vec3DEventDispatcher;
 import events.Vec3DEvent;
 import openfl.events.Event;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import physics.bounding.BoundingBox;
 import physics.bounding.BoundingSphere;
 import physics.bounding.BoundingVolume;

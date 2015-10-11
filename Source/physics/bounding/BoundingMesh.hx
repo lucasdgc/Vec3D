@@ -1,7 +1,7 @@
 package physics.bounding;
 import objects.GameObject;
 import rendering.Mesh;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 
 /**
  * ...

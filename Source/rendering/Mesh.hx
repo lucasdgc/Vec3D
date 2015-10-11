@@ -1,7 +1,7 @@
 package rendering;
 
-import com.babylonhx.math.Vector3;
-import com.babylonhx.math.Matrix;
+import math.Vector3;
+import math.Matrix;
 import device.Device;
 import device.ShaderProgram;
 import lime.graphics.opengl.GLBuffer;

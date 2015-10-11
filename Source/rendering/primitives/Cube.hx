@@ -1,6 +1,6 @@
 package rendering.primitives;
 
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import rendering.Mesh;
 /**
  * ...

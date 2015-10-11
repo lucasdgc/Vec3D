@@ -1,8 +1,8 @@
 package rendering.primitives;
 
 import rendering.Mesh;
-import com.babylonhx.math.Vector3;
-import com.babylonhx.math.Matrix;
+import math.Vector3;
+import math.Matrix;
 import utils.Color;
 
 /**

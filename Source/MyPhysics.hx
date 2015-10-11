@@ -11,7 +11,7 @@ import rendering.Mesh;
 import rendering.primitives.Primitives;
 import rendering.Scene;
 import utils.Color;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 
 /**
  * ...

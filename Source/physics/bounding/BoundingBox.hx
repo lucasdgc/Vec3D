@@ -3,7 +3,7 @@ import math.Vec3D;
 import objects.GameObject;
 import rendering.Mesh;
 import rendering.primitives.Primitives;
-import com.babylonhx.math.Vector3;
+import math.Vector3;
 import physics.bounding.BoundingVolume;
 
 /**
