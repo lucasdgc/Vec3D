@@ -28,7 +28,7 @@ class ShipRace extends Scene
 		playerShip = new Ship(this);
 		playerShip.transform.position = new Vector3 (0, 1, 0);
 		
-		var floorMesh:Mesh = Primitives.createPlane (128, 1);
+		var floorMesh:Mesh = Primitives.createPlane (100, 1);
 		floorMesh.drawEdges = false;
 		floorMesh.drawPoints = true;
 		var floor:GameObject = new GameObject ("floor", floorMesh, this);

@@ -69,11 +69,16 @@ class Scene
 	}
 	
 	private function sceneLoaded () {
-		//Vec3DEventDispatcher.instance.dispatchSceneLoadedEvent();
+		Vec3DEventDispatcher.instance.dispatchSceneLoadedEvent();
 	}
 	
 	public function onSceneInstantiated (e:Event) {
+		Vec3DEventDispatcher.instance.removeEventListener (Vec3DEvent.SCENE_INSTANTIATED, onSceneInstantiated);
 		Vec3DEventDispatcher.instance.dispatchSceneLoadedEvent();
+	}
+	
+	private function load () {
+		Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.SCENE_INSTANTIATED, onSceneInstantiated);
 	}
 	
 	public function mergeStaticMeshes () {

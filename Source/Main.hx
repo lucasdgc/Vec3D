@@ -28,7 +28,7 @@ class Main extends Sprite {
 		InputAxis.bindAxis("Horizontal", InputAxisMethod.KEYBOARD, Keyboard.A, Keyboard.D);
 		InputAxis.bindAxis("Vertical", InputAxisMethod.KEYBOARD, Keyboard.S, Keyboard.W);
 		
-		//InputAxis.bindAxis("CameraX", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
+		InputAxis.bindAxis("CameraX", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
 		//InputAxis.bindAxis("CameraY", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
 		
 		InputButton.bindButton ("Jump", Keyboard.SPACE);
@@ -42,6 +42,6 @@ class Main extends Sprite {
 		
 		//trace (SimpleMath.getCloserPow2(360));
 		
-		Engine.instance.loadScene (ship_game.ShipRace);
+		Engine.instance.loadScene (Adjusts);
 	}
 }

@@ -96,7 +96,7 @@ class Transform
 		
 		var newPosition:Vector3 = rotQuaternion.multVector(translation);
 		
-		trace(newPosition);
+		//trace(newPosition);
 		
 		var translationMatrix:Matrix = Matrix.Translation(newPosition.x, newPosition.y, newPosition.z);
 		

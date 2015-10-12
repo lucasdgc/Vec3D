@@ -64,6 +64,7 @@ class Device
 	}
 	
 	public function update (e:Event) {
+
 		if (Engine.instance.currentScene != null) {
 			Engine.instance.currentScene.update(e);
 		}

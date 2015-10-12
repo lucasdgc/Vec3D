@@ -11,21 +11,14 @@ import haxe.Timer;
  */
 class Time
 {
-	public static var lastFrameTime:Float;
-	public static var deltaTime:Float;
-
 	public static var instance:Time = new Time ();
 	
-	
-	//private static 
-	//private var timer:Timer;
-	
+	public static var lastFrameTime:Float = 0;
+	public static var deltaTime:Float = 0;
+
 	public function new() 
 	{
 		if (instance == null) {
-			//timer = new Timer (0, 0);
-			//timer.start();
-			
 			Vec3DEventDispatcher.instance.addEventListener(Vec3DEvent.UPDATE, update);
 		} else {
 			throw "Error instancing Time Class...";
@@ -35,8 +28,10 @@ class Time
 	private function update (e:Event) {
 		deltaTime = Timer.stamp() - lastFrameTime;
 		
-		lastFrameTime = Timer.stamp();
+		if (lastFrameTime == 0) {
+			deltaTime = lastFrameTime;
+		}
 		
-		//timer.reset();
+		lastFrameTime = Timer.stamp();
 	}
 }
