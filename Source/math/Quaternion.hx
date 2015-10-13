@@ -275,6 +275,22 @@ class Quaternion {
 		return result;
 	}
 	
+	public static function LookAt ( forward:Vector3, ?up:Vector3 ) {
+		if (up == null) {
+			up  = Vector3.Up();
+		} else {
+			up.normalize ();
+		}
+		
+		var at:Vector3 = Vector3.Normalize( forward );
+		var right:Vector3 = Vector3.Normalize ( Vector3.Cross ( at, up ) );
+		var relUp:Vector3 = Vector3.Normalize ( Vector3.Cross ( at, right ) );
+		
+		
+		
+		
+	}
+	
 	public static function LookRotation(forward:Vector3, ?up:Vector3) {
 		if (up == null) {
 			up  = Vector3.Up();
@@ -305,6 +321,8 @@ class Quaternion {
 			quaternion.y = (m20 - m02) * num;
 			quaternion.z = (m01 - m10) * num;
 			
+			trace ("case 1");
+			
 			return quaternion;
 		}
 		
@@ -315,6 +333,8 @@ class Quaternion {
 			quaternion.y = (m01 + m10) * num4;
 			quaternion.z = (m02 + m20) * num4;
 			quaternion.w = (m12 - m21) * num4;
+			
+			trace ("case 2");
 			
 			return quaternion;
 		}
@@ -327,6 +347,8 @@ class Quaternion {
 			quaternion.z = (m21 + m12) * num3;
 			quaternion.w = (m20 - m02) * num3;
 			
+			trace ("case 3");
+			
 			return quaternion; 
 		}
 		
@@ -336,6 +358,8 @@ class Quaternion {
 		quaternion.y = (m21 + m12) * num2;
 		quaternion.z = 0.5 * num5;
 		quaternion.w = (m01 - m10) * num2;
+		
+		trace ("case 4");
 		
 		return quaternion;
 	}

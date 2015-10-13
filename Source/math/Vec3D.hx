@@ -25,15 +25,15 @@ class Vec3D extends Vector3
 	}
 	
 		
-	public function toRadVector ():Vec3D {
+	/*public override function toRadVector ():Vec3D {
 		//trace(degreeVector.y);
 		return new Vec3D (this.x * (Math.PI / 180), this.y * (Math.PI / 180), this.z * (Math.PI / 180));
 	}
 	
-	public function toDegreeVector ():Vec3D {
+	public override function toDegreeVector ():Vec3D {
 		//trace(radVector.y);
 		return new Vec3D (this.x * (180 / Math.PI), this.y * (180 / Math.PI), this.z * (180 / Math.PI));
-	}
+	}*/
 	
 	public static function maxValues (vector1:Vector3, vector2:Vector3) {
 		var maxX:Float;

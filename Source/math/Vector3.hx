@@ -108,6 +108,16 @@ class Vector3 {
 		return new Vector3(-this.x, -this.y, -this.z);
 	}
 
+	
+	inline public function toRadians ():Vector3 {
+		return new Vector3 (this.x * (Math.PI / 180), this.y * (Math.PI / 180), this.z * (Math.PI / 180));
+	}
+	
+	inline public function toDegree ():Vector3 {
+		return new Vector3 (this.x * (180 / Math.PI), this.y * (180 / Math.PI), this.z * (180 / Math.PI));
+	}
+	
+	
 	inline public function scaleInPlace(scale:Float):Vector3 {
 		this.x *= scale;
 		this.y *= scale;
@@ -155,6 +165,10 @@ class Vector3 {
 
 	public function multiplyByFloats(x:Float, y:Float, z:Float):Vector3 {
 		return new Vector3(this.x * x, this.y * y, this.z * z);
+	}
+	
+	inline public function multiplyByFloat( value:Float ):Vector3 {
+		return new Vector3(this.x * value, this.y * value, this.z * value);
 	}
 
 	inline public function divide(otherVector:Vector3):Vector3 {

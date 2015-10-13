@@ -1,5 +1,6 @@
 package math;
 
+import haxe.ds.Vector;
 import openfl.utils.Float32Array;
 import tools.Tools;
 
@@ -234,6 +235,10 @@ import tools.Tools;
 			this.m[4], this.m[5], this.m[6], this.m[7],
 			this.m[8], this.m[9], this.m[10], this.m[11],
 			this.m[12], this.m[13], this.m[14], this.m[15]);
+	}
+	
+	public function getTranslation ():Vector3 {
+		return new Vector3 ( this.m[12], this.m[13], this.m[14] );
 	}
 	
 	public function decompose(scale:Vector3, rotation:Quaternion, translation:Vector3):Bool {

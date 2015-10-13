@@ -67,22 +67,18 @@ class Transform
 	}
 	
 	public function rotate (angles:Vector3) {
-		
+		if ( angles == Vector3.Zero () ) {
+			return;
+		}
 		var previousPosition = position.clone();
-		
-		//translate(position.negate());
-		transformMatrix.setTranslation(Vector3.Zero());
-		
 		var anglesRad:Vector3 = SimpleMath.toRadVector(angles);
-		
 		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll(anglesRad.y, anglesRad.x, anglesRad.z);
 		
+		transformMatrix.setTranslation(Vector3.Zero());
 		transformMatrix = transformMatrix.multiply(rotationMatrix);
-		
 		transformMatrix.setTranslation(previousPosition);
-
+		
 		decomposeTrasformMatrix();
-	
 	}
 	
 	public function translate (translation:Vector3) {
@@ -91,17 +87,10 @@ class Transform
 			return;
 		}
 		
-		var rotQuaternion:Quaternion = Quaternion.Inverse (rotation);
-		//var rotQuaternion:Quaternion = rotation.clone();
-		
-		var newPosition:Vector3 = rotQuaternion.multVector(translation);
-		
-		//trace(newPosition);
-		
+		var newPosition:Vector3 = rotation.multVector(translation);
 		var translationMatrix:Matrix = Matrix.Translation(newPosition.x, newPosition.y, newPosition.z);
 		
 		transformMatrix = transformMatrix.multiply(translationMatrix);
-		
 		decomposeTrasformMatrix();
 	}
 	
@@ -116,30 +105,34 @@ class Transform
 	}
 	
 	public function rotateAroundPoint (point:Vector3, axis:Vector3, degrees:Float) {
+		if (degrees == 0) {
+			return;
+		}
 		
-		var previousPosition = position.clone ();		
-		var previousRotation = rotation.clone();
+		var relPosition:Vector3 = point.subtract ( position );
+		var translationMatrix:Matrix = Matrix.Translation ( relPosition.x, relPosition.y, relPosition.z );
+		var rotationInRad:Vector3 = axis.multiplyByFloat(degrees).toRadians();
+		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll ( rotationInRad.y, rotationInRad.x, rotationInRad.z );
 		
-		transformMatrix.setTranslation(point);
+		var newPosition:Matrix = translationMatrix.multiply (rotationMatrix);
 		
-		var rotationInRad:Vector3 = SimpleMath.toRadVector (axis.multiplyByFloats(degrees, degrees, degrees));
+		position = newPosition.getTranslation ();
+		
+		/*var previousPosition:Vector3 = position.clone ();
+		var previousRotation:Quaternion = rotation.clone ();
+
+		translate(point.subtract(position));
+
+		var rotationInRad:Vector3 = axis.multiplyByFloat(degrees).toRadians();
+		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll ( rotationInRad.y, rotationInRad.x, rotationInRad.z );
+		
+		transformMatrix = transformMatrix.multiply ( rotationMatrix );
 		
 		//rotate(rotationInRad);
 		
-		var rotMatrix:Matrix = Matrix.RotationYawPitchRoll (rotationInRad.y, rotationInRad.x, rotationInRad.z);
-		
-		rotMatrix.setTranslation (previousPosition);
-		
-		transformMatrix = transformMatrix.multiply(rotMatrix);
-		
-		//translate(previousPosition.subtract(point).negate());
-		//transformMatrix.setTranslation(previousPosition);
-		//translate.setRotation
-		//transformMatrix = Matrix.Compose(scale, previousRotation, position);
-		
-		//trace(Vector3.Distance(point, previousPosition));
-		
-		decomposeTrasformMatrix();
+		translate ( previousPosition.subtract ( point ) );
+		//transformMatrix = Matrix.Compose (scale, previousRotation, position);
+		decomposeTrasformMatrix();*/
 	}
 	
 	public function updateChildTransform () {
