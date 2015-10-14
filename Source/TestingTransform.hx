@@ -8,7 +8,7 @@ import objects.GameObject;
 import physics.RigidBody;
 import physics.World;
 import rendering.Mesh;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import rendering.Scene;
 import utils.Color;
 import math.Vector3;

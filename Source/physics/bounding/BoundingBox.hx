@@ -2,7 +2,7 @@ package physics.bounding;
 import math.Vec3D;
 import objects.GameObject;
 import rendering.Mesh;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import math.Vector3;
 import physics.bounding.BoundingVolume;
 

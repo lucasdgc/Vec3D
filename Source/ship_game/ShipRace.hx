@@ -5,7 +5,7 @@ import math.Vector3;
 import objects.GameObject;
 import openfl.events.Event;
 import rendering.Mesh;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import rendering.Scene;
 import ship_game.gameobjects.PlayerCamera;
 import ship_game.gameobjects.Ship;

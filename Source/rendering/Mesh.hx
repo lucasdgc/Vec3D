@@ -653,10 +653,14 @@ class Mesh
 			var goY:Float = 0;
 			var goZ:Float = 0;
 			
-			if (newMesh.gameObject != null) {
+			if ( newMesh.gameObject != null ) {
 				goX = newMesh.gameObject.transform.position.x;
 				goY = newMesh.gameObject.transform.position.y;
 				goZ = newMesh.gameObject.transform.position.z;
+			} else if ( ! newMesh.relPosition.equals ( Vector3.Zero () ) ) {
+				goX = newMesh.relPosition.x;
+				goY = newMesh.relPosition.y;
+				goZ = newMesh.relPosition.z;
 			}
 			
 			this.addVertex (vert.x + goX, vert.y + goY, vert.z + goZ);

@@ -1,4 +1,4 @@
-package rendering.primitives;
+package rendering;
 
 import rendering.Mesh;
 import math.Vector3;
@@ -311,7 +311,7 @@ class Primitives
 		return vertexGroup;
 	}
 	
-	private static function finishMesh (mesh:Mesh) {
+	public static function finishMesh (mesh:Mesh) {
 		mesh.vertexGroups.push(createVertexGroup(mesh));
 		mesh.bindMeshBuffers();
 	}

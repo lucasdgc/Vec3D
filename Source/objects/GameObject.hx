@@ -7,8 +7,7 @@ import events.Vec3DEventDispatcher;
 import openfl.events.Event;
 import physics.RigidBody;
 import rendering.Mesh;
-import rendering.primitives.Cube;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import rendering.Scene;
 import physics.bounding.BoundingVolume;
 

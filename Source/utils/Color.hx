@@ -102,7 +102,7 @@ class Color
 		return new Float32Array (array);
 	}
 	
-	private static function initializeColors() {
+	/*private static function initializeColors() {
 		Color.red = new Color(RED_HEX);
 		Color.green = new Color(GREEN_HEX);
 		Color.blue = new Color(BLUE_HEX);
@@ -114,7 +114,7 @@ class Color
 		Color.blue.toRGBA();
 		Color.black.toRGBA();
 		Color.white.toRGBA();
-	}
+	}*/
 	
 	public static function getColorHexByName(colorName:String):Color {
 		var returnColor:Color;

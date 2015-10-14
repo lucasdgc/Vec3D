@@ -2,7 +2,7 @@ package;
 
 import math.Vector3;
 import rendering.Mesh;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import rendering.Scene;
 import objects.GameObject;
 import utils.Color;

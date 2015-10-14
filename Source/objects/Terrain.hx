@@ -5,7 +5,7 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import rendering.Mesh;
 import openfl.Assets;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import openfl.gl.GL;
 import rendering.Scene;
 

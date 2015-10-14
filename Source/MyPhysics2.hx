@@ -12,7 +12,7 @@ import physics.bounding.BoundingSphere;
 import physics.RigidBody;
 import physics.World;
 import rendering.Mesh;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import rendering.Scene;
 import math.Vector3;
 import math.Quaternion;

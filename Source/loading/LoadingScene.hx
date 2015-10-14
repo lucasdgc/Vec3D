@@ -12,7 +12,7 @@ import physics.Physics;
 import physics.Ray;
 import physics.World;
 import rendering.Mesh;
-import rendering.primitives.Primitives;
+import rendering.Primitives;
 import rendering.Scene;
 import utils.Color;
 import utils.Time;
