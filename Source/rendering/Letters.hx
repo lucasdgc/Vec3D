@@ -10,9 +10,38 @@ import rendering.Mesh;
 class Letters
 {
 
-	public static function convertToMesh ( string:String, gap:Float = 0.05 ):Mesh {
+	public static function convertToMesh ( string:String, letterWidth:Float = 0.5, letterHeight:Float = 1, gap:Float = 0.05, capitalize:Bool = false ):Mesh {
+		if (string == "") {
+			return null;
+		}
 		var mesh:Mesh = new Mesh ();
-		var currentXPos:Float = 0;
+		
+		var linesCount:Int = 1;
+		var biggerLineLength:Int = 0;
+		var curLineLength:Int = 0;
+		
+		for ( i in 0...string.length ) {
+			curLineLength ++;
+			if ( string.charAt ( i ) == "\n" ) {
+				linesCount++;
+				
+				if ( curLineLength - 1 > biggerLineLength ) {
+					biggerLineLength = curLineLength - 1;
+				}
+				curLineLength = 0;
+			}
+		}
+		
+		if ( curLineLength > biggerLineLength ) {
+			biggerLineLength = curLineLength;
+		}
+		
+		//var startingPosX:Float = - ( ( ( string.length - 1 ) * ( letterWidth ) ) * 0.5 ) - ( ( string.length - 1 ) * gap  * 0.5 );
+		var startingPosX:Float = - ( ( ( biggerLineLength - 1 ) * ( letterWidth ) ) * 0.5 ) - ( ( biggerLineLength -1 ) * gap  * 0.5 );
+		var startingPosY:Float = ( ( linesCount - 1 ) * letterHeight * 0.5 ) + ( ( linesCount - 1 ) * gap * 0.5 );
+		
+		var currentXPos:Float = startingPosX;
+		var currentYPos:Float = startingPosY;
 		
 		for (i in 0...string.length) {
 			var letterMesh:Mesh;
@@ -70,18 +99,327 @@ class Letters
 					letterMesh = createY ();
 				case "z":
 					letterMesh = createZ ();
+				case "0":
+					letterMesh = create0 ();
+				case "1":
+					letterMesh = create1 ();
+				case "2":
+					letterMesh = create2 ();
+				case "3":
+					letterMesh = create3 ();
+				case "4":
+					letterMesh = create4 ();
+				case "5":
+					letterMesh = create5 ();
+				case "6":
+					letterMesh = create6 ();
+				case "7":
+					letterMesh = create7 ();
+				case "8":
+					letterMesh = create8 ();
+				case "9":
+					letterMesh = create9 ();
+				case ".":
+					letterMesh = createPeriod ();
+				case ",":
+					letterMesh = createPeriod ();
+				case "!":
+					letterMesh = createExclamation ();
+				case "?":
+					letterMesh = createInterrogation ();
+				case " ":
+					currentXPos += letterWidth + gap;
+					letterMesh = new Mesh ();
+				case "\n":
+					currentYPos -= letterHeight + gap;
+					currentXPos = startingPosX;
+					letterMesh = new Mesh ();
 				default:
 					throw "unkown character...";
 			}
-			
-			letterMesh.relPosition = new Vector3 ( currentXPos, 0, 0 );
-			currentXPos += Math.max (letterMesh.width, 0.5) + gap;
-			trace (currentXPos);
-			
-			mesh.merge (letterMesh);
+			if ( letter != " " && letter != "\n") {
+				letterMesh.relPosition = new Vector3 ( currentXPos, currentYPos, 0 );
+				mesh.merge (letterMesh);
+				
+				var curGap:Float = ( i == string.length - 1) ? 0 : gap;
+				trace (currentXPos);
+				
+				currentXPos += Math.max (letterMesh.width, letterWidth) + curGap;
+			}
 		}
 		
 		return mesh;
+	}
+	
+	public static function create0( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var zero:Mesh = new Mesh ();
+		
+		//Outer Edges
+		zero.addVertex (  - width * 0.5, - height * 0.5, 0 );
+		zero.addVertex (  - width * 0.5, height * 0.5, 0 );
+		zero.addVertex (  width * 0.5,  height * 0.5, 0 );
+		zero.addVertex (  width * 0.5,  - height * 0.5, 0 );
+		
+		zero.addEdge ( 0, 1 );
+		zero.addEdge ( 2, 3 );
+		zero.addEdge ( 0, 3 );
+		zero.addEdge ( 1, 2 );
+		zero.addEdge ( 0, 2 );
+		
+		Primitives.finishMesh ( zero );
+		
+		return zero;
+	}
+	
+	public static function create1( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var one:Mesh = new Mesh ();
+		
+		//Outer Edges
+		one.addVertex (  width * 0.1, - height * 0.5, 0 );
+		one.addVertex (  width * 0.1, height * 0.5, 0 );
+		one.addVertex (   - width * 0.1,  height * 0.4, 0 );
+		
+		one.addEdge ( 0, 1 );
+		one.addEdge ( 1, 2 );
+		
+		Primitives.finishMesh ( one );
+		
+		return one;
+	}
+	
+	public static function create2( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var two:Mesh = new Mesh ();
+		
+		//Outer Edges
+		two.addVertex (  - width * 0.5, height * 0.5, 0 );
+		two.addVertex (  width * 0.5, height * 0.5, 0 );
+		two.addVertex (  width * 0.5, height * 0.1, 0 );
+		two.addVertex (  - width * 0.5, - height * 0.5, 0 );
+		two.addVertex (  width * 0.5, - height * 0.5, 0 );
+		
+		two.addEdge ( 0, 1 );
+		two.addEdge ( 1, 2 );
+		two.addEdge ( 2, 3 );
+		two.addEdge ( 3, 4 );
+		
+		Primitives.finishMesh ( two );
+		
+		return two;
+	}
+	
+	public static function create3( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var three:Mesh = new Mesh ();
+		
+		//Outer Edges
+		three.addVertex (  - width * 0.5, height * 0.5, 0 );
+		three.addVertex (  width * 0.5, height * 0.5, 0 );
+		three.addVertex ( width * 0.5, - height * 0.5, 0 );
+		three.addVertex (  - width * 0.5, - height * 0.5, 0 );
+		
+		three.addVertex (  width * 0.5, 0, 0 );
+		three.addVertex ( - width * 0.3, 0, 0 );
+		
+		three.addEdge ( 0, 1 );
+		three.addEdge ( 1, 2 );
+		three.addEdge ( 2, 3 );
+		three.addEdge ( 4, 5 );
+		
+		Primitives.finishMesh ( three );
+		
+		return three;
+	}
+	
+	public static function create4( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var four:Mesh = new Mesh ();
+		
+		//Outer Edges
+		four.addVertex (  width * 0.5, - height * 0.5, 0 );
+		four.addVertex (  width * 0.5, height * 0.5, 0 );
+		four.addVertex (  width * 0.5, height * 0.1, 0 );
+		four.addVertex (  - width * 0.5, height * 0.1, 0 );
+		four.addVertex (  - width * 0.5, height * 0.5, 0 );
+		
+		four.addEdge ( 0, 1 );
+		four.addEdge ( 2, 3 );
+		four.addEdge ( 3, 4 );
+		
+		Primitives.finishMesh ( four );
+		
+		return four;
+	}
+	
+	public static function create5( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var five:Mesh = new Mesh ();
+		
+		//Outer Edges
+		five.addVertex (  - width * 0.5, - height * 0.5, 0 );
+		five.addVertex (  width * 0.5, - height * 0.5, 0 );
+		five.addVertex (  width * 0.5, 0, 0 );
+		five.addVertex (  - width * 0.5, 0, 0 );
+		five.addVertex (  - width * 0.5, height * 0.5, 0 );
+		five.addVertex (  width * 0.5, height * 0.5, 0 );
+		
+		five.addEdge ( 0, 1 );
+		five.addEdge ( 1, 2 );
+		five.addEdge ( 2, 3 );
+		five.addEdge ( 3, 4 );
+		five.addEdge ( 4, 5 );
+		
+		Primitives.finishMesh ( five );
+		
+		return five;
+	}
+	
+	public static function create6 ( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var six:Mesh = new Mesh ();
+		
+		//Outer Edges
+		six.addVertex (  - width * 0.5, - height * 0.5, 0 );
+		six.addVertex (  width * 0.5, - height * 0.5, 0 );
+		six.addVertex (  width * 0.5, 0, 0 );
+		six.addVertex (  - width * 0.5, 0, 0 );
+		six.addVertex (  - width * 0.5, height * 0.5, 0 );
+		six.addVertex (  width * 0.5, height * 0.5, 0 );
+		
+		six.addEdge ( 0, 1 );
+		six.addEdge ( 0, 3 );
+		six.addEdge ( 1, 2 );
+		six.addEdge ( 2, 3 );
+		six.addEdge ( 3, 4 );
+		six.addEdge ( 4, 5 );
+		
+		Primitives.finishMesh ( six );
+		
+		return six;
+	}
+	
+	public static function create7 ( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var seven:Mesh = new Mesh ();
+		
+		//Outer Edges
+		seven.addVertex (  width * 0.5, - height * 0.5, 0 );
+		seven.addVertex (  width * 0.5, height * 0.5, 0 );
+		seven.addVertex (  - width * 0.5, height * 0.5, 0 );
+		seven.addVertex (  - width * 0.5, height * 0.3, 0 );
+		
+		seven.addEdge ( 0, 1 );
+		seven.addEdge ( 1, 2 );
+		seven.addEdge ( 2, 3 );
+		
+		Primitives.finishMesh ( seven );
+		
+		return seven;
+	}
+	
+	public static function create8 ( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var eight:Mesh = new Mesh ();
+		
+		//Outer Edges
+		eight.addVertex (  - width * 0.5, - height * 0.5, 0 );
+		eight.addVertex (  width * 0.5, - height * 0.5, 0 );
+		eight.addVertex (  width * 0.5, 0, 0 );
+		eight.addVertex (  - width * 0.5, 0, 0 );
+		eight.addVertex (  - width * 0.5, height * 0.5, 0 );
+		eight.addVertex (  width * 0.5, height * 0.5, 0 );
+		
+		eight.addEdge ( 0, 1 );
+		eight.addEdge ( 0, 3 );
+		eight.addEdge ( 1, 2 );
+		eight.addEdge ( 2, 3 );
+		eight.addEdge ( 2, 5 );
+		eight.addEdge ( 3, 4 );
+		eight.addEdge ( 4, 5 );
+		
+		Primitives.finishMesh ( eight );
+		
+		return eight;
+	}
+	
+	public static function create9 ( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var nine:Mesh = new Mesh ();
+		
+		//Outer Edges
+		nine.addVertex (  - width * 0.5, - height * 0.5, 0 );
+		nine.addVertex (  width * 0.5, - height * 0.5, 0 );
+		nine.addVertex (  width * 0.5, 0, 0 );
+		nine.addVertex (  - width * 0.5, 0, 0 );
+		nine.addVertex (  - width * 0.5, height * 0.5, 0 );
+		nine.addVertex (  width * 0.5, height * 0.5, 0 );
+		
+		nine.addEdge ( 0, 1 );
+		//nine.addEdge ( 0, 3 );
+		nine.addEdge ( 1, 2 );
+		nine.addEdge ( 2, 3 );
+		nine.addEdge ( 2, 5 );
+		nine.addEdge ( 3, 4 );
+		nine.addEdge ( 4, 5 );
+		
+		Primitives.finishMesh ( nine );
+		
+		return nine;
+	}
+	
+	public static function createPeriod ( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var period:Mesh = new Mesh ();
+		
+		//Outer Edges
+		period.addVertex ( - width * 0.5, - height * 0.5, 0 );
+		period.addVertex ( - width * 0.4, - height * 0.5, 0 );
+		period.addVertex ( - width * 0.4, - height * 0.4, 0 );
+		period.addVertex ( - width * 0.5, - height * 0.4, 0 );
+		
+		period.addEdge ( 0, 1 );
+		period.addEdge ( 1, 2 );
+		period.addEdge ( 2, 3 );
+		period.addEdge ( 3, 0 );
+		
+		Primitives.finishMesh ( period );
+		
+		return period;
+	}
+	
+	public static function createExclamation ( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var ex:Mesh = new Mesh ();
+		
+		//Outer Edges
+		ex.addVertex ( 0, - height * 0.5, 0 );
+		ex.addVertex ( 0, - height * 0.45, 0 );
+		
+		ex.addVertex ( 0, height * 0.5, 0 );
+		ex.addVertex ( 0, - height * 0.35, 0 );
+		
+		ex.addEdge ( 0, 1 );
+		ex.addEdge ( 2, 3 );
+		
+		Primitives.finishMesh ( ex );
+		
+		return ex;
+	}
+	
+	public static function createInterrogation ( width:Float = 0.5, height:Float = 1 ):Mesh {
+		var interrogation:Mesh = new Mesh ();
+		
+		//Outer Edges
+		interrogation.addVertex ( 0, - height * 0.5, 0 );
+		interrogation.addVertex ( 0, - height * 0.45, 0 );
+		
+		interrogation.addVertex ( 0, - height * 0.35, 0 );
+		interrogation.addVertex ( 0, - height * 0.2, 0 );
+		interrogation.addVertex ( width * 0.5, height * 0.2, 0 );
+		interrogation.addVertex ( width * 0.5, height * 0.5, 0 );
+		interrogation.addVertex ( - width * 0.5, height * 0.5, 0 );
+		interrogation.addVertex ( - width * 0.5, height * 0.2, 0 );
+		
+		interrogation.addEdge ( 0, 1 );
+		interrogation.addEdge ( 2, 3 );
+		interrogation.addEdge ( 3, 4 );
+		interrogation.addEdge ( 4, 5 );
+		interrogation.addEdge ( 5, 6 );
+		interrogation.addEdge ( 6, 7 );
+		
+		Primitives.finishMesh ( interrogation );
+		
+		return interrogation;
 	}
 	
 	public static function createA ( width:Float = 0.5, height:Float = 1 ):Mesh {

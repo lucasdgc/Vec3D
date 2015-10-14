@@ -300,6 +300,37 @@ class Primitives
 		return square;
 	}
 	
+	public static function createRectangle ( width:Float = 1, height:Float = 1 ) {
+		var rect:Mesh = new Mesh ("rectangle_");
+		
+		if (width <= 0 || height <= 0) {
+			width = 1;
+			height = 1;
+		}
+		
+		var posValueX:Float = - 0.5 * width;
+		var posValueY:Float = - 0.5 * height;
+		
+		var posX = posValueX;
+		for (x in 0...2) {
+			var posY = posValueY;
+			for (y in 0...2) {
+				rect.addVertex (posX, posY, 0);
+				posY += Math.abs(posValueY * 2);
+			}
+			posX += Math.abs (posValueX * 2);
+		}
+		
+		rect.addEdge (0, 1);
+		rect.addEdge (0, 2);
+		rect.addEdge (3, 1);
+		rect.addEdge (3, 2);
+		
+		finishMesh (rect);
+		
+		return rect;
+	}
+	
 	private static function createVertexGroup (mesh:Mesh):VertexGroup {
 		var vIndex:Array<Int> = new Array();
 		for (i in 0...mesh.vertices.length) {
