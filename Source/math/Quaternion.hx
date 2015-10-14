@@ -321,8 +321,6 @@ class Quaternion {
 			quaternion.y = (m20 - m02) * num;
 			quaternion.z = (m01 - m10) * num;
 			
-			trace ("case 1");
-			
 			return quaternion;
 		}
 		
@@ -334,8 +332,6 @@ class Quaternion {
 			quaternion.z = (m02 + m20) * num4;
 			quaternion.w = (m12 - m21) * num4;
 			
-			trace ("case 2");
-			
 			return quaternion;
 		}
 		
@@ -346,9 +342,7 @@ class Quaternion {
 			quaternion.y = 0.5 * num6;
 			quaternion.z = (m21 + m12) * num3;
 			quaternion.w = (m20 - m02) * num3;
-			
-			trace ("case 3");
-			
+
 			return quaternion; 
 		}
 		
@@ -358,9 +352,7 @@ class Quaternion {
 		quaternion.y = (m21 + m12) * num2;
 		quaternion.z = 0.5 * num5;
 		quaternion.w = (m01 - m10) * num2;
-		
-		trace ("case 4");
-		
+
 		return quaternion;
 	}
 

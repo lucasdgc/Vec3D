@@ -25,9 +25,9 @@ class Transform
 	public var up (default, null):Vector3;
 	public var right (default, null):Vector3;
 	
-	public var localPosition:Vector3;
-	public var localRotation:Quaternion;
-	public var localScale:Vector3;
+	public var localPosition (default, set):Vector3;
+	public var localRotation (default, set):Quaternion;
+	public var localScale (default, set):Vector3;
 	public var localEulerAngles:Vector3;
 	public var localTransformMatrix:Matrix;
 	
@@ -138,7 +138,8 @@ class Transform
 	public function updateChildTransform () {
 		
 		position = localPosition.add(gameObject.parent.transform.position);
-		rotation = localRotation.multiply(gameObject.parent.transform.rotation);
+		//rotation = localRotation.multiply(gameObject.parent.transform.rotation);
+		//rotateAroundPoint (gameObject.parent.position, gameObject.parent.position, gameObject.parent.rotation);
 		scale = localScale.add(gameObject.parent.transform.scale);
 		
 		composeTransformMatrix();
@@ -251,6 +252,24 @@ class Transform
 		}
 		
 		return scale;
+	}
+	
+	private function set_localPosition (value:Vector3):Vector3 {
+		localPosition = value;
+		
+		return this.localPosition;
+	}
+	
+	private function set_localRotation (value:Quaternion):Quaternion {
+		localRotation = value;
+		
+		return this.localRotation;
+	}
+	
+	private function set_localScale (value:Vector3):Vector3 {
+		localScale = value;
+		
+		return this.localScale;
 	}
 	
 	private function set_transformMatrix (value:Matrix):Matrix {

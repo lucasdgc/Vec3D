@@ -249,10 +249,10 @@ class Mesh
 			if(!isInGroup) {
 				vertexColor = this.pointColor;
 			}
-			batch.push(vertexColor.r);
-			batch.push(vertexColor.g);
-			batch.push(vertexColor.b);
-			batch.push(vertexColor.a);
+			batch.push(vertexColor.r / 255);
+			batch.push(vertexColor.g / 255);
+			batch.push(vertexColor.b / 255);
+			batch.push(vertexColor.a / 255);
 		}
 		
 		var returnBatch:Float32Array = new Float32Array (batch);

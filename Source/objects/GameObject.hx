@@ -101,11 +101,13 @@ class GameObject
 		}
 	}
 	
-	public function set_parent (value:GameObject):GameObject {
+	private function set_parent (value:GameObject):GameObject {
 		
 		parent = value;
 		
-		if(parent != null){
+		if (parent != null) {
+			trace ("set parent...");
+			
 			parent.children.push(this);	
 			transform.initiateLocalTransform ();
 		}
