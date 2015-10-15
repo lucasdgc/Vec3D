@@ -115,8 +115,8 @@ class GameObject
 	}
 	
 	public function update (e:Event) {
-		for (bVolue in boundingVolumes) {
-			bVolue.updateCenterPosition (transform.position);
+		for (bVolume in boundingVolumes) {
+			bVolume.updateCenterPosition (transform.position);
 		}
 	}
 	
@@ -179,5 +179,7 @@ class GameObject
 		boundingVolumes.push(bVolume);
 		
 		bVolume.setGameObject(this);
+		
+		bVolume.updateCenterPosition ( this.transform.position );
 	}
 }

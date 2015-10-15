@@ -14,18 +14,36 @@ class Physics
 {
 
 	public static function raycast (ray:Ray):Collision {
+		var collisions:Array<Collision> = new Array ();
 		
-		//trace("bVolumes: "+World.boundingVolumes.length);
 		for (bVolume in World.boundingVolumes) {
 			if (Vector3.Distance(ray.origin, bVolume.center) < ray.length) {
 				var collision = checkBoundingVolumeIntersection (ray, bVolume);
 				if (collision.isColliding) {
-					return collision;
+					collisions.push ( collision );
+					//return collision;
 				}
 			}
 		}
 		
-		return new Collision ();
+		if ( collisions.length == 0 ) {
+			return new Collision ();
+		} else {
+			var minDistance:Float = Math.POSITIVE_INFINITY;
+			var curCollision:Collision = new Collision ();
+			
+			for ( col in collisions ) {
+				var colDistance:Float = Vector3.Distance ( ray.origin, col.direction );
+				if ( colDistance < minDistance ) {
+					minDistance = colDistance;
+					curCollision = col;
+				}
+			}
+			
+			return curCollision;
+		}
+		
+		//return new Collision ();
 	}
 	
 	private static function checkBoundingVolumeIntersection (ray:Ray, bVolume:BoundingVolume):Collision {

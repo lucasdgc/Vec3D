@@ -75,10 +75,15 @@ class Scene
 	public function onSceneInstantiated (e:Event) {
 		Vec3DEventDispatcher.instance.removeEventListener (Vec3DEvent.SCENE_INSTANTIATED, onSceneInstantiated);
 		Vec3DEventDispatcher.instance.dispatchSceneLoadedEvent();
+		start ();
 	}
 	
 	private function load () {
 		Vec3DEventDispatcher.instance.addEventListener (Vec3DEvent.SCENE_INSTANTIATED, onSceneInstantiated);
+	}
+	
+	public function start () {
+		
 	}
 	
 	public function mergeStaticMeshes () {
