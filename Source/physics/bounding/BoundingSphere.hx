@@ -13,7 +13,7 @@ class BoundingSphere extends BoundingVolume
 	//private var center:Vector3;
 	public var radius:Float;
 	
-	public function new(radius:Float = 1) 
+	public function new(radius:Float = 0.5 ) 
 	{
 		super();
 		this.radius = radius;

@@ -1,5 +1,6 @@
 package rendering;
 
+import math.Vector2;
 import math.Vector3;
 import math.Matrix;
 import device.Device;
@@ -12,6 +13,7 @@ import openfl.gl.GL;
 import openfl.utils.Float32Array;
 import lime.utils.UInt16Array;
 import rendering.Mesh.MeshBuffer;
+import rendering.Mesh.Vertex;
 import utils.Color;
 import utils.SimpleMath;
 
@@ -38,6 +40,12 @@ import utils.SimpleMath;
 	 var verticesArray:Float32Array;
 	 var color:utils.Color;
  }*/
+ 
+ typedef Vertex = {
+	var position:Vector3;
+	var normal:Vector3;
+	var uv:Vector2;
+ }
  
  typedef Edge = {
 	 var a:Int;
@@ -67,7 +75,8 @@ class Mesh
 	public static var drawingFaces:Bool = true;
 	
 	public var name:String;
-	public var vertices:Array<Vector3>;
+	//public var vertices:Array<Vector3>;
+	public var vertices:Array<Vertex>;
 	public var edges:Array<Edge>;
 	public var faces:Array<Face>;
 	
@@ -106,28 +115,28 @@ class Mesh
 		relPosition = new Vector3();
 		relRotation = new Vector3();
 		
-		vertices = new Array<Vector3>();
-		if(verticesCount > 0){
+		vertices = new Array<Vertex>();
+		/*if(verticesCount > 0){
 			for(i in 0...verticesCount){
 				vertices.push(new Vector3(0, 0, 0));
 			}
-		}
+		}*/
 		
 		faces = new Array<Face>();
-		if(facesCount > 0) {
+		/*if(facesCount > 0) {
 			for (i in 0...facesCount) {
 				var f:Face = { a : 0, b : 0, c: 0 };
 				faces.push(f);
 			}
-		}
+		}*/
 		
 		edges = new Array<Edge>();
-		if(edgesCount > 0) {
+		/*if(edgesCount > 0) {
 			for (i in 0...edgesCount) {
 				var e:Edge = { a : 0, b : 0 };
 				edges.push(e);
 			}
-		}
+		}*/
 		
 		vertexGroups = new Array();
 		
@@ -191,28 +200,28 @@ class Mesh
 		var maxZ:Float = 0;
 		
 		for (vert in vertices) {
-			if (vert.x < minX) {
-				minX = vert.x;
+			if (vert.position.x < minX) {
+				minX = vert.position.x;
 			}
 			
-			if (vert.x > maxX) {
-				maxX = vert.x;
+			if (vert.position.x > maxX) {
+				maxX = vert.position.x;
 			}
 			
-			if (vert.y < minY) {
-				minY = vert.y;
+			if (vert.position.y < minY) {
+				minY = vert.position.y;
 			}
 			
-			if (vert.y > maxY) {
-				maxY = vert.y;
+			if (vert.position.y > maxY) {
+				maxY = vert.position.y;
 			}
 			
-			if (vert.z < minZ) {
-				minZ = vert.z;
+			if (vert.position.z < minZ) {
+				minZ = vert.position.z;
 			}
 			
-			if (vert.z > maxZ) {
-				maxZ = vert.z;
+			if (vert.position.z > maxZ) {
+				maxZ = vert.position.z;
 			}
 		}
 		
@@ -226,9 +235,9 @@ class Mesh
 		var batch:Array<Float> = new Array();
 		
 		for(i in 0...vertices.length){
-			batch.push(vertices[i].x);
-			batch.push(vertices[i].y);
-			batch.push(vertices[i].z);
+			batch.push(vertices[i].position.x);
+			batch.push(vertices[i].position.y);
+			batch.push(vertices[i].position.z);
 			
 			var isInGroup = false;
 			var vertexColor:Color = new Color();
@@ -373,7 +382,7 @@ class Mesh
 					var z = Std.parseFloat(verticesArray[k * 3 + 2]);
 					
 					if(i == 0){
-						mesh.vertices[k] = new Vector3(x, y, z);
+						mesh.vertices[k] = { position : new Vector3(x, y, z), normal : new Vector3 (), uv : new Vector2 (0,0) };
 					} /*else {
 						mesh.vertices[mesh.vertices.length] = new Vector3(x + pos.x, y + pos.y, z + pos.z);
 					}*/
@@ -631,8 +640,10 @@ class Mesh
 		rawFacesData = new Float32Array (facesArray);
 	}*/
 	
-	public function addVertex(x:Float, y:Float, z:Float){
-		vertices.push(new Vector3(x, y, z));
+	public function addVertex(x:Float, y:Float, z:Float) {
+		var newVertex:Vertex = { position : new Vector3(x, y, z), normal : new Vector3 (), uv : new Vector2 (0,0) }
+		
+		vertices.push(newVertex);
 	}
 	
 	public function addFace(pointA:Int, pointB:Int, pointC:Int){
@@ -663,7 +674,7 @@ class Mesh
 				goZ = newMesh.relPosition.z;
 			}
 			
-			this.addVertex (vert.x + goX, vert.y + goY, vert.z + goZ);
+			this.addVertex (vert.position.x + goX, vert.position.y + goY, vert.position.z + goZ);
 		}
 		
 		for (edge in newMesh.edges) {
@@ -691,9 +702,9 @@ class Mesh
 	
 	public function translate (value:Vector3) {
 		for (vert in this.vertices) {
-			vert.x += value.x;
-			vert.y += value.y;
-			vert.z += value.z;
+			vert.position.x += value.x;
+			vert.position.y += value.y;
+			vert.position.z += value.z;
 		}
 		this.bindMeshBuffers ();
 	}
@@ -708,9 +719,9 @@ class Mesh
 				trace ("i: "+i+" value: "+ rotationMatrix.m[i]);
 			}
 			
-			vert.x += newRot.x;
-			vert.y += newRot.y;
-			vert.z += newRot.z;
+			vert.position.x += newRot.x;
+			vert.position.y += newRot.y;
+			vert.position.z += newRot.z;
 			
 			trace(vert);
 		}
@@ -728,9 +739,9 @@ class Mesh
 	
 	public function scale (value:Vector3) {
 		for (vert in this.vertices) {
-			vert.x *= value.x;
-			vert.y *= value.y;
-			vert.z *= value.z;
+			vert.position.x *= value.x;
+			vert.position.y *= value.y;
+			vert.position.z *= value.z;
 		}
 		this.bindMeshBuffers ();
 	}

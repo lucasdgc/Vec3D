@@ -64,15 +64,15 @@ class BoundingBox extends BoundingVolume
 		var minExt:Vector3;
 		var maxExt:Vector3;
 		
-		minExt = mesh.vertices[0].clone();
-		maxExt = mesh.vertices[0].clone();
+		minExt = mesh.vertices[0].position.clone();
+		maxExt = mesh.vertices[0].position.clone();
 		
 		for (vert in mesh.vertices) {
 			
-			var vertPos:Vector3 = vert.clone ();
+			var vertPos:Vector3 = vert.position.clone ();
 			
 			if (mesh.gameObject != null) {
-				vertPos = vert.multiplyByFloats(mesh.gameObject.transform.scale.x, mesh.gameObject.transform.scale.y, mesh.gameObject.transform.scale.z);
+				vertPos = vert.position.multiplyByFloats(mesh.gameObject.transform.scale.x, mesh.gameObject.transform.scale.y, mesh.gameObject.transform.scale.z);
 			}
 			
 			if (vertPos.x < minExt.x && vertPos.y < minExt.y && vertPos.z < minExt.z) {

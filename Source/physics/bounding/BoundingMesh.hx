@@ -22,7 +22,7 @@ class BoundingMesh extends BoundingVolume
 		var bMesh:BoundingMesh = new BoundingMesh ();
 		
 		for (vert in mesh.vertices) {
-			bMesh.vertices.push (vert.clone());
+			bMesh.vertices.push (vert.position.clone());
 		}
 		
 		return bMesh;

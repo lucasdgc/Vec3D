@@ -157,9 +157,9 @@ class GameObject
 	
 	public function scaleObjectMesh () {
 		for (vert in mesh.vertices) {
-			vert.x = vert.x * scale.x;
-			vert.y = vert.y * scale.y;
-			vert.z = vert.z * scale.z;
+			vert.position.x = vert.position.x * scale.x;
+			vert.position.y = vert.position.y * scale.y;
+			vert.position.z = vert.position.z * scale.z;
 		}
 		
 		mesh.bindMeshBuffers();

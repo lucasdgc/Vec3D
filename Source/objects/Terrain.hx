@@ -47,7 +47,7 @@ class Terrain extends GameObject
 			sum += height;
 			
 			if (i % 4 == 0) {
-				mesh.vertices[Std.int(i/4)].y = sum;
+				mesh.vertices[Std.int(i/4)].position.y = sum;
 				sum = 0;
 			}
 		}

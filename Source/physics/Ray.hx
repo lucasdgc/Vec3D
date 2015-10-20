@@ -1,5 +1,6 @@
 package physics;
 
+import haxe.io.Float32Array;
 import physics.Collision;
 import physics.bounding.BoundingBox;
 import physics.bounding.BoundingSphere;
@@ -137,7 +138,7 @@ class Ray {
 		var rr = sphere.radius * sphere.radius;
 		
 		if (pyth <= rr) {
-			return new Collision(true, new Vector3 (),sphere);
+			return new Collision(true, new Vector3 ( origin.x + direction.x * pyth, origin.y + direction.y * pyth, origin.z + direction.z * pyth ),sphere);
 		}
 		
 		var dot = (x * this.direction.x) + (y * this.direction.y) + (z * this.direction.z);
@@ -147,7 +148,19 @@ class Ray {
 		
 		var temp = pyth - (dot * dot);
 		
-		return new Collision (temp <= rr, new Vector3 (),sphere);
+		var newVec:Vector3 = new Vector3 ();
+		if (temp <= rr) {
+			var proj:Vector3 = direction.multiplyByFloat ( dot );
+			//var i:Vector3 = sphere.center.subtract (proj);
+			var dist:Vector3 = proj.subtract ( origin );
+			newVec = origin.add ( direction.multiplyByFloat ( dot ) );
+			//var intersection:Vector3 = sphere.center.subtract ( dotPoint );
+			//var a:Vector3 = 
+			
+			//newVec = i;
+		}
+		
+		return new Collision (temp <= rr, newVec ,sphere);
 	}
 
 	/*public function intersectsTriangle(vertex0:Vector3, vertex1:Vector3, vertex2:Vector3):Collision {

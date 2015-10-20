@@ -5,6 +5,7 @@ import math.Vector3;
 import objects.GameObject;
 import openfl.events.Event;
 import physics.bounding.BoundingBox;
+import physics.bounding.BoundingSphere;
 import physics.Collision;
 import physics.Physics;
 import physics.Ray;
@@ -59,9 +60,13 @@ class Rays extends Scene
 		cube4.transform.position = new Vector3 ( 2, -1, 0 );
 		cube4.attachBoundingVolume ( BoundingBox.getMeshExtents( cube4.mesh ) );
 		
-		cube5 = new GameObject ( "cube5", cubeMesh.clone (), this );
+		/*cube5 = new GameObject ( "cube5", cubeMesh.clone (), this );
 		cube5.transform.position = new Vector3 ( -2, 1, 0 );
-		cube5.attachBoundingVolume ( BoundingBox.getMeshExtents( cube5.mesh ) );
+		cube5.attachBoundingVolume ( BoundingBox.getMeshExtents( cube5.mesh ) );*/
+		
+		var sphere1:GameObject = new GameObject ( "sp2", Primitives.createSphere (), this );
+		sphere1.transform.position = new Vector3 ( -2, 1, 0 );
+		sphere1.attachBoundingVolume ( new BoundingSphere ( 0.5 ) );
 		
 		cube6 = new GameObject ( "cube6", cubeMesh.clone (), this );
 		cube6.transform.position = new Vector3 ( 0, 1.5, 0 );
