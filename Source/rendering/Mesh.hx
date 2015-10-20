@@ -170,7 +170,7 @@ class Mesh
 			initMeshBuffers ();
 		}
 		
-		GL.bindBuffer(GL.ARRAY_BUFFER, meshBuffer.vertexBuffer);
+		GL.bindBuffer (GL.ARRAY_BUFFER, meshBuffer.vertexBuffer);
 		
 		if(isStatic){
 			GL.bufferData(GL.ARRAY_BUFFER, getBindVertexData(), GL.STATIC_DRAW);
@@ -178,12 +178,20 @@ class Mesh
 			GL.bufferData(GL.ARRAY_BUFFER, getBindVertexData(), GL.DYNAMIC_DRAW);
 		}
 		
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, meshBuffer.edgeIndexBuffer);
+		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, meshBuffer.edgeIndexBuffer);
 		
 		if(isStatic){
 			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, getBindEdgeData(), GL.STATIC_DRAW);
 		} else {
 			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, getBindEdgeData(), GL.DYNAMIC_DRAW);
+		}
+		
+		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, meshBuffer.faceIndexBuffer);
+		
+		if(isStatic){
+			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, getBindFaceData(), GL.STATIC_DRAW);
+		} else {
+			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, getBindFaceData(), GL.DYNAMIC_DRAW);
 		}
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);

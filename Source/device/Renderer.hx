@@ -93,6 +93,12 @@ class Renderer
 			GL.drawElements(GL.LINES, edgeBufferSize * 2, GL.UNSIGNED_SHORT, 2 * 0);	
 		}
 		
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, facesIndexBuffer);
+		if (drawFaces && faceBufferSize > 0) {
+			frameDrawCalls ++;
+			GL.drawElements(GL.TRIANGLES, faceBufferSize * 3, GL.UNSIGNED_SHORT, 3 * 0);	
+		}
+		
 	}
 	
 	public function drawFrameBuffer (frameBuffer:FrameBuffer) {
