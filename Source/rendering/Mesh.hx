@@ -266,6 +266,7 @@ class Mesh
 			if(!isInGroup) {
 				vertexColor = this.pointColor;
 			}
+			
 			batch.push(vertexColor.r / 255);
 			batch.push(vertexColor.g / 255);
 			batch.push(vertexColor.b / 255);

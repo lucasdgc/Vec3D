@@ -28,8 +28,8 @@ class Main extends Sprite {
 		InputAxis.bindAxis("Horizontal", InputAxisMethod.KEYBOARD, Keyboard.A, Keyboard.D);
 		InputAxis.bindAxis("Vertical", InputAxisMethod.KEYBOARD, Keyboard.S, Keyboard.W);
 		
-		InputAxis.bindAxis("CameraX", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
-		//InputAxis.bindAxis("CameraY", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
+		InputAxis.bindAxis("Camera X", InputAxisMethod.KEYBOARD, Keyboard.LEFT, Keyboard.RIGHT);
+		InputAxis.bindAxis("Camera Y", InputAxisMethod.KEYBOARD, Keyboard.DOWN, Keyboard.UP);
 		
 		InputButton.bindButton ("Jump", Keyboard.SPACE);
 		

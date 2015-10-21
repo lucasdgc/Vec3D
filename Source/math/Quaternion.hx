@@ -275,22 +275,6 @@ class Quaternion {
 		return result;
 	}
 	
-	public static function LookAt ( forward:Vector3, ?up:Vector3 ) {
-		if (up == null) {
-			up  = Vector3.Up();
-		} else {
-			up.normalize ();
-		}
-		
-		var at:Vector3 = Vector3.Normalize( forward );
-		var right:Vector3 = Vector3.Normalize ( Vector3.Cross ( at, up ) );
-		var relUp:Vector3 = Vector3.Normalize ( Vector3.Cross ( at, right ) );
-		
-		
-		
-		
-	}
-	
 	public static function LookRotation(forward:Vector3, ?up:Vector3) {
 		if (up == null) {
 			up  = Vector3.Up();

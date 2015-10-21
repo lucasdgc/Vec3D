@@ -133,8 +133,4 @@ class Renderer
 		GL.vertexAttribPointer(vertexColorAttribute, 4, GL.FLOAT, false, 7 * 4, 3 * 4);*/
 	}
 	
-	public function applyPostProcessing () {
-		
-	}
-	
 }

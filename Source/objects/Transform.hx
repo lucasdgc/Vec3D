@@ -87,6 +87,7 @@ class Transform
 			return;
 		}
 		
+		//var rotQuaternion:Quaternion = Quaternion.Inverse ( rotation );
 		var newPosition:Vector3 = rotation.multVector(translation);
 		var translationMatrix:Matrix = Matrix.Translation(newPosition.x, newPosition.y, newPosition.z);
 		
@@ -104,35 +105,36 @@ class Transform
 		//trace(position);
 	}
 	
-	public function rotateAroundPoint (point:Vector3, axis:Vector3, degrees:Float) {
+	/*public function rotateAroundPoint (point:Vector3, axis:Vector3, degrees:Float) {
 		if (degrees == 0) {
 			return;
 		}
 		
 		var relPosition:Vector3 = point.subtract ( position );
+
+		//var relPosition:Vector3 = position.subtract ( point );
 		var translationMatrix:Matrix = Matrix.Translation ( relPosition.x, relPosition.y, relPosition.z );
 		var rotationInRad:Vector3 = axis.multiplyByFloat(degrees).toRadians();
 		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll ( rotationInRad.y, rotationInRad.x, rotationInRad.z );
 		
 		var newPosition:Matrix = translationMatrix.multiply (rotationMatrix);
-		
+		//
+		//position = newPosition.getTranslation ();
 		position = newPosition.getTranslation ();
+	}*/
+	
+	public function rotateAroundPoint (point:Vector3, axis:Vector3, degrees:Float) {
+		if (degrees == 0) {
+			return;
+		}
 		
-		/*var previousPosition:Vector3 = position.clone ();
-		var previousRotation:Quaternion = rotation.clone ();
-
-		translate(point.subtract(position));
-
-		var rotationInRad:Vector3 = axis.multiplyByFloat(degrees).toRadians();
-		var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll ( rotationInRad.y, rotationInRad.x, rotationInRad.z );
+		var rads:Vector3 = axis.multiplyByFloat(degrees).toRadians();
+		var r0:Matrix = Matrix.RotationYawPitchRoll ( rads.y, rads.x, rads.z );
+		var t:Matrix = Matrix.Translation ( point.x, point.y, point.z );
+		var tInv:Matrix = Matrix.Translation ( -point.x, -point.y, -point.z );
+		var rotationMatrix:Matrix = tInv.multiply ( r0.multiply ( t ) );
 		
 		transformMatrix = transformMatrix.multiply ( rotationMatrix );
-		
-		//rotate(rotationInRad);
-		
-		translate ( previousPosition.subtract ( point ) );
-		//transformMatrix = Matrix.Compose (scale, previousRotation, position);
-		decomposeTrasformMatrix();*/
 	}
 	
 	public function updateChildTransform () {

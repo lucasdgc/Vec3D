@@ -43,6 +43,7 @@ class Camera extends GameObject
 			scene.cameras.push(this);
 			transform.position = position;
 			//this.facingPoint = target;
+			facingPoint = transform.position.add(transform.forward);
 			
 			viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, Vector3.Up());
 			projectionMatrix =  Matrix.PerspectiveFovLH(fov, Engine.canvas.stage.stageWidth / Engine.canvas.stage.stageHeight, zNear, zFar);
@@ -58,8 +59,8 @@ class Camera extends GameObject
 		
 		if (scene != null) {
 			if (scene.activeCamera == this) {
-				viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, Vector3.Up());
-				
+				this.facingPoint = this.transform.position.add ( transform.forward );
+				viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, this.transform.up);
 				projectionMatrix =  Matrix.PerspectiveFovLH(fov, Engine.canvas.stage.stageWidth / Engine.canvas.stage.stageHeight, zNear, zFar);
 			}
 		}
@@ -127,7 +128,7 @@ class Camera extends GameObject
 	}
 	
 	private function get_facingPoint ():Vector3 {
-		facingPoint = transform.position.add(transform.forward);
+		//facingPoint = transform.position.add(transform.forward);
 		//trace("FP: " + transform.forward);
 		return facingPoint;
 	}

@@ -54,7 +54,7 @@ class Adjusts extends Scene
 		
 		var cubeMesh:Mesh = Primitives.createCube();
 		
-		for ( i in -4...5 ) {
+		/*for ( i in -4...5 ) {
 			for ( j in -3...3 ) {
 				for ( k in 0...4 ) {
 					var cube:GameObject = new GameObject ("cube_" + i + j, cubeMesh.clone(), this);
@@ -71,17 +71,18 @@ class Adjusts extends Scene
 					}
 					
 					cube.transform.rotate ( new Vector3 ( 0, 0, 45) );
+					cube.mesh.drawFaces = false;
 					
 					cubeArray.push(cube);
 				}
 			}
-		}
+		}*/
 		
-		/*var cubeMesh:Mesh = Primitives.createCube();
+		var cubeMesh:Mesh = Primitives.createCube();
 		cube1 = new GameObject ( "cube1", cubeMesh, this );
 		cube1.transform.position = new Vector3 (1.2, 1, 0);
 		
-		cube2 = new GameObject ( "cube2", cubeMesh.clone(), this );
+		/*cube2 = new GameObject ( "cube2", cubeMesh.clone(), this );
 		cube2.transform.position = new Vector3 (-1.2, -1, 0);
 		
 		cube3 = new GameObject ( "cube3", cubeMesh.clone(), this );
@@ -146,11 +147,14 @@ class Adjusts extends Scene
 		
 		//previousSpherePosition = sphere.transform.position.clone ();
 		
-		//moveObject (cube1, rotationSpeed);
-		//moveObject (cube2, rotationSpeed);
-		//moveObject (cube3, rotationSpeed);
-		//moveObject (cube4, rotationSpeed);*/
+		moveObject (cube1, rotationSpeed);
+		moveObject (cube2, rotationSpeed);
+		moveObject (cube3, rotationSpeed);
+		moveObject (cube4, rotationSpeed);*/
 		var rotationSpeed:Float = 50 * Time.deltaTime;
+		
+		moveObject ( cube1, rotationSpeed );
+		
 		if ( started ) {
 			for ( cube in cubeArray ) {
 				moveObject ( cube, rotationSpeed );
@@ -160,11 +164,11 @@ class Adjusts extends Scene
 	}
 	
 	private function moveObject (obj:GameObject, rotationSpeed:Float) {
-		//obj.transform.rotateAroundPoint ( sphere.transform.position, Vector3.Forward (), rotationSpeed );
+		obj.transform.rotateAroundPoint ( sphere.transform.position, Vector3.Forward (), rotationSpeed );
 		//obj.transform.rotateAroundPoint ( sphere.transform.position, Vector3.Right (), rotationSpeed );
 		
 		//obj.transform.rotate ( new Vector3 ( 0, 3, 0 ) );
-		rotateAround ( obj );
+		//rotateAround ( obj );
 	}
 	
 	private function rotateAround ( obj:GameObject ) {
