@@ -17,6 +17,7 @@ import utils.Time;
 class Faced extends Scene
 {
 	var cube1:GameObject;
+	var cube2:GameObject;
 	var squareArray:Array<GameObject>;
 	
 	public function new() 
@@ -34,6 +35,10 @@ class Faced extends Scene
 		
 		cube1.mesh.setVetexGroupColor ( 0, b );
 		//cube1.transform.position = new Vector3 ( 1, 1, -20 );
+		
+		var monkeyMesh:Mesh = Mesh.loadMeshFile ( "monkey" );
+		cube2 = new GameObject ( "cube2", monkeyMesh, this );
+		cube2.transform.position = new Vector3 ( 2, 1, 0 );
 		
 		var squareMesh:Mesh = Primitives.createSquare ( 0.1 );
 		squareArray = new Array ();
@@ -74,29 +79,30 @@ class Faced extends Scene
 		
 		
 		//cube1.transform.rotate ( new Vector3 ( v, h, 0 ).multiplyByFloat (rotationSpeed)  );
-		activeCamera.transform.translate ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
-		cube1.transform.rotate ( new Vector3 ( camY, 0, 0 ).multiplyByFloat ( rotationSpeed ) );
-		cube1.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up (), rotationSpeed * - camX );
+		//cube1.transform.translate ( new Vector3 ( h, v, 0 ).multiplyByFloat ( moveSpeed ) );
+		//cube1.transform.rotate ( new Vector3 ( camY, 0, 0 ).multiplyByFloat ( rotationSpeed ) );
+		//cube1.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up (), rotationSpeed * - camX );
 		
-		//activeCamera.transform.position = activeCamera.transform.position.add ( new Vector3 ( h, v, 0 ).multiplyByFloat ( moveSpeed ) );
-		//rotateCamera ();
+		activeCamera.transform.position = activeCamera.transform.position.add ( new Vector3 ( h, v, 0 ).multiplyByFloat ( moveSpeed ) );
+		rotateCamera ();
 		/*for ( sq in squareArray ) {
 			rotateObject ( sq );
 		}
 		rotateObject ( cube1 );*/
 		//
 		//moveCube ();
+		rotateObject ( cube2 );
 	}
 	
 	private function rotateCamera () {
 		var relPosition:Vector3 = cube1.transform.position.subtract ( activeCamera.transform.position );
-		var targetRotation:Quaternion = Quaternion.LookRotation ( relPosition );
-		activeCamera.transform.rotation = Quaternion.Slerp ( activeCamera.transform.rotation, targetRotation, 1 * Time.deltaTime );
+		var targetRotation:Quaternion = Quaternion.Inverse (Quaternion.LookRotation ( relPosition ));
+		activeCamera.transform.rotation = Quaternion.Slerp ( activeCamera.transform.rotation, targetRotation, 2 * Time.deltaTime );
 	}
 	
 	private function rotateObject ( obj:GameObject ) {
 		var relPosition:Vector3 = activeCamera.transform.position.subtract ( obj.transform.position );
-		var targetRotation:Quaternion = Quaternion.LookRotation ( relPosition );
+		var targetRotation:Quaternion = Quaternion.LookRotation ( relPosition.negate () );
 		obj.transform.rotation = Quaternion.Slerp ( obj.transform.rotation, targetRotation, 1 * Time.deltaTime );
 	}
 	
@@ -104,6 +110,5 @@ class Faced extends Scene
 		var targetPos:Vector3 = new Vector3 ( cube1.transform.position.x, activeCamera.transform.position.y, cube1.transform.position.z );
 		cube1.transform.position = Vector3.Lerp ( cube1.transform.position, targetPos, 0.1 );
 		rotateObject ( cube1 );
-		
 	}
 }

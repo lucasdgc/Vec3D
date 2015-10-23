@@ -1,5 +1,6 @@
 package objects;
 
+import math.Quaternion;
 import math.Vector2;
 import math.Vector3;
 import math.Vector4;
@@ -59,7 +60,7 @@ class Camera extends GameObject
 		
 		if (scene != null) {
 			if (scene.activeCamera == this) {
-				this.facingPoint = this.transform.position.add ( transform.forward );
+				this.facingPoint = this.transform.position.add (  this.transform.forward );
 				viewMatrix = Matrix.LookAtLH(this.transform.position, this.facingPoint, this.transform.up);
 				projectionMatrix =  Matrix.PerspectiveFovLH(fov, Engine.canvas.stage.stageWidth / Engine.canvas.stage.stageHeight, zNear, zFar);
 			}

@@ -23,9 +23,9 @@ class GameObject
 	public var isStatic:Bool;
 	
 	public var name:String;
-	public var position:Vector3;
-	public var rotation:Vector3;
-	public var scale  (default, set) :Vector3;
+	//public var position:Vector3;
+	//public var rotation:Vector3;
+	//public var scale  (default, set) :Vector3;
 	
 	public var mesh:Mesh;
 	
@@ -60,9 +60,9 @@ class GameObject
 				this.name = "gameObject_"+scene.gameObject.length;
 			}
 			
-			position = new Vector3 ();
+			//position = new Vector3 ();
 			
-			rotation = new Vector3 ();
+			//rotation = new Vector3 ();
 			
 			this.mesh = mesh;
 			
@@ -135,7 +135,7 @@ class GameObject
 		}
 	}
 	
-	public function set_scale (value:Vector3):Vector3 {
+	/*public function set_scale (value:Vector3):Vector3 {
 		if (value.x < 1) {
 			value.x = 1;
 		}
@@ -163,7 +163,7 @@ class GameObject
 		}
 		
 		mesh.bindMeshBuffers();
-	}
+	}*/
 	
 	public function attachRigidBody () {
 		this.rigidBody = new RigidBody ();
