@@ -54,16 +54,16 @@ class Primitives
 		cube.addEdge (5, 7);
 		cube.addEdge (6, 7);
 		
-		//cube.addFace (0, 1, 2);
-		//cube.addFace (1, 2, 3);
+		cube.addFace (0, 1, 2);
+		cube.addFace (1, 2, 3);
 		cube.addFace (0, 1, 4);
 		cube.addFace (1, 4, 5);
 		cube.addFace (0, 2, 4);
 		cube.addFace (2, 4, 6);
-		//cube.addFace (1, 3, 5);
-		//cube.addFace (3, 5, 7);
-		//cube.addFace (4, 5, 6);
-		//cube.addFace (5, 6, 7);
+		cube.addFace (1, 3, 5);
+		cube.addFace (3, 5, 7);
+		cube.addFace (4, 5, 6);
+		cube.addFace (5, 6, 7);
 		cube.addFace (2, 3, 6);
 		cube.addFace (3, 6, 7);
 		
@@ -357,6 +357,8 @@ class Primitives
 	
 	public static function finishMesh (mesh:Mesh) {
 		mesh.vertexGroups.push(createVertexGroup(mesh));
+		mesh.calculateNormals ();
+		
 		mesh.bindMeshBuffers();
 	}
 }

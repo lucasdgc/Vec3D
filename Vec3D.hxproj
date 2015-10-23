@@ -42,7 +42,7 @@
     <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>"$(CompilerPath)/haxelib" run lime build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dwebgl</preBuildCommand>
+  <preBuildCommand>"$(CompilerPath)/haxelib" run openfl build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dwebgl</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->

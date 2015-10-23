@@ -1,5 +1,6 @@
 package device;
 
+import math.Vector3;
 import objects.Camera;
 import objects.GameObject;
 import openfl.utils.Float32Array;
@@ -42,10 +43,13 @@ class Renderer
 			
 				var worldMatrix:Matrix = gameObject.transform.transformMatrix;
 				
-				var worldViewMatrix:Matrix = worldMatrix.multiply(viewMatrix);
+				//var worldViewMatrix:Matrix = worldMatrix.multiply(viewMatrix);
 				
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[0].index, false, new Float32Array (projectionMatrix.m));
-				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[1].index, false, new Float32Array (worldViewMatrix.m));
+				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[1].index, false, new Float32Array (worldMatrix.m));
+				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[2].index, false, new Float32Array (viewMatrix.m));
+				
+				GL.uniform3f ( mesh.shaderProgram.uniforms[3].index, 2, 2, -2 );
 				
 				if (gameObject.mesh.meshBuffer == null) {
 					throw "Object " + mesh.name +" has undefined vertex buffers...";
@@ -63,6 +67,7 @@ class Renderer
 		
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
+		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
@@ -77,11 +82,14 @@ class Renderer
 		GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
 		
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index, 3, GL.FLOAT, false, 7 * 4, 0);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index, 3, GL.FLOAT, false, 10 * 4, 0);
 
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index, 4, GL.FLOAT, false, 7 * 4, 3 * 4);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index, 3, GL.FLOAT, false, 10 * 4, 3 * 4);
 
+		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index, 4, GL.FLOAT, false, 10 * 4, 6 * 4);
+		
 		if (drawVertex && vertexBufferSize > 0) {
 			frameDrawCalls ++;
 			GL.drawArrays(GL.POINTS, 0, vertexBufferSize);
