@@ -551,15 +551,9 @@ class Mesh
 			var rotationMatrix:Matrix = Matrix.RotationYawPitchRoll(value.y, value.x, value.z).multiply(Matrix.Zero());
 			var newRot:Vector3 = SimpleMath.matrixToEulerAngles(rotationMatrix);
 			
-			for (i in 0...rotationMatrix.m.length) {
-				trace ("i: "+i+" value: "+ rotationMatrix.m[i]);
-			}
-			
 			vert.position.x += newRot.x;
 			vert.position.y += newRot.y;
 			vert.position.z += newRot.z;
-			
-			trace(vert);
 		}
 		
 		

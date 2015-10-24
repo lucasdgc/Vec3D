@@ -49,7 +49,7 @@ class Renderer
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[1].index, false, new Float32Array (worldMatrix.m));
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[2].index, false, new Float32Array (viewMatrix.m));
 				
-				GL.uniform3f ( mesh.shaderProgram.uniforms[3].index, 2, 2, -2 );
+				GL.uniform3f ( mesh.shaderProgram.uniforms[3].index, 2, 2, -0 );
 				
 				if (gameObject.mesh.meshBuffer == null) {
 					throw "Object " + mesh.name +" has undefined vertex buffers...";

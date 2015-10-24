@@ -74,12 +74,15 @@ class Device
 	
 	
 	private function renderLoop(rect:Rectangle) {
-		GL.enable(GL.BLEND);
-		GL.disable ( GL.CULL_FACE );
+		//GL.enable(GL.BLEND);
+		//GL.disable ( GL.CULL_FACE );
 		//GL.depthMask(false);
-		GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+		//GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
 		//GL.enable (GL.pol);
+		GL.cullFace ( GL.BACK );
+		GL.enable ( GL.CULL_FACE );
 		GL.enable (GL.DEPTH_TEST);
+
 		
 		if (Engine.instance.currentScene != null) {
 			#if mobile

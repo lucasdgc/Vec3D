@@ -23,15 +23,19 @@ class Lighting extends Scene
 		super ();
 		
 		//var cubeMesh:Mesh = Primitives.createCube ();
-		var cubeMesh:Mesh = Mesh.loadMeshFile ( "monkey" );
+		var cubeMesh:Mesh = Mesh.loadMeshFile ( "faced_monkey" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		cubeMesh.calculateNormals ();
-		cube1 = new GameObject ( "cube1", cubeMesh, this );
+		cube1 = new GameObject ( "monkey", cubeMesh, this );
+		cube1.transform.scale = new Vector3 ( 0.5, 0.5, 0.5 );
 		
 		
-		//cube1.mesh.setVetexGroupColor ( 0, Color.green );
-		//cube1.mesh.drawEdges = true;
-		//cube1.mesh.drawPoints = true;
+		var floorMesh:Mesh = Mesh.loadMeshFile ( "cube" );
+		floorMesh.calculateNormals ();
+		var floor:GameObject = new GameObject ( "floor", floorMesh, this );
+	
+		floor.transform.position = new Vector3 ( 0, -2, 0 );
+		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 	}
 	
 	override public function update(event:Event) 
@@ -44,7 +48,7 @@ class Lighting extends Scene
 		var rotationSpeed:Float = 15 * Time.deltaTime;
 		var moveSpeed:Float = 10 * Time.deltaTime;
 		
-		//cube1.transform.translate ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
+		cube1.transform.translate ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
 		
 		cube1.transform.rotate ( cube1.transform.up.multiplyByFloat ( rotationSpeed ) );
 		//cube1.transform.rotate ( cube1.transform.right.multiplyByFloat ( rotationSpeed / 2 ) );
