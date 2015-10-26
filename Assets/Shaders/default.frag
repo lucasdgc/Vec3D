@@ -6,6 +6,8 @@ precision mediump float;
 precision mediump float;
 #endif
 
+#define pi 3.14159265359;
+
 varying vec4 vColor;
 varying vec3 vFragPosition;
 varying vec3 vNormal;
@@ -25,10 +27,11 @@ void main (void)  {
 	float distanceSqr = ldLength * ldLength;
 	
 	vec3 lightColor = vec3 ( 0.8, 0.8, 0.6 );
-	float lightPower = 10.0;
+	float lightPower = 20.0;
 
 	vec3 diffuseColor = vec3 ( vColor ) * lightColor * lightPower * lambertDiffuse ( normal, lightDir, distanceSqr );
 	vec3 specularColor = vec3 ( vColor ) * lightColor * lightPower * specularBlinn ( normal, lightDir, normalize ( vEyePos ), distanceSqr );
+	//vec3 specularColor = vec3 (0.0, 0.0, 0.0);
 	
 	vec3 result = diffuseColor + specularColor;
 	gl_FragColor = vec4(result, 1.0);
@@ -36,8 +39,9 @@ void main (void)  {
 
 float lambertDiffuse (vec3 normal, vec3 lightDir, float distanceSqr) {
 	float diff = max ( dot ( normal, lightDir ), 0.0 );
+	float normalization = 1.0 / pi;
 	
-	return diff / distanceSqr;
+	return  ( diff * normalization / distanceSqr );
 }
 
 float specularPhong (vec3 normal, vec3 lightDir, vec3 eye, float distanceSqr) {
@@ -50,6 +54,10 @@ float specularPhong (vec3 normal, vec3 lightDir, vec3 eye, float distanceSqr) {
 float specularBlinn (vec3 normal, vec3 lightDir, vec3 eye, float distanceSqr) {
 	vec3 halfDir = normalize ( lightDir + eye );
 	float specAngle = max ( dot ( halfDir, normal ), 0.0 );
+	float dotNL = max ( dot ( normal, lightDir ), 0.0 );
+	float power = 64.0;
+	float glossiness = 0.8;
+	float normalization = ( power + 8.0 ) / 8.0 * pi;
 	
-	return pow ( specAngle, 32.0 ) / distanceSqr;
+	return ( pow ( specAngle, power ) * glossiness * dotNL ) * normalization / distanceSqr;
 }
