@@ -35,7 +35,7 @@ class Lighting extends Scene
 		var a = new VirtualAnalogStick ( rect, "Analog X", "Analog Y" );
 		#end
 		//var cubeMesh:Mesh = Primitives.createCube ();
-		var cubeMesh:Mesh = Mesh.loadMeshFile ( "monkey" );
+		var cubeMesh:Mesh = Mesh.loadMeshFile ( "faced_monkey" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		cubeMesh.calculateNormals ();
 		cube1 = new GameObject ( "monkey", cubeMesh, this );
@@ -86,7 +86,7 @@ class Lighting extends Scene
 		
 		pointLight.position.addInPlace ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
 		
-		cube1.transform.rotate ( cube1.transform.up.multiplyByFloat ( rotationSpeed ) );
+		//cube1.transform.rotate ( cube1.transform.up.multiplyByFloat ( rotationSpeed ) );
 		monkey2.transform.rotate ( monkey2.transform.up.multiplyByFloat ( - rotationSpeed ) );
 		monkey3.transform.rotate ( monkey3.transform.up.multiplyByFloat ( rotationSpeed ) );
 		monkey4.transform.rotate ( monkey4.transform.up.multiplyByFloat ( - rotationSpeed ) );
