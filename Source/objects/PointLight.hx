@@ -32,6 +32,8 @@ class PointLight
 		this.attenuation = attenuation;
 		this.color = ( color != null ) ? color : Color.white;
 		
+		scene.pointLights.push ( this );
 	}
+	
 	
 }

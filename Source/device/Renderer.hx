@@ -3,6 +3,7 @@ package device;
 import math.Vector3;
 import objects.Camera;
 import objects.GameObject;
+import objects.PointLight;
 import openfl.utils.Float32Array;
 import utils.Color;
 import openfl.gl.GL;
@@ -49,7 +50,10 @@ class Renderer
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[1].index, false, new Float32Array (worldMatrix.m));
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[2].index, false, new Float32Array (viewMatrix.m));
 				
-				GL.uniform3f ( mesh.shaderProgram.uniforms[3].index, 2, 2, -0 );
+				if ( gameObject.scene.pointLights.length > 0 ) {
+					var pl:PointLight = gameObject.scene.pointLights[0];
+					GL.uniform3f ( mesh.shaderProgram.uniforms[3].index, pl.position.x, pl.position.y, pl.position.z );
+				}
 				
 				if (gameObject.mesh.meshBuffer == null) {
 					throw "Object " + mesh.name +" has undefined vertex buffers...";

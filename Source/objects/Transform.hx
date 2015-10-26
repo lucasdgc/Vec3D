@@ -150,7 +150,7 @@ class Transform
 	}
 	
 	public function decomposeTrasformMatrix () {
-		transformMatrix.decompose(scale, rotation, position);
+		transformMatrix.decompose( new Vector3 ( 1, 1, 1), rotation, position );
 		
 		if (gameObject != null) {
 			if(gameObject.parent != null) {
@@ -191,7 +191,7 @@ class Transform
 	}
 	
 	private function composeTransformMatrix () {
-		transformMatrix = Matrix.Compose(scale, rotation, position);
+		transformMatrix = Matrix.Compose( new Vector3 ( 1, 1, 1 ), rotation, position );
 	}
 	
 	private function composeLocalTransformMatrix () {
@@ -242,7 +242,7 @@ class Transform
 	}
 
 	private function set_scale (value:Vector3):Vector3 {
-		if (scale != null) {
+		/*if (scale != null) {
 			scale = value;
 			composeTransformMatrix();
 			decomposeTrasformMatrix ();
@@ -251,7 +251,15 @@ class Transform
 		}
 		if(initialized){
 			//decomposeTrasformMatrix();
+		}*/
+		
+		if ( gameObject != null ) {
+			if ( gameObject.mesh != null ) {
+				gameObject.mesh.scale ( value );
+			}
 		}
+		
+		scale = value;
 		
 		return scale;
 	}

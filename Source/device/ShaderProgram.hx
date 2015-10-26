@@ -28,9 +28,11 @@ class ShaderProgram
 	private static var vertExtension:String = ".vert";
 	private static var fragExtension:String = ".frag";
 	
-	#if !desktop
+	#if mobile
 	private static var defineES:String = "#define MOBILE \n";
-	#else 
+	#elseif html5
+	private static var defineES:String = "#define HTML5 \n";
+	#else
 	private static var defineES:String = "";
 	#end
 	

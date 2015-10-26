@@ -14,6 +14,7 @@ import openfl.gl.GL;
 import rendering.Mesh;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import objects.PointLight;
 
 /**
  * ...
@@ -24,9 +25,9 @@ class Scene
 	var engine:Engine;
 
 	public var gameObject:Array<GameObject>;
-	
 	public var cameras:Array<Camera>;
 	public var activeCamera:Camera;
+	public var pointLights:Array<PointLight>;
 	
 	public var staticMeshBuffer:MeshBuffer;
 	
@@ -55,6 +56,7 @@ class Scene
 		
 		//engine.currentScene = this;
 		activeCamera = new Camera (new Vector3(0, 0, -10), "main_camera", this);
+		pointLights = new Array ();
 		
 		staticMeshBuffer = { vertexBuffer : GL.createBuffer(), edgeIndexBuffer : GL.createBuffer(), faceIndexBuffer : GL.createBuffer() };
 		
