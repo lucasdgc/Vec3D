@@ -7,6 +7,7 @@ import objects.GameObject;
 import objects.PointLight;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
+import rendering.Cubemap;
 import rendering.Mesh;
 import rendering.Primitives;
 import rendering.Scene;

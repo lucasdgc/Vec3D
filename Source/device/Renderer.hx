@@ -1,10 +1,12 @@
 package device;
 
+import math.Quaternion;
 import math.Vector3;
 import objects.Camera;
 import objects.GameObject;
 import objects.PointLight;
 import openfl.utils.Float32Array;
+import rendering.Cubemap;
 import utils.Color;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;
@@ -35,6 +37,10 @@ class Renderer
 	public function render(camera:Camera, gameObjects:Array<GameObject>) {
 		var viewMatrix = camera.viewMatrix.clone ();
 		var projectionMatrix = camera.projectionMatrix.clone ();
+		
+		if (Engine.instance.currentScene.skybox != null) {
+			drawCubemap ( Engine.instance.currentScene.skybox, projectionMatrix, viewMatrix );
+		}
 		
 		GL.useProgram(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).program);
 		
@@ -132,6 +138,25 @@ class Renderer
 		//GL.uniform1f(frameBuffer.shaderProgram.uniforms[1].index, Time.deltaTime * 2 * 3.14159 * .75 * 10);
 		
 		GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4);
+	}
+	
+	public function drawCubemap ( cubemap:Cubemap, projection:Matrix, view:Matrix ) {
+		GL.bindBuffer ( GL.ARRAY_BUFFER, cubemap.vertexBuffer );
+		GL.useProgram ( cubemap.shaderProgram.program );
+		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, cubemap.cubemapTexture );
+		
+		GL.enableVertexAttribArray ( cubemap.shaderProgram.attributes[0].index );
+		GL.vertexAttribPointer( cubemap.shaderProgram.attributes[0].index, 3, GL.FLOAT, false, 3 * 4, 0);
+		
+		var uView:Float32Array = Matrix.GetAsRotationMatrix4x4 ( view );
+		
+		GL.uniformMatrix4fv ( cubemap.shaderProgram.uniforms[0].index, false, new Float32Array ( projection.m ) );
+		GL.uniformMatrix4fv ( cubemap.shaderProgram.uniforms[1].index, false, uView );
+		
+		GL.drawArrays ( GL.TRIANGLES, 0, 36 );
+		
+		GL.bindBuffer ( GL.ARRAY_BUFFER, null );
+		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, null );
 	}
 	
 	private function setDefaultShaderParams () {

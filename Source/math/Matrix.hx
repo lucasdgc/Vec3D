@@ -695,6 +695,15 @@ import tools.Tools;
 		]);
 	}
 
+	inline public static function GetAsRotationMatrix4x4(matrix:Matrix):Float32Array {
+		return new Float32Array([
+			matrix.m[0], matrix.m[1], matrix.m[2], 0,
+			matrix.m[4], matrix.m[5], matrix.m[6], 0,
+			matrix.m[8], matrix.m[9], matrix.m[10], 0,
+			0, 0, 0, 1
+		]);
+	}
+	
 	inline public static function Transpose(matrix:Matrix):Matrix {
 		var result = new Matrix();
 		

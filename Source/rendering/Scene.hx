@@ -32,6 +32,7 @@ class Scene
 	public var staticMeshBuffer:MeshBuffer;
 	
 	public var backgroundColor:Color = Color.black;
+	public var skybox:Cubemap;
 	
 	public var staticMesh:Mesh;
 	

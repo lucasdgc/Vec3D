@@ -38,8 +38,13 @@ void main (void)  {
 	vec3 lightColor = vec3 ( 0.8, 0.8, 0.6 );
 	float lightPower = 8.0;
 
-	vec3 diffuseColor = dColor * lambertDiffuse ( normal, lightDir );
-	vec3 specularColor = dColor * specularBlinn ( normal, lightDir, eye, dColor, sColor, smoothness, metallic );
+	float diffuseFactor = lambertDiffuse ( normal, lightDir );
+	vec3 specularFactor = specularBlinn ( normal, lightDir, eye, dColor, sColor, smoothness, metallic );
+	
+	diffuseFactor = float ( ( 1.0 - specularFactor ) * diffuseFactor ); 
+	
+	vec3 diffuseColor = dColor * diffuseFactor;
+	vec3 specularColor = dColor * specularFactor;
 	//vec3 specularColor = vec3 ( vColor ) * specularPhong ( normal, lightDir, normalize ( vEyePos ) );
 	//vec3 specularColor = vec3 (0.0, 0.0, 0.0);
 	//diffuseColor = ( 1.0 - specularColor ) * diffuseColor; 

@@ -1,0 +1,112 @@
+package rendering;
+
+import device.ShaderProgram;
+import openfl.Assets;
+import openfl.display.BitmapData;
+import openfl.geom.Rectangle;
+import openfl.gl.GLBuffer;
+import openfl.gl.GL;
+import openfl.gl.GLTexture;
+import openfl.utils.ByteArray;
+import openfl.utils.Float32Array;
+import openfl.utils.UInt8Array;
+import utils.ImageOperations;
+
+/**
+ * ...
+ * @author Lucas Gonçalves
+ */
+class Cubemap
+{
+	private static var cubemapAssetsDirectory:String = "assets/Images/Cubemaps/";
+	public static var defaultCubemapShader:ShaderProgram;
+	
+	public var vertexBuffer:GLBuffer;
+	
+	public var cubemapTexture:GLTexture;
+	
+	public var shaderProgram:ShaderProgram = defaultCubemapShader;
+	
+	public function new( negX:String, posX:String, negY:String, posY:String, negZ:String, posZ:String ) 
+	{
+		if ( defaultCubemapShader == null) {
+			defaultCubemapShader = new ShaderProgram ( "cubemap", "cubemap", "cubemap", ["aVertexPosition"], ["uProjectionMatrix", "uViewMatrix"] );
+		}
+		shaderProgram = defaultCubemapShader;
+		
+		cubemapTexture = GL.createTexture ();
+		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, cubemapTexture );
+		loadImages ( [posX, negX, posY, negY, posZ, negZ] );
+		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, null );
+		
+		createBuffers ();
+	}
+	
+	private function createBuffers () {
+		vertexBuffer = GL.createBuffer ();
+		
+		var vertexData:Array<Float> = [ -1.0,  1.0, -1.0,
+										-1.0, -1.0, -1.0,
+										 1.0, -1.0, -1.0,
+										 1.0, -1.0, -1.0,
+										 1.0,  1.0, -1.0,
+										-1.0,  1.0, -1.0,
+
+										-1.0, -1.0,  1.0,
+										-1.0, -1.0, -1.0,
+										-1.0,  1.0, -1.0,
+										-1.0,  1.0, -1.0,
+										-1.0,  1.0,  1.0,
+										-1.0, -1.0,  1.0,
+
+										 1.0, -1.0, -1.0,
+										 1.0, -1.0,  1.0,
+										 1.0,  1.0,  1.0,
+										 1.0,  1.0,  1.0,
+										 1.0,  1.0, -1.0,
+										 1.0, -1.0, -1.0,
+
+										-1.0, -1.0,  1.0,
+										-1.0,  1.0,  1.0,
+										 1.0,  1.0,  1.0,
+										 1.0,  1.0,  1.0,
+										 1.0, -1.0,  1.0,
+										-1.0, -1.0,  1.0,
+
+										-1.0,  1.0, -1.0,
+										 1.0,  1.0, -1.0,
+										 1.0,  1.0,  1.0,
+										 1.0,  1.0,  1.0,
+										-1.0,  1.0,  1.0,
+										-1.0,  1.0, -1.0,
+
+										-1.0, -1.0, -1.0,
+										-1.0, -1.0,  1.0,
+										 1.0, -1.0, -1.0,
+										 1.0, -1.0, -1.0,
+										-1.0, -1.0,  1.0,
+										 1.0, -1.0,  1.0 ];
+							 
+		GL.bindBuffer ( GL.ARRAY_BUFFER, vertexBuffer );
+		GL.bufferData ( GL.ARRAY_BUFFER, new Float32Array ( vertexData ), GL.STATIC_DRAW );
+		GL.bindBuffer ( GL.ARRAY_BUFFER, null );
+		
+	}
+	
+	private function loadImages ( images:Array<String> ) {
+		var imageBD:BitmapData;
+		var imgData:UInt8Array;
+		
+		for ( i in 0...images.length ) {
+			imageBD = Assets.getBitmapData ( cubemapAssetsDirectory + images[i] );
+			imgData = ImageOperations.rgbBitmapDataToUIntArray8 ( imageBD );
+			GL.texImage2D ( GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL.RGB, imageBD.width, imageBD.height, 0, GL.RGB, GL.UNSIGNED_BYTE, imgData );
+		}
+		
+		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+	}
+	
+}
