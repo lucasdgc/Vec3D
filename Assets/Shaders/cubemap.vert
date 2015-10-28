@@ -10,6 +10,7 @@ uniform mat4 uViewMatrix;
 varying vec3 vTexCoords;
 
 void main (void) {
-	gl_Position = uProjectionMatrix * uViewMatrix * vec4 ( aVertexPosition, 1.0 );
+	vec4 pos = uProjectionMatrix * uViewMatrix * vec4 ( aVertexPosition, 1.0 );
+	gl_Position = pos.xyww;
 	vTexCoords = aVertexPosition;
 }

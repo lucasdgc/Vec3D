@@ -42,6 +42,6 @@ class Main extends Sprite {
 		
 		//trace (SimpleMath.getCloserPow2(360));
 		
-		Engine.instance.loadScene ( CubemapTest );
+		Engine.instance.loadScene ( Lighting );
 	}
 }

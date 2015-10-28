@@ -30,6 +30,7 @@ class Lighting extends Scene
 	public function new() 
 	{
 		super ();
+		skybox = new Cubemap ( "512/negx.jpg", "512/posx.jpg", "512/negy.jpg", "512/posy.jpg", "512/negz.jpg", "512/posz.jpg" );
 		
 		#if mobile
 		var rect:Rectangle = new Rectangle ( Engine.canvas.stage.x, Engine.canvas.stage.y, Engine.canvas.stage.stageWidth, Engine.canvas.stage.stageHeight );
@@ -65,7 +66,7 @@ class Lighting extends Scene
 		floor.transform.position = new Vector3 ( 0, -1.5, 0 );
 		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 		
-		pointLight = new PointLight ( new Vector3 ( -2, 2, -8 ), 10, 3, Color.white, this );
+		pointLight = new PointLight ( new Vector3 ( -2, 5, -8 ), 10, 3, Color.white, this );
 		
 		activeCamera.transform.position = new Vector3 ( 0, 4, -10 );
 		activeCamera.transform.rotate ( new Vector3 ( -27.5, 0, 0 ) );

@@ -11,5 +11,6 @@ uniform samplerCube uCubemap;
 varying vec3 vTexCoords;
 
 void main (void) {
-	gl_FragColor = textureCube ( uCubemap, vTexCoords );	
-}
+	gl_FragColor = textureCube ( uCubemap, vTexCoords );
+
+} 

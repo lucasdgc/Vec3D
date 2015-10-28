@@ -38,9 +38,8 @@ class Renderer
 		var viewMatrix = camera.viewMatrix.clone ();
 		var projectionMatrix = camera.projectionMatrix.clone ();
 		
-		if (Engine.instance.currentScene.skybox != null) {
-			drawCubemap ( Engine.instance.currentScene.skybox, projectionMatrix, viewMatrix );
-		}
+		GL.enable ( GL.CULL_FACE );
+		GL.enable ( GL.DEPTH_TEST );
 		
 		GL.useProgram(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).program);
 		
@@ -75,6 +74,12 @@ class Renderer
 			//drawGeometry ();
 		}
 		
+		GL.disable ( GL.CULL_FACE );
+		if (Engine.instance.currentScene.skybox != null) {
+			drawCubemap ( Engine.instance.currentScene.skybox, projectionMatrix, viewMatrix );
+		}
+		
+		
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
@@ -99,6 +104,10 @@ class Renderer
 
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
 		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index, 4, GL.FLOAT, false, 10 * 4, 6 * 4);
+		
+		if ( Engine.instance.currentScene.skybox != null ) {
+			GL.bindTexture ( GL.TEXTURE_CUBE_MAP, Engine.instance.currentScene.skybox.cubemapTexture );
+		}
 		
 		if (drawVertex && vertexBufferSize > 0) {
 			frameDrawCalls ++;

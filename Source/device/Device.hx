@@ -79,7 +79,7 @@ class Device
 		//GL.depthMask(false);
 		//GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
 		//GL.enable (GL.pol);
-		GL.cullFace ( GL.BACK );
+		//GL.cullFace ( GL.BACK );
 		//GL.enable ( GL.CULL_FACE );
 		//GL.enable (GL.DEPTH_TEST);
 		

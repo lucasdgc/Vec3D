@@ -8,6 +8,8 @@ precision mediump float;
 
 #define pi 3.14159265359;
 
+uniform samplerCube skybox;
+
 varying vec4 vColor;
 varying vec3 vFragPosition;
 varying vec3 vNormal;
@@ -21,6 +23,8 @@ float specularPhong  ( vec3 normal, vec3 lightDir, vec3 eye );
 
 vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir );
 vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir );
+
+vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye );
 
 void main (void)  {
 	vec3 normal = normalize ( vNormal );
@@ -36,12 +40,12 @@ void main (void)  {
 	float metallic = 1.0;
 	
 	vec3 lightColor = vec3 ( 0.8, 0.8, 0.6 );
-	float lightPower = 8.0;
+	float lightPower = 16.0;
 
 	float diffuseFactor = lambertDiffuse ( normal, lightDir );
 	vec3 specularFactor = specularBlinn ( normal, lightDir, eye, dColor, sColor, smoothness, metallic );
 	
-	diffuseFactor = float ( ( 1.0 - specularFactor ) * diffuseFactor ); 
+	//diffuseFactor = float ( ( 1.0 - specularFactor ) * diffuseFactor ); 
 	
 	vec3 diffuseColor = dColor * diffuseFactor;
 	vec3 specularColor = dColor * specularFactor;
@@ -49,8 +53,11 @@ void main (void)  {
 	//vec3 specularColor = vec3 (0.0, 0.0, 0.0);
 	//diffuseColor = ( 1.0 - specularColor ) * diffuseColor; 
 	
+	//vec3 skyboxR = reflect ( - eye, normalize ( vNormal ) );
+	
 	vec3 result = ( diffuseColor + specularColor ) * lightColor * ( lightPower / distanceSqr );
 	gl_FragColor = vec4(result, 1.0);
+	//gl_FragColor = textureCube ( skybox, skyboxR ); 
 }
 
 float lambertDiffuse ( vec3 normal, vec3 lightDir ) {
@@ -75,11 +82,17 @@ vec3 specularBlinn ( vec3 normal, vec3 lightDir, vec3 eye, vec3 dColor, vec3 sCo
 	float dotNL = max ( dot ( normal, lightDir ), 0.0 );
 	float power = exp2 ( 10.0 * smoothness + 1.0 );
 	float normalization = ( power + 2.0 ) / 8.0;
-	vec3 specColor = ( metallic * dColor ) + ( 1.0 - metallic * sColor );
+	//vec3 specColor = ( metallic * dColor ) + ( 1.0 - metallic * sColor );
+	
+	vec3 ambient = ambientSpecular ( power, dotNL, normal, eye );
+	vec3 fresnelN = fresnelSchlickAprox ( sColor, eye,  halfDir ) * normalization;
+	float specular = pow ( specAngle, power ) * dotNL ;
+	
 	
 	//return ( ( pow ( specAngle, power ) ) * dotNL ) * dColor;
 	//return ( ( fresnelSchlick ( specColor, eye,  halfDir ) * normalization ) * ( pow ( specAngle, power ) ) * dotNL ); 
-	return ( ( fresnelSchlickAprox ( specColor, eye,  halfDir ) * normalization ) * ( pow ( specAngle, power ) ) * dotNL ); 
+	//return ( ( fresnelSchlickAprox ( sColor, eye,  halfDir ) * normalization ) * ( pow ( specAngle, power ) ) * dotNL ); 
+	return fresnelN * specular;
 }
 
 vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir ) {
@@ -89,4 +102,12 @@ vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir ) {
 vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir ) {
 	float dotEH = dot ( eye, halfDir );
 	return specColor + ( 1.0 - specColor ) * exp2 ( ( -5.55473 * dotEH - 6.98316 ) * dotEH );
+}
+
+vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye ) {
+	float pie = pi;
+	float normalization = ( power + 2.0 ) / ( 2.0 * pie );
+	vec3 skyboxR = reflect ( - eye, normalize ( normal ) );
+	
+	return normalization * pow ( dotNL, power ) * dotNL * vec3 ( textureCube ( skybox, skyboxR ) );
 }
