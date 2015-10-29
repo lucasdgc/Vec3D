@@ -30,7 +30,8 @@ class Lighting extends Scene
 	public function new() 
 	{
 		super ();
-		skybox = new Cubemap ( "512/negx.jpg", "512/posx.jpg", "512/negy.jpg", "512/posy.jpg", "512/negz.jpg", "512/posz.jpg" );
+		skybox = new Cubemap ( "512/negx", "512/posx", "512/negy", "512/posy", "512/negz", "512/posz" );
+		//skybox = new Cubemap ( "left.jpg", "right.jpg", "bottom.jpg", "top.jpg", "back.jpg", "front.jpg" );
 		
 		#if mobile
 		var rect:Rectangle = new Rectangle ( Engine.canvas.stage.x, Engine.canvas.stage.y, Engine.canvas.stage.stageWidth, Engine.canvas.stage.stageHeight );
@@ -40,6 +41,7 @@ class Lighting extends Scene
 		var cubeMesh:Mesh = Mesh.loadMeshFile ( "faced_monkey" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		cubeMesh.calculateNormals ();
+		cubeMesh.drawEdges = false;
 		cube1 = new GameObject ( "monkey", cubeMesh, this );
 		cube1.transform.scale = new Vector3 ( 0.5, 0.5, 0.5 );
 		
@@ -66,10 +68,10 @@ class Lighting extends Scene
 		floor.transform.position = new Vector3 ( 0, -1.5, 0 );
 		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 		
-		pointLight = new PointLight ( new Vector3 ( -2, 5, -8 ), 10, 3, Color.white, this );
+		pointLight = new PointLight ( new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
 		
-		activeCamera.transform.position = new Vector3 ( 0, 4, -10 );
-		activeCamera.transform.rotate ( new Vector3 ( -27.5, 0, 0 ) );
+		activeCamera.transform.position = new Vector3 ( 0, 0, -10 );
+		activeCamera.transform.rotate ( new Vector3 ( -0.01, 0, 0 ) );
 	}
 	
 	override public function update(event:Event) 

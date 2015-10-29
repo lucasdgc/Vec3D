@@ -15,10 +15,6 @@ class ImageOperations
 		trace ("getting byte array...");
 		var pixelData:ByteArray = bd.getPixels ( bd.rect );
 		trace ("done...");
-		var alpha:UInt;
-		var red:UInt;
-		var green:UInt;
-		var blue:UInt;
 		
 		trace ("getting pixel data...");
 		for ( i in 0...bd.width * bd.height ) {

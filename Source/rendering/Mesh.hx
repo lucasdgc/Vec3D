@@ -446,10 +446,14 @@ class Mesh
 	public function calculateNormals () {
 		var faceNormals:Array<Vector3> = new Array ();
 		
+		var v1:Vector3;
+		var v2:Vector3;
+		var fn:Vector3;
+		
 		for ( f in 0...faces.length ) {
-			var v1:Vector3 = vertices[faces[f].a].position.subtract( vertices[faces[f].b].position );
-			var v2:Vector3 = vertices[faces[f].a].position.subtract( vertices[faces[f].c].position );
-			var fn:Vector3 = Vector3.Cross ( v1, v2 ).normalize ();
+			v1 = vertices[faces[f].a].position.subtract( vertices[faces[f].b].position );
+			v2 = vertices[faces[f].a].position.subtract( vertices[faces[f].c].position );
+			fn = Vector3.Cross ( v1, v2 ).normalize ();
 			
 			faceNormals.push ( fn.negate () );
 		}
@@ -470,10 +474,6 @@ class Mesh
 			
 			vertices[i].normal = normalsSum.normalize ();
 		}
-		
-		
-		
-		
 	}
 	
 	public function addVertex(x:Float, y:Float, z:Float) {

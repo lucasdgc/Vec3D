@@ -97,6 +97,7 @@ class ShaderProgram
 		GL.linkProgram(program);
 		
 		if (GL.getProgramParameter (program, GL.LINK_STATUS) == 0) {
+			trace(name + " - " + GL.getProgramInfoLog(program));
 			throw "Unable to initialize the shader program "+name;
 		}
 		

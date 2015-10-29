@@ -19,6 +19,7 @@ import utils.ImageOperations;
 class Cubemap
 {
 	private static var cubemapAssetsDirectory:String = "assets/Images/Cubemaps/";
+	private static var mimapNumbers:Int = 6;
 	public static var defaultCubemapShader:ShaderProgram;
 	
 	public var vertexBuffer:GLBuffer;
@@ -97,16 +98,32 @@ class Cubemap
 		var imageBD:BitmapData;
 		var imgData:UInt8Array;
 		
-		for ( i in 0...images.length ) {
-			imageBD = Assets.getBitmapData ( cubemapAssetsDirectory + images[i] );
-			imgData = ImageOperations.rgbBitmapDataToUIntArray8 ( imageBD );
-			GL.texImage2D ( GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL.RGB, imageBD.width, imageBD.height, 0, GL.RGB, GL.UNSIGNED_BYTE, imgData );
-		}
-		
 		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
 		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
 		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 		GL.texParameteri(GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+		
+		for ( i in 0...images.length ) {
+				imageBD = Assets.getBitmapData ( cubemapAssetsDirectory + images[i] + ".jpg" );
+				imgData = ImageOperations.rgbBitmapDataToUIntArray8 ( imageBD );
+				GL.texImage2D ( GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL.RGB, imageBD.width, imageBD.height, 0, GL.RGB, GL.UNSIGNED_BYTE, imgData );
+				imageBD.dispose ();
+				imgData = null;
+				loadMipMaps ( GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemapAssetsDirectory + images[i], i );
+		}		
 	}
 	
+	private function loadMipMaps ( slot:Int, path:String, i:Int ) {
+		var mipmapBD:BitmapData;
+		var imgData:UInt8Array;
+		
+		for ( mipLevel in 0...mimapNumbers ) {
+			mipmapBD = Assets.getBitmapData ( cubemapAssetsDirectory + "512/512" + "_m0" + mipLevel + "_" + "c0" + i + ".jpg" );
+			trace (cubemapAssetsDirectory + "512/512" + "_m0" + mipLevel + "_" + "c0" + i + ".jpg");
+			trace ( mipLevel + 1 );
+			imgData = ImageOperations.rgbBitmapDataToUIntArray8 ( mipmapBD );
+			GL.texImage2D ( slot, mipLevel + 1, GL.RGB, mipmapBD.width, mipmapBD.height, 0, GL.RGB, GL.UNSIGNED_BYTE, imgData );
+			mipmapBD.dispose ();
+		}
+	}
 }
