@@ -70,8 +70,8 @@ class Lighting extends Scene
 		
 		pointLight = new PointLight ( new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
 		
-		activeCamera.transform.position = new Vector3 ( 0, 0, -10 );
-		activeCamera.transform.rotate ( new Vector3 ( -0.01, 0, 0 ) );
+		activeCamera.transform.position = new Vector3 ( 0, 4, -10 );
+		activeCamera.transform.rotate ( new Vector3 ( -27, 0, 0 ) );
 	}
 	
 	override public function update(event:Event) 

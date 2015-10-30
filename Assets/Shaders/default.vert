@@ -16,7 +16,7 @@ uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec3 uLightPos;
-uniform vec3 vCameraPos;
+uniform vec3 uCameraPos;
 
 varying vec4 vColor;
 varying vec3 vFragPosition;
@@ -27,15 +27,15 @@ varying vec3 vEyePos;
 void main(void) {
 	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4 (aVertexPosition, 1.0);
 	
-	vec3 vertexC = ( uViewMatrix * uModelMatrix * vec4 ( aVertexPosition, 1.0 ) ).xyz;
-	vec3 normalC = ( uViewMatrix * uModelMatrix * vec4 ( aVertexNormal, 0.0 ) ).xyz;
-	vec3 lightW = ( uViewMatrix * vec4 ( uLightPos, 1.0) ).xyz;
-	vec3 eyeC = vec3 ( 0.0, 0.0, 0.0 ) - vertexC;
-	//vec3 eyeC = vCameraPos;
+	vec3 vertexW = ( uModelMatrix * vec4 ( aVertexPosition, 1.0 ) ).xyz;
+	vec3 normalW = ( uModelMatrix * vec4 ( aVertexNormal, 0.0 ) ).xyz;
+	vec3 lightW = uLightPos;
+	//vec3 eyeC = vec3 ( 0.0, 0.0, 0.0 ) - vertexC;
+	vec3 eyeW = uCameraPos;
 	
 	vColor = aVertexColor;
-    vFragPosition = vertexC;
-	vNormal = normalC;
+    vFragPosition = vertexW;
+	vNormal = normalW;
 	vLightPos = lightW;
-	vEyePos = eyeC;
+	vEyePos = eyeW;
 }
