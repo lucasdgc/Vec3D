@@ -18,13 +18,13 @@ varying vec3 vEyePos;
 
 float lambertDiffuse ( vec3 normal, vec3 lightDir );
 
-float specularBlinn ( vec3 normal, vec3 lightDir, vec3 eye, vec3 dColor, vec3 sColor, float smoothness, float metallic );
+float specularBlinn ( vec3 normal, vec3 halfDir, float smoothness );
 float specularPhong  ( vec3 normal, vec3 lightDir, vec3 eye, float smoothness );
 
 vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir );
 vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir );
 
-float fresnelFloat ( vec3 eye, vec3 halfDir, float dotNL );
+float fresnelFloat ( vec3 eye, vec3 normal, float f0 );
 
 vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye );
 
@@ -38,45 +38,39 @@ void main (void)  {
 	float distanceSqr = ldLength * ldLength;
 	float dotNL = dot ( lightDir, normal );
 	
-	vec3 dColor = vec3 ( vColor );
+	//vec3 dColor = vec3 ( vColor );
+	vec3 dColor = vec3 ( 0.0, 0.0, 0.7 );
 	vec3 sColor = vec3 ( 0.7, 0.7, 0.7 );
 	float smoothness = 0.4;
 	float metallic = 1.0;
 	
-	vec3 lightColor = vec3 ( 0.9, 0.8, 0.2 );
-	float lightPower = 8.0;
+	vec3 lightColor = vec3 ( 0.5, 0.4, 0.1 );
+	float lightPower = 80.0;
 
-	float diffuseFactor = lambertDiffuse ( normal, lightDir );
-	float specularFactor = specularBlinn ( normal, lightDir, eye, dColor, sColor, smoothness, metallic );
-	//float specularFactor = specularPhong ( normal, lightDir, eye, smoothness );
+	vec3 directLighting = lightColor * ( lightPower / distanceSqr ) ;
 	
-	//diffuseFactor = float ( ( 1.0 - specularFactor ) * diffuseFactor ); 
+	float diffuseFactor = dotNL;
+	float specularFactor = specularBlinn ( normal, halfDir, smoothness );
+	float fresnelFactor = fresnelFloat ( eye, normal, 0.0 );
 	
-	vec3 diffuseColor = dColor * diffuseFactor;
-	vec3 specularColor = sColor * specularFactor;
-	//vec3 specularColor = vec3 ( vColor ) * specularPhong ( normal, lightDir, normalize ( vEyePos ) );
-	//vec3 specularColor = vec3 (0.0, 0.0, 0.0);
-	//diffuseColor = ( 1.0 - specularColor ) * diffuseColor; 
+	vec3 directDiffuse = dColor * diffuseFactor;
+	
+	vec3 specularColor = mix ( sColor, dColor, metallic );
+	vec3 directFresnel = mix ( vec3 ( 0, 0, 0 ), lightColor, fresnelFactor );
+	vec3 directSpecular = ( specularColor * specularFactor ) + directFresnel;
 	
 	//vec3 skyboxR = reflect ( - eye, normalize ( vNormal ) );
 	
-	vec3 result = ( diffuseColor + specularColor ) * lightColor * ( lightPower / distanceSqr );
-	//gl_FragColor = vec4(result, 1.0);
+	vec3 result = directDiffuse + directSpecular;
 	
-	float fresnel = fresnelFloat ( eye, normal, dotNL );
-	//vec3 fresnel = fresnelSchlick ( specularColor, normal, eye );
-	//vec3 fresnel = vec3 ( 1.0, 1.0, 1.0 );
-	vec3 specular = vec3 ( 1.0, 1.0, 1.0 ) * specularFactor;
-	
-	gl_FragColor = vec4 ( ( mix ( vec3 (0, 0, 0), sColor, fresnel ) + diffuseColor + specularColor ) * lightColor * ( lightPower / distanceSqr ), 1.0 );
-	//gl_FragColor = textureCube ( skybox, skyboxR ); 
+	gl_FragColor = vec4 (result, 1.0 );
 }
 
 float lambertDiffuse ( vec3 normal, vec3 lightDir ) {
 	float diff = max ( dot ( normal, lightDir ), 0.0 );
 	float normalization = 1.0 / pi;
 	
-	return diff * normalization;
+	return diff;
 }
 
 float specularPhong ( vec3 normal, vec3 lightDir, vec3 eye, float smoothness ) {
@@ -88,27 +82,14 @@ float specularPhong ( vec3 normal, vec3 lightDir, vec3 eye, float smoothness ) {
 	return pow ( cosAlpha, power );
 }
 
-float specularBlinn ( vec3 normal, vec3 lightDir, vec3 eye, vec3 dColor, vec3 sColor, float smoothness, float metallic ) {
-	vec3 halfDir = normalize ( lightDir + eye );
+float specularBlinn ( vec3 normal, vec3 halfDir, float smoothness ) {
 	float specAngle = max ( dot ( halfDir, normal ), 0.0 );
-	float dotNL = max ( dot ( normal, lightDir ), 0.0 );
 	float power = exp2 ( 10.0 * smoothness + 1.0 );
 	float normalization = ( power + 2.0 ) / 8.0;
-	//vec3 specColor = ( metallic * dColor ) + ( 1.0 - metallic * sColor );
 	
-	vec3 ambient = ambientSpecular ( power, dotNL, normal, eye );
-	//vec3 fresnelN = fresnelSchlick ( sColor, eye,  halfDir ) * normalization;
-	float fresnelN = fresnelFloat ( lightDir,  halfDir, dotNL );
-	float specular = pow ( specAngle, power ) * dotNL ;
+	float specular = pow ( specAngle, power );
 	
-	
-	//return ( ( pow ( specAngle, power ) ) * dotNL ) * dColor;
-	//return ( ( fresnelSchlick ( specColor, eye,  halfDir ) * normalization ) * ( pow ( specAngle, power ) ) * dotNL ); 
-	//return ( ( fresnelSchlickAprox ( sColor, eye,  halfDir ) * normalization ) * ( pow ( specAngle, power ) ) * dotNL ); 
-	//return fresnelN + specular;
 	return specular * normalization;
-	//return vec3 ( 100.0, 100.0, 100.0 ) * specular;
-	//return fresnelN * ambient;
 }
 
 vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir ) {
@@ -123,19 +104,8 @@ vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir ) {
 	//return exp + specColor * f0 * ( 1.0 - exp );
 }
 
-float fresnelFloat ( vec3 eye, vec3 halfDir, float dotNL ) {
-	float base = 1.0 - dot ( - eye, halfDir );
-	float exp = pow ( base, 4.0 );
-	float ior = 0.04;
-	float f0 = ( ior - 1.0 ) / ( ior + 1.0 );
-	f0 *= f0;
-	
-	f0 = 0.0;
-	
-	return f0 + ( 1.0 - f0 ) * pow ( 1.0 - dot ( eye, halfDir ), 4.0 );
-	//return 1.0 - dot ( eye, halfDir );
-	//return exp + f0 * ( 1.0 - exp );
-	//return ( 1.0 - exp ) + exp;
+float fresnelFloat ( vec3 eye, vec3 normal, float f0 ) {
+	return f0 + ( 1.0 - f0 ) * pow ( 1.0 - dot ( normal, eye ), 4.0 );
 }
 
 vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir ) {
