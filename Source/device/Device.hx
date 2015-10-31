@@ -46,7 +46,20 @@ class Device
 			
 			Engine.canvas.addChild(glView);
 			
-			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexColor"], ["uProjectionMatrix", "uModelMatrix", "uViewMatrix", "uCameraPos", "uLightPos"]);
+			var unitforms:Array<String> = ["uProjectionMatrix", "uModelMatrix", "uViewMatrix", "uCameraPos", "uDirLight.direction" ];
+			
+			var pointLightUniforms:Array<String> = [];
+			var plUnifformString:String = "uPointLights";
+			
+			for ( i in 0...8 ) {
+				unitforms.push ( plUnifformString + "["+i+"].position" );
+				//pointLightUniforms.push ( plUnifformString + "[i].position" );
+				//pointLightUniforms.push ( plUnifformString+"[i].position" );
+			}
+			
+			
+			
+			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexColor"], unitforms);
 			//var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "u_screenWidth", "u_screenHeight"]);
 			//var bloomShader = new ShaderProgram ("bloomShader", "frameBuffer", "bloom", ["a_position"], ["u_sampler", "u_backgroundColor", ]);
 

@@ -57,9 +57,12 @@ class Renderer
 				
 				GL.uniform3f ( mesh.shaderProgram.uniforms[3].index, camera.transform.position.x, camera.transform.position.y, camera.transform.position.z );
 				
+				GL.uniform3f ( mesh.shaderProgram.uniforms[4].index, 0.3, -1, 0 );
+				
 				if ( gameObject.scene.pointLights.length > 0 ) {
 					var pl:PointLight = gameObject.scene.pointLights[0];
-					GL.uniform3f ( mesh.shaderProgram.uniforms[4].index, pl.position.x, pl.position.y, pl.position.z );
+					GL.uniform3f ( mesh.shaderProgram.uniforms[5].index, pl.position.x, pl.position.y, pl.position.z );
+					GL.uniform3f ( mesh.shaderProgram.uniforms[6].index, -pl.position.x, -pl.position.y, -pl.position.z );
 				}
 				
 				if (gameObject.mesh.meshBuffer == null) {
