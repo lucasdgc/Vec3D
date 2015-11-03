@@ -84,7 +84,7 @@ class Renderer
 					var sl:Light = gameObject.scene.spotLights[j];
 
 					GL.uniform3f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5].index, sl.transform.position.x, sl.transform.position.y, sl.transform.position.z );
-					GL.uniform3f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 1].index, -1, 0, 0 );
+					GL.uniform3f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 1].index, sl.transform.forward.x, sl.transform.forward.y, sl.transform.forward.z );
 					GL.uniform3f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 2].index, sl.color.r / 255, sl.color.g / 255, sl.color.b / 255 );
 					GL.uniform1f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 3].index, sl.power );
 					GL.uniform1f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 4].index, sl.cutoff );
@@ -92,6 +92,10 @@ class Renderer
 				
 				if (gameObject.mesh.meshBuffer == null) {
 					throw "Object " + mesh.name +" has undefined vertex buffers...";
+				}
+				
+				for ( matBinding in mesh.materials ) {
+					matBinding.material.bindMaterialTextures ();
 				}
 				
 				drawGeometry(mesh.meshBuffer.vertexBuffer, mesh.vertices.length, mesh.drawPoints,

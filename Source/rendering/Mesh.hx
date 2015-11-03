@@ -1,5 +1,6 @@
 package rendering;
 
+import materials.Material;
 import math.Vector2;
 import math.Vector3;
 import math.Matrix;
@@ -36,10 +37,12 @@ import utils.SimpleMath;
 	 var isColorGroup:Bool;
  }
  
- /*typedef VertexGroupData = {
-	 var verticesArray:Float32Array;
-	 var color:utils.Color;
- }*/
+  typedef MaterialBinding = {
+	 var material:Material;
+	 var name:String;
+	 var id:Int;
+	 var verticesIndex:Array<Int>;
+ }
  
  typedef Vertex = {
 	var position:Vector3;
@@ -80,6 +83,8 @@ class Mesh
 	public var edges:Array<Edge>;
 	public var faces:Array<Face>;
 	
+	public var materials ( default, null ):Array<MaterialBinding>;
+	
 	public var vertexGroups:Array<VertexGroup>;
 	
 	public var relPosition:Vector3;
@@ -109,7 +114,7 @@ class Mesh
 	public var height:Float;
 	public var depth:Float;
 	
-	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = false, drawEdges:Bool = true, drawFaces:Bool = true) {
+	public function new(name:String = "", verticesCount:Int = 0, facesCount:Int = 0, edgesCount:Int = 0, drawPoints:Bool = false, drawEdges:Bool = false, drawFaces:Bool = true) {
 		//meshes.push(this);
 		
 		relPosition = new Vector3();
@@ -159,6 +164,8 @@ class Mesh
 		} else {
 			this.name = "no_name";
 		}
+		
+		materials = new Array ();
 		
 		shaderProgram = ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME);
 		
@@ -328,14 +335,14 @@ class Mesh
 				var verticesArray:Dynamic =  jsonData.meshes[i].vertices;
 				var facesArray:Dynamic =  jsonData.meshes[i].faces;
 				var edgesArray:Dynamic = jsonData.meshes[i].edges;
-				
+				var hasUv:Dynamic = jsonData.meshes[i].hasUV;
+
 				var vGroups:Dynamic = jsonData.meshes[i].vertexGroups;
 				var vertexGroupCount = vGroups.length;
-				
-				var verticesCount = Std.int(verticesArray.length / (vertexStep * 3));
+				var vertexStructSize:UInt = ( hasUv ) ? 8 : 6;
+				var verticesCount = Std.int(verticesArray.length / (vertexStep * vertexStructSize));
 				var facesCount = Std.int(facesArray.length / 3);
 				var edgesCount = Std.int(edgesArray.length / 2);
-				
 				/*if(i == 0){
 					//mesh = new Mesh(jsonData.meshes[i].name, verticesCount, facesCount, edgesCount);
 				} else {
@@ -390,12 +397,24 @@ class Mesh
 				}
 				
 				for(k in 0...verticesCount){
-					var x = Std.parseFloat(verticesArray[k * 3]);
-					var y = Std.parseFloat(verticesArray[k * 3 + 1]);
-					var z = Std.parseFloat(verticesArray[k * 3 + 2]);
+					var x = Std.parseFloat(verticesArray[k * vertexStructSize]);
+					var y = Std.parseFloat(verticesArray[k * vertexStructSize + 1]);
+					var z = Std.parseFloat(verticesArray[k * vertexStructSize + 2]);
+					
+					var normalX:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 3]);
+					var normalY:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 4]);
+					var normalZ:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 5]);
+					
+					var uvU:Float = 0;
+					var uvV:Float = 0;
+
+					if ( hasUv ) {
+						uvU = Std.parseFloat(verticesArray[k * vertexStructSize + 6]);
+						uvV = Std.parseFloat(verticesArray[k * vertexStructSize + 7]);
+					}
 					
 					if(i == 0){
-						mesh.vertices[k] = { position : new Vector3(x, y, z), normal : new Vector3 (), uv : new Vector2 (0,0) };
+						mesh.vertices[k] = { position : new Vector3(x, y, z), normal : new Vector3 ( normalX, normalY, normalZ ), uv : new Vector2 (uvU,uvV) };
 					} /*else {
 						mesh.vertices[mesh.vertices.length] = new Vector3(x + pos.x, y + pos.y, z + pos.z);
 					}*/
@@ -474,6 +493,10 @@ class Mesh
 			
 			vertices[i].normal = normalsSum.normalize ();
 		}
+	}
+	
+	public function bindMaterialAt ( material:Material, index:UInt = 0 ) {
+		materials[index].material = material;
 	}
 	
 	public function addVertex(x:Float, y:Float, z:Float) {

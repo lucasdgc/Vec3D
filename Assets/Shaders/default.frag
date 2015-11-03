@@ -8,6 +8,13 @@ precision mediump float;
 
 #define pi 3.14159265359;
 
+struct material {
+	sampler2D albedo;
+	sampler2D normal;
+	sampler2D smoothness;
+	sampler2D metallic;
+};
+
 struct directionalLight {
 	vec3 direction;
 	vec3 color;
@@ -35,12 +42,13 @@ uniform int uPointLightCount;
 uniform pointLight uPointLights[8];
 uniform int uSpotLightCount;
 uniform spotLight uSpotLights[8];
+uniform material uMaterial;
 
-varying vec4 vColor;
 varying vec3 vFragPosition;
 varying vec3 vNormal;
 varying vec3 vLightPos;
 varying vec3 vEyePos;
+varying vec2 vTexCoords;
 
 vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, float metallic );
 
@@ -65,7 +73,7 @@ void main (void)  {
 	//Material attributes
 	vec3 dColor = vec3 ( 0.7, 0.7, 0.7 );
 	vec3 sColor = vec3 ( 0.7, 0.7, 0.7 );
-	float smoothness = 0.01;
+	float smoothness = 0.0;
 	float metallic = 1.0;
 
 	vec3 fragColor = vec3 ( 0, 0, 0 );
@@ -95,10 +103,14 @@ void main (void)  {
 			break;
 		}
 		vec3 spotDirection = normalize ( uSpotLights[j].position - vFragPosition );
-		if ( dot ( spotDirection, -uSpotLights[j].direction ) > uSpotLights[j].cutoff ) { 
+		float theta = dot ( spotDirection, -uSpotLights[j].direction );		
+		if ( theta > uSpotLights[j].cutoff ) { 
+			float outerCutoff = 0.95;
+			float epsilon = 1.0 - uSpotLights[j].cutoff;
+			float intensity = clamp ( (theta - outerCutoff) / epsilon, 0.0, 1.0 );   
 			vec3 spotLightAttr = calcLightFactors ( spotDirection, normal, eye, smoothness, metallic );
 			vec3 spotContribution = getDirectLightContribution ( spotLightAttr.x, spotLightAttr.y, spotLightAttr.z, dColor, specColor );
-			fragColor += spotContribution;
+			fragColor += spotContribution * intensity;
 		}
 	}
 	

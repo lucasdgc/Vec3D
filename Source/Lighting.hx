@@ -2,6 +2,7 @@ package;
 
 import input.InputAxis;
 import input.VirtualAnalogStick;
+import materials.Material;
 import math.Vector3;
 import objects.GameObject;
 import objects.Light;
@@ -39,9 +40,9 @@ class Lighting extends Scene
 		var a = new VirtualAnalogStick ( rect, "Analog X", "Analog Y" );
 		#end
 		//var cubeMesh:Mesh = Primitives.createCube ();
-		var cubeMesh:Mesh = Mesh.loadMeshFile ( "faced_monkey" );
+		var cubeMesh:Mesh = Mesh.loadMeshFile ( "monkey_normals" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
-		cubeMesh.calculateNormals ();
+		//cubeMesh.calculateNormals ();
 		cubeMesh.drawEdges = false;
 		cube1 = new GameObject ( "monkey", cubeMesh, this );
 		cube1.transform.scale = new Vector3 ( 0.5, 0.5, 0.5 );
@@ -62,18 +63,18 @@ class Lighting extends Scene
 		//monkey5.transform.scale = new Vector3 ( 0.5, 0.5, 0.5 );
 		monkey5.transform.position = new Vector3 ( 3, 0, -3 );
 		
-		var floorMesh:Mesh = Mesh.loadMeshFile ( "cube" );
-		floorMesh.calculateNormals ();
+		var floorMesh:Mesh = Mesh.loadMeshFile ( "cube_nouvs" );
+		//floorMesh.calculateNormals ();
 		var floor:GameObject = new GameObject ( "floor", floorMesh, this );
 	
 		floor.transform.position = new Vector3 ( 0, -1.5, 0 );
 		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 		
 		//sun = new Light ( LightType.DIRECTIONAL, null, 10, 3, Color.yellow, this );
-		
+		var material:Material = new Material ( "bricks.jpg" );
 		
 		pointLight = new Light ( LightType.SPOT, new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
-		pointLight.cutoff = 0.6;
+		pointLight.cutoff = 0.9;
 		
 		activeCamera.transform.position = new Vector3 ( 0, 10, -10 );
 		activeCamera.transform.rotate ( new Vector3 ( -45, 0, 0 ) );

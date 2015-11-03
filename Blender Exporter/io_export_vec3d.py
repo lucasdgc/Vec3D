@@ -216,10 +216,11 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		hasUV2 = False;
 		
 		
-		#if len(mesh.tessface_uv_textures) > 0:
+		if len(mesh.tessface_uv_textures) > 0:
 		#	UVmap=mesh.tessface_uv_textures[0].data	
-		#else:
-		#	hasUV = False
+			hasUV = True
+		else:
+			hasUV = False
 			
 		#if len(mesh.tessface_uv_textures) > 1:
 		#	UV2map=mesh.tessface_uv_textures[1].data
@@ -267,6 +268,24 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			vertices_indices[vertex_index].append(index)
 			
 			vertices+="%.4f,%.4f,%.4f,"%(position.x,position.z,position.y)
+			vertices+="%.4f,%.4f,%.4f,"%(normal.x,normal.z,normal.y)
+			
+			hasUV = len(mesh.tessface_uv_textures) > 0
+			if hasUV:
+				savedUV = False
+				for face in mesh.tessfaces:
+					for v in range (0, 3):
+						if (face.vertices[v] == vertex_index):
+							savedUV = True
+							UVmap = mesh.tessface_uv_textures[0].data
+							vertex_UV = UVmap[face.index].uv[v]
+							vertices+="%.4f,%.4f,"%(vertex_UV[0], vertex_UV[1])
+							break
+					if (savedUV):
+						break
+			#if hasUV2:
+			#	vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
+			
 			
 			for vg in verts.groups:
 			
@@ -412,11 +431,13 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 						
 						vertices+="%.4f,%.4f,%.4f,"%(position.x,position.z,position.y)				
 						# vertices+="%.4f,%.4f,%.4f,"%(normal.x,normal.z,normal.y)
-						if hasUV:
-							vertices+="%.4f,%.4f,"%(vertex_UV[0], vertex_UV[1])
+						#hasUV = len(mesh.tessface_uv_textures) > 0
+						#if hasUV:
+						#	UVmap = mesh.tessface_uv_textures[0].data
+						#	vertices+="%.4f,%.4f,"%(UVmap[0], vertex_UV[1])
 							
-						if hasUV2:
-							vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
+						#if hasUV2:
+						#	vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
 						
 						verticesCount += 1
 					faces +="%i,"%(index)
@@ -425,11 +446,16 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			subMeshes[materialIndex].verticesCount = verticesCount - subMeshes[materialIndex].verticesStart
 			subMeshes[materialIndex].indexCount = indicesCount - subMeshes[materialIndex].indexStart
 			subMeshes[materialIndex].edgesCount = edgesCount - subMeshes[materialIndex].edgesStart
-				
+		
+		hasUv = ",\"hasUV\":"
+		hasUv+="%i"%(hasUV)
+		hasUv+="\n"		
+		
 		vertices=vertices.rstrip(',')
 		faces=faces.rstrip(',')
 		edges=edges.rstrip(',')
-			
+		
+		
 		vertices+="]\n"
 		faces+="]\n"	
 		edges+="]\n"		
@@ -469,7 +495,7 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		#Export_babylon.write_bool(file_handler, "isEnabled", True)
 		Export_babylon.write_bool(file_handler, "checkCollisions", object.data.checkCollisions)
 		#Export_babylon.write_int(file_handler, "billboardMode", billboardMode)
-		
+		Export_babylon.write_bool(file_handler, "hasUV", hasUV)
 		#if hasUV and hasUV2:
 		#	Export_babylon.write_int(file_handler, "uvCount", 2)
 		#elif hasUV:
