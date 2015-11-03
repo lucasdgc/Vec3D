@@ -4,6 +4,7 @@ import math.Quaternion;
 import math.Vector3;
 import objects.Camera;
 import objects.GameObject;
+import objects.Light;
 import objects.PointLight;
 import openfl.utils.Float32Array;
 import rendering.Cubemap;
@@ -50,19 +51,43 @@ class Renderer
 				var worldMatrix:Matrix = gameObject.transform.transformMatrix;
 				
 				//var worldViewMatrix:Matrix = worldMatrix.multiply(viewMatrix);
-				
+				//MVP Matrices
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[0].index, false, new Float32Array (projectionMatrix.m));
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[1].index, false, new Float32Array (worldMatrix.m));
 				GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[2].index, false, new Float32Array (viewMatrix.m));
-				
+				//Camera Pos
 				GL.uniform3f ( mesh.shaderProgram.uniforms[3].index, camera.transform.position.x, camera.transform.position.y, camera.transform.position.z );
+				//Directional Light direction, power and color
+				var sun:Light = Engine.instance.currentScene.sun;
+				if ( sun != null ) {
+					GL.uniform3f ( mesh.shaderProgram.uniforms[4].index, sun.direction.x, sun.direction.y, sun.direction.z );
+					GL.uniform3f ( mesh.shaderProgram.uniforms[5].index, sun.color.r / 255, sun.color.g / 255, sun.color.b / 255 );
+					GL.uniform1f ( mesh.shaderProgram.uniforms[6].index, sun.power );
+					trace ("sun");
+				}
+				//Point Lights
+				GL.uniform1i ( mesh.shaderProgram.uniforms[7].index, gameObject.scene.pointLights.length );
+				var pointLightStartingIndex:Int = 8;
+				for ( i in 0...gameObject.scene.pointLights.length ) {
+					var pl:Light = gameObject.scene.pointLights[i];
+
+					GL.uniform3f ( mesh.shaderProgram.uniforms[pointLightStartingIndex + i * 3].index, pl.transform.position.x, pl.transform.position.y, pl.transform.position.z );
+					GL.uniform3f ( mesh.shaderProgram.uniforms[pointLightStartingIndex + i * 3 + 1].index, pl.color.r / 255, pl.color.g / 255, pl.color.b / 255 );
+					GL.uniform1f ( mesh.shaderProgram.uniforms[pointLightStartingIndex + i * 3 + 2].index, pl.power);
+				}
+				//Spot Lights
+				var spotLightStartingIndex:Int = pointLightStartingIndex + 8 * 3;
+				GL.uniform1i ( mesh.shaderProgram.uniforms[spotLightStartingIndex].index, gameObject.scene.spotLights.length );
+				spotLightStartingIndex ++;
 				
-				GL.uniform3f ( mesh.shaderProgram.uniforms[4].index, 0.3, -1, 0 );
-				
-				if ( gameObject.scene.pointLights.length > 0 ) {
-					var pl:PointLight = gameObject.scene.pointLights[0];
-					GL.uniform3f ( mesh.shaderProgram.uniforms[5].index, pl.position.x, pl.position.y, pl.position.z );
-					GL.uniform3f ( mesh.shaderProgram.uniforms[6].index, -pl.position.x, -pl.position.y, -pl.position.z );
+				for ( j in 0...gameObject.scene.spotLights.length ) {
+					var sl:Light = gameObject.scene.spotLights[j];
+
+					GL.uniform3f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5].index, sl.transform.position.x, sl.transform.position.y, sl.transform.position.z );
+					GL.uniform3f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 1].index, -1, 0, 0 );
+					GL.uniform3f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 2].index, sl.color.r / 255, sl.color.g / 255, sl.color.b / 255 );
+					GL.uniform1f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 3].index, sl.power );
+					GL.uniform1f ( mesh.shaderProgram.uniforms[spotLightStartingIndex + j * 5 + 4].index, sl.cutoff );
 				}
 				
 				if (gameObject.mesh.meshBuffer == null) {

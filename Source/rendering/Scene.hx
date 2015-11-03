@@ -6,6 +6,7 @@ import lime.utils.UInt16Array;
 import lime.utils.UInt32Array;
 import objects.GameObject;
 import objects.Camera;
+import objects.Light;
 import openfl.utils.Float32Array;
 import math.Vector3;
 import physics.World;
@@ -27,7 +28,11 @@ class Scene
 	public var gameObject:Array<GameObject>;
 	public var cameras:Array<Camera>;
 	public var activeCamera:Camera;
-	public var pointLights:Array<PointLight>;
+	public var lights:Array<Light>;
+	public var spotLights:Array<Light>;
+	public var pointLights:Array<Light>;
+	
+	public var sun:Light;
 	
 	public var staticMeshBuffer:MeshBuffer;
 	
@@ -57,6 +62,8 @@ class Scene
 		
 		//engine.currentScene = this;
 		activeCamera = new Camera (new Vector3(0, 0, -10), "main_camera", this);
+		lights = new Array ();
+		spotLights = new Array ();
 		pointLights = new Array ();
 		
 		staticMeshBuffer = { vertexBuffer : GL.createBuffer(), edgeIndexBuffer : GL.createBuffer(), faceIndexBuffer : GL.createBuffer() };

@@ -46,18 +46,26 @@ class Device
 			
 			Engine.canvas.addChild(glView);
 			
-			var unitforms:Array<String> = ["uProjectionMatrix", "uModelMatrix", "uViewMatrix", "uCameraPos", "uDirLight.direction" ];
+			var unitforms:Array<String> = [ "uProjectionMatrix", "uModelMatrix", "uViewMatrix", "uCameraPos", "uDirLight.direction", "uDirLight.color", "uDirLight.power", "uPointLightCount" ];
 			
-			var pointLightUniforms:Array<String> = [];
 			var plUnifformString:String = "uPointLights";
 			
 			for ( i in 0...8 ) {
-				unitforms.push ( plUnifformString + "["+i+"].position" );
-				//pointLightUniforms.push ( plUnifformString + "[i].position" );
-				//pointLightUniforms.push ( plUnifformString+"[i].position" );
+				unitforms.push ( plUnifformString + "[" + i + "].position" );
+				unitforms.push ( plUnifformString + "[" + i + "].color" );
+				unitforms.push ( plUnifformString + "[" + i + "].power" );
 			}
 			
+			unitforms.push ( "uSpotLightCount" );
+			var spotLString = "uSpotLights";
 			
+			for ( j in 0...8 ) {
+				unitforms.push ( spotLString + "[" + j + "].position" );
+				unitforms.push ( spotLString + "[" + j + "].direction" );
+				unitforms.push ( spotLString + "[" + j + "].color" );
+				unitforms.push ( spotLString + "[" + j + "].power" );
+				unitforms.push ( spotLString + "[" + j + "].cutoff" );
+			}
 			
 			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexColor"], unitforms);
 			//var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "u_screenWidth", "u_screenHeight"]);

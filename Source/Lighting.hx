@@ -4,6 +4,7 @@ import input.InputAxis;
 import input.VirtualAnalogStick;
 import math.Vector3;
 import objects.GameObject;
+import objects.Light;
 import objects.PointLight;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
@@ -25,7 +26,7 @@ class Lighting extends Scene
 	var monkey3:GameObject;
 	var monkey4:GameObject;
 	var monkey5:GameObject;
-	var pointLight:PointLight;
+	var pointLight:Light;
 	
 	public function new() 
 	{
@@ -68,7 +69,11 @@ class Lighting extends Scene
 		floor.transform.position = new Vector3 ( 0, -1.5, 0 );
 		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 		
-		pointLight = new PointLight ( new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
+		//sun = new Light ( LightType.DIRECTIONAL, null, 10, 3, Color.yellow, this );
+		
+		
+		pointLight = new Light ( LightType.SPOT, new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
+		pointLight.cutoff = 0.6;
 		
 		activeCamera.transform.position = new Vector3 ( 0, 10, -10 );
 		activeCamera.transform.rotate ( new Vector3 ( -45, 0, 0 ) );
@@ -87,8 +92,8 @@ class Lighting extends Scene
 		#end
 		var rotationSpeed:Float = 15 * Time.deltaTime;
 		var moveSpeed:Float = 10 * Time.deltaTime;
-		
-		pointLight.position.addInPlace ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
+
+		pointLight.transform.position = pointLight.transform.position.add ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
 		
 		//cube1.transform.rotate ( cube1.transform.up.multiplyByFloat ( rotationSpeed ) );
 		monkey2.transform.rotate ( monkey2.transform.up.multiplyByFloat ( - rotationSpeed ) );

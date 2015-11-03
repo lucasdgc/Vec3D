@@ -25,6 +25,7 @@ struct spotLight {
 	vec3 direction;
 	vec3 color;
 	float power;
+	float cutoff;
 };
 
 uniform samplerCube skybox;
@@ -32,6 +33,8 @@ uniform samplerCube skybox;
 uniform directionalLight uDirLight;
 uniform int uPointLightCount;
 uniform pointLight uPointLights[8];
+uniform int uSpotLightCount;
+uniform spotLight uSpotLights[8];
 
 varying vec4 vColor;
 varying vec3 vFragPosition;
@@ -60,67 +63,56 @@ void main (void)  {
 	vec3 normal = normalize ( vNormal );
 	vec3 eye = normalize ( vEyePos - vFragPosition );
 	//Material attributes
-	vec3 dColor = vec3 ( 0.0, 0.0, 0.7 );
+	vec3 dColor = vec3 ( 0.7, 0.7, 0.7 );
 	vec3 sColor = vec3 ( 0.7, 0.7, 0.7 );
-	float smoothness = 0.4;
-	float metallic = 0.7;
-	
-	vec3 ld = vLightPos - vFragPosition;
-	vec3 lightDir = normalize ( ld );
-
-	float ldLength = length ( ld );
-	float distanceSqr = ldLength * ldLength;
-
-	vec3 halfDir = normalize ( lightDir + eye );
-	float dotNL = dot ( lightDir, normal );
-	
-	//vec3 dColor = vec3 ( vColor );
+	float smoothness = 0.01;
+	float metallic = 1.0;
 
 	vec3 fragColor = vec3 ( 0, 0, 0 );
 	
-	vec3 lightColor = vec3 ( 0.5, 0.4, 0.1 );
-	float lightPower = 80.0;
-	vec3 directLighting = lightColor * ( 1.0 / distanceSqr ) ;
+	//vec3 lightColor = vec3 ( 0.5, 0.4, 0.1 );
+	//float lightPower = 80.0;
+	//vec3 directLighting = lightColor * ( 1.0 / distanceSqr ) ;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );
-	
-	vec3 dirLightAttr = calcLightFactors ( -uDirLight.direction, normal, eye, smoothness, metallic );
+	//Directional Light Contribbution
+	vec3 dirLightAttr = calcLightFactors ( normalize ( -uDirLight.direction ), normal, eye, smoothness, metallic );
 	vec3 directionalContribution = getDirectLightContribution ( dirLightAttr.x, dirLightAttr.y, dirLightAttr.z, dColor, specColor );
 	fragColor += directionalContribution;
-	
-	for ( int i = 0; i < 2; i++ ) {
-		//if ( i == uPointLightCount ) {
-		//	break;
-		//}
+	//Point Lights Contribbution
+	for ( int i = 0; i < 8; i++ ) {
+		if ( i == uPointLightCount ) {
+			break;
+		}
 		vec3 plDirection = uPointLights[i].position - vFragPosition;
-		vec3 pointLightAttr = calcLightFactors ( plDirection, normal, eye, smoothness, metallic );
+		vec3 pointLightAttr = calcLightFactors ( normalize ( plDirection ), normal, eye, smoothness, metallic );
 		vec3 pointContribution = getDirectLightContribution ( pointLightAttr.x, pointLightAttr.y, pointLightAttr.z, dColor, specColor );
 		fragColor += pointContribution;
 	}
-	
-	float diffuseFactor = dotNL;
-	float specularFactor = specularBlinn ( normal, halfDir, smoothness ) * dotNL;
-	float fresnelFactor = fresnelFloat ( eye, normal, 0.0 );
-	
-	vec3 directDiffuse = dColor * ( diffuseFactor - fresnelFactor - metallic );
-	
-	vec3 specularColor = mix ( sColor, dColor, metallic );
-	vec3 directFresnel = mix ( vec3 ( 0, 0, 0 ), lightColor, fresnelFactor );
-	vec3 directSpecular = ( specularColor * specularFactor ) + directFresnel;
-	
-	vec3 result = ( directDiffuse + directSpecular ) * directLighting;
+	//Spot lights conttribution
+	for ( int j = 0; j < 8; j++ ) {
+		if ( j == uSpotLightCount ) {
+			break;
+		}
+		vec3 spotDirection = normalize ( uSpotLights[j].position - vFragPosition );
+		if ( dot ( spotDirection, -uSpotLights[j].direction ) > uSpotLights[j].cutoff ) { 
+			vec3 spotLightAttr = calcLightFactors ( spotDirection, normal, eye, smoothness, metallic );
+			vec3 spotContribution = getDirectLightContribution ( spotLightAttr.x, spotLightAttr.y, spotLightAttr.z, dColor, specColor );
+			fragColor += spotContribution;
+		}
+	}
 	
 	gl_FragColor = vec4 ( fragColor, 1.0 );
 }
 
 vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, float metallic ) {
-	lightDir = normalize ( lightDir );
+	lightDir = lightDir;
 	vec3 halfDir = normalize ( lightDir + eye );
 	float dotNL = dot ( normal, lightDir );
 	
-	float diffuseFactor = dotNL;
-	float specularFactor = specularBlinn ( normal, halfDir, smoothness ) * dotNL;
-	float fresnelFactor = fresnelFloat ( eye, normal, 0.0 ) * smoothness;
+	float diffuseFactor = max ( dotNL, 0.0 );
+	float specularFactor = max ( specularBlinn ( normal, halfDir, smoothness ) * dotNL, 0.0 );
+	float fresnelFactor = max ( fresnelFloat ( eye, normal, 0.0 ) * smoothness, 0.0 );
 	
 	return vec3 ( diffuseFactor, specularFactor, fresnelFactor );
 }
