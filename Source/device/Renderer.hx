@@ -1,5 +1,6 @@
 package device;
 
+import materials.Material;
 import math.Quaternion;
 import math.Vector3;
 import objects.Camera;
@@ -21,6 +22,7 @@ import utils.Time;
  */
 class Renderer
 {
+	public static var lightsCount:UInt = 8;
 	public var drawBoundingVolumes:Bool = false;
 	
 	public var drawCallCount:Int = 0;
@@ -63,7 +65,6 @@ class Renderer
 					GL.uniform3f ( mesh.shaderProgram.uniforms[4].index, sun.direction.x, sun.direction.y, sun.direction.z );
 					GL.uniform3f ( mesh.shaderProgram.uniforms[5].index, sun.color.r / 255, sun.color.g / 255, sun.color.b / 255 );
 					GL.uniform1f ( mesh.shaderProgram.uniforms[6].index, sun.power );
-					trace ("sun");
 				}
 				//Point Lights
 				GL.uniform1i ( mesh.shaderProgram.uniforms[7].index, gameObject.scene.pointLights.length );
@@ -76,7 +77,7 @@ class Renderer
 					GL.uniform1f ( mesh.shaderProgram.uniforms[pointLightStartingIndex + i * 3 + 2].index, pl.power);
 				}
 				//Spot Lights
-				var spotLightStartingIndex:Int = pointLightStartingIndex + 8 * 3;
+				var spotLightStartingIndex:Int = pointLightStartingIndex + lightsCount * 3;
 				GL.uniform1i ( mesh.shaderProgram.uniforms[spotLightStartingIndex].index, gameObject.scene.spotLights.length );
 				spotLightStartingIndex ++;
 				
@@ -94,13 +95,21 @@ class Renderer
 					throw "Object " + mesh.name +" has undefined vertex buffers...";
 				}
 				
+				var materialUniformIndex:UInt = spotLightStartingIndex + lightsCount * 5;
 				for ( matBinding in mesh.materials ) {
-					matBinding.material.bindMaterialTextures ();
+					matBinding.material.bindMaterialTextures ( );
+					
+					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex ].index, 0 );
+					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 1].index, 1 );
+					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 2].index, 2 );
+					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 3].index, 3 );
 				}
 				
 				drawGeometry(mesh.meshBuffer.vertexBuffer, mesh.vertices.length, mesh.drawPoints,
 						mesh.meshBuffer.edgeIndexBuffer, mesh.edges.length, mesh.drawEdges,
 						mesh.meshBuffer.faceIndexBuffer, mesh.faces.length, mesh.drawFaces);
+						
+				Material.unbindMaterialTextures ();
 			}
 		}
 		
@@ -112,7 +121,6 @@ class Renderer
 		if (Engine.instance.currentScene.skybox != null) {
 			drawCubemap ( Engine.instance.currentScene.skybox, projectionMatrix, viewMatrix );
 		}
-		
 		
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
@@ -131,13 +139,13 @@ class Renderer
 		GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
 		
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index, 3, GL.FLOAT, false, 10 * 4, 0);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index, 3, GL.FLOAT, false, 8 * 4, 0);
 
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index, 3, GL.FLOAT, false, 10 * 4, 3 * 4);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index, 3, GL.FLOAT, false, 8 * 4, 3 * 4);
 
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index, 4, GL.FLOAT, false, 10 * 4, 6 * 4);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index, 2, GL.FLOAT, false, 8 * 4, 6 * 4);
 		
 		if ( Engine.instance.currentScene.skybox != null ) {
 			GL.bindTexture ( GL.TEXTURE_CUBE_MAP, Engine.instance.currentScene.skybox.cubemapTexture );

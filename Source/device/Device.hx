@@ -50,7 +50,7 @@ class Device
 			
 			var plUnifformString:String = "uPointLights";
 			
-			for ( i in 0...8 ) {
+			for ( i in 0...Renderer.lightsCount ) {
 				unitforms.push ( plUnifformString + "[" + i + "].position" );
 				unitforms.push ( plUnifformString + "[" + i + "].color" );
 				unitforms.push ( plUnifformString + "[" + i + "].power" );
@@ -59,7 +59,7 @@ class Device
 			unitforms.push ( "uSpotLightCount" );
 			var spotLString = "uSpotLights";
 			
-			for ( j in 0...8 ) {
+			for ( j in 0...Renderer.lightsCount ) {
 				unitforms.push ( spotLString + "[" + j + "].position" );
 				unitforms.push ( spotLString + "[" + j + "].direction" );
 				unitforms.push ( spotLString + "[" + j + "].color" );
@@ -67,7 +67,12 @@ class Device
 				unitforms.push ( spotLString + "[" + j + "].cutoff" );
 			}
 			
-			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexColor"], unitforms);
+			unitforms.push ( "uMaterialAlbedo" );
+			unitforms.push ( "uMaterialNormal" );
+			unitforms.push ( "uMaterialSmoothness" );
+			unitforms.push ( "uMaterialMetallic" );
+			
+			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexTextCoords"], unitforms);
 			//var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "u_screenWidth", "u_screenHeight"]);
 			//var bloomShader = new ShaderProgram ("bloomShader", "frameBuffer", "bloom", ["a_position"], ["u_sampler", "u_backgroundColor", ]);
 

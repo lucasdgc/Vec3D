@@ -261,6 +261,9 @@ class Mesh
 			batch.push ( vertices[i].normal.y );
 			batch.push ( vertices[i].normal.z );
 			
+			batch.push ( vertices[i].uv.x );
+			batch.push ( vertices[i].uv.y );
+			
 			for(vGroup in vertexGroups){
 				for (vGroup in vertexGroups) {
 					if (vGroup.isColorGroup) {
@@ -278,10 +281,10 @@ class Mesh
 				vertexColor = this.pointColor;
 			}
 			
-			batch.push(vertexColor.r / 255);
-			batch.push(vertexColor.g / 255);
-			batch.push(vertexColor.b / 255);
-			batch.push(vertexColor.a / 255);
+			//batch.push(vertexColor.r / 255);
+			//batch.push(vertexColor.g / 255);
+			//batch.push(vertexColor.b / 255);
+			//batch.push(vertexColor.a / 255);
 		}
 		
 		var returnBatch:Float32Array = new Float32Array (batch);
@@ -495,8 +498,9 @@ class Mesh
 		}
 	}
 	
-	public function bindMaterialAt ( material:Material, index:UInt = 0 ) {
-		materials[index].material = material;
+	public function bindMaterialAt ( mat:Material, index:UInt = 0 ) {
+		var matBinding:MaterialBinding = { material : mat, name : "", id : index, verticesIndex :[] };
+		materials[index] = matBinding;
 	}
 	
 	public function addVertex(x:Float, y:Float, z:Float) {

@@ -40,10 +40,11 @@ class Lighting extends Scene
 		var a = new VirtualAnalogStick ( rect, "Analog X", "Analog Y" );
 		#end
 		//var cubeMesh:Mesh = Primitives.createCube ();
-		var cubeMesh:Mesh = Mesh.loadMeshFile ( "monkey_normals" );
+		var cubeMesh:Mesh = Mesh.loadMeshFile ( "sphere" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		//cubeMesh.calculateNormals ();
 		cubeMesh.drawEdges = false;
+		
 		cube1 = new GameObject ( "monkey", cubeMesh, this );
 		cube1.transform.scale = new Vector3 ( 0.5, 0.5, 0.5 );
 		
@@ -63,15 +64,21 @@ class Lighting extends Scene
 		//monkey5.transform.scale = new Vector3 ( 0.5, 0.5, 0.5 );
 		monkey5.transform.position = new Vector3 ( 3, 0, -3 );
 		
-		var floorMesh:Mesh = Mesh.loadMeshFile ( "cube_nouvs" );
+		var floorMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		//floorMesh.calculateNormals ();
 		var floor:GameObject = new GameObject ( "floor", floorMesh, this );
 	
 		floor.transform.position = new Vector3 ( 0, -1.5, 0 );
 		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 		
-		//sun = new Light ( LightType.DIRECTIONAL, null, 10, 3, Color.yellow, this );
-		var material:Material = new Material ( "bricks.jpg" );
+		sun = new Light ( LightType.DIRECTIONAL, null, 10, 3, Color.yellow, this );
+		var material:Material = new Material ( "bricks_a.jpg", "", "bricks_m.png", "bricks_s.png" );
+		floor.mesh.bindMaterialAt ( material );
+		cubeMesh.bindMaterialAt ( material );
+		monkey2.mesh.bindMaterialAt ( material );
+		monkey3.mesh.bindMaterialAt ( material );
+		monkey4.mesh.bindMaterialAt ( material );
+		monkey5.mesh.bindMaterialAt ( material );
 		
 		pointLight = new Light ( LightType.SPOT, new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
 		pointLight.cutoff = 0.9;
@@ -94,7 +101,8 @@ class Lighting extends Scene
 		var rotationSpeed:Float = 15 * Time.deltaTime;
 		var moveSpeed:Float = 10 * Time.deltaTime;
 
-		pointLight.transform.position = pointLight.transform.position.add ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
+		//pointLight.transform.position = pointLight.transform.position.add ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
+		activeCamera.transform.position = activeCamera.transform.position.add ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
 		
 		//cube1.transform.rotate ( cube1.transform.up.multiplyByFloat ( rotationSpeed ) );
 		monkey2.transform.rotate ( monkey2.transform.up.multiplyByFloat ( - rotationSpeed ) );

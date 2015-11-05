@@ -8,17 +8,17 @@ precision mediump float;
 
 #define pi 3.14159265359;
 
-struct material {
+/*struct material {
 	sampler2D albedo;
 	sampler2D normal;
 	sampler2D smoothness;
 	sampler2D metallic;
-};
+};*/
 
 struct directionalLight {
 	vec3 direction;
 	vec3 color;
-	vec3 power;
+	float power;
 };
 
 struct pointLight {
@@ -42,7 +42,12 @@ uniform int uPointLightCount;
 uniform pointLight uPointLights[8];
 uniform int uSpotLightCount;
 uniform spotLight uSpotLights[8];
-uniform material uMaterial;
+//uniform material uMaterial;
+uniform sampler2D uMaterialAlbedo;
+uniform sampler2D uMaterialNormal;
+uniform sampler2D uMaterialSmoothness;
+uniform sampler2D uMaterialMetallic;
+uniform sampler2D uMaterialParallax;
 
 varying vec3 vFragPosition;
 varying vec3 vNormal;
@@ -70,23 +75,28 @@ void main (void)  {
 	//Fragment attributes
 	vec3 normal = normalize ( vNormal );
 	vec3 eye = normalize ( vEyePos - vFragPosition );
+	
 	//Material attributes
-	vec3 dColor = vec3 ( 0.7, 0.7, 0.7 );
 	vec3 sColor = vec3 ( 0.7, 0.7, 0.7 );
-	float smoothness = 0.0;
-	float metallic = 1.0;
-
-	vec3 fragColor = vec3 ( 0, 0, 0 );
+	vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
+	float smoothness = vec3 ( texture2D ( uMaterialSmoothness, vTexCoords ) ).x;
+	//float smoothness = 0.4;
+	float metallic = vec3 ( texture2D ( uMaterialMetallic, vTexCoords ) ).x;
+	//float metallic = 1.0;
+	
+	vec3 specColor = mix ( sColor, dColor, metallic );
 	
 	//vec3 lightColor = vec3 ( 0.5, 0.4, 0.1 );
 	//float lightPower = 80.0;
 	//vec3 directLighting = lightColor * ( 1.0 / distanceSqr ) ;
 	
-	vec3 specColor = mix ( sColor, dColor, metallic );
+	vec3 fragColor = vec3 ( 0, 0, 0 );
 	//Directional Light Contribbution
-	vec3 dirLightAttr = calcLightFactors ( normalize ( -uDirLight.direction ), normal, eye, smoothness, metallic );
-	vec3 directionalContribution = getDirectLightContribution ( dirLightAttr.x, dirLightAttr.y, dirLightAttr.z, dColor, specColor );
-	fragColor += directionalContribution;
+	if ( uDirLight.power != 0.0 ) {
+		vec3 dirLightAttr = calcLightFactors ( normalize ( -uDirLight.direction ), normal, eye, smoothness, metallic );
+		vec3 directionalContribution = getDirectLightContribution ( dirLightAttr.x, dirLightAttr.y, dirLightAttr.z, dColor, specColor );
+		fragColor += directionalContribution;
+	}
 	//Point Lights Contribbution
 	for ( int i = 0; i < 8; i++ ) {
 		if ( i == uPointLightCount ) {
@@ -110,6 +120,7 @@ void main (void)  {
 			float intensity = clamp ( (theta - outerCutoff) / epsilon, 0.0, 1.0 );   
 			vec3 spotLightAttr = calcLightFactors ( spotDirection, normal, eye, smoothness, metallic );
 			vec3 spotContribution = getDirectLightContribution ( spotLightAttr.x, spotLightAttr.y, spotLightAttr.z, dColor, specColor );
+			//vec3 spotContribution = getDirectLightContribution ( spotLightAttr.x, 0.0, 0, dColor, specColor );
 			fragColor += spotContribution * intensity;
 		}
 	}
@@ -123,6 +134,7 @@ vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, 
 	float dotNL = dot ( normal, lightDir );
 	
 	float diffuseFactor = max ( dotNL, 0.0 );
+	//float diffuseFactor = dotNL;
 	float specularFactor = max ( specularBlinn ( normal, halfDir, smoothness ) * dotNL, 0.0 );
 	float fresnelFactor = max ( fresnelFloat ( eye, normal, 0.0 ) * smoothness, 0.0 );
 	
@@ -131,7 +143,7 @@ vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, 
 
 vec3 getDirectLightContribution ( float diffuseFactor, float specularFactor, float fresnelFactor, vec3 diffuseColor, vec3 specColor ) {
 	vec3 diffuse = diffuseFactor * diffuseColor;
-	vec3 fresnel = mix ( vec3 ( 0, 0, 0), vec3 ( 0.7, 0.7, 0.7 ), fresnelFactor );
+	vec3 fresnel = mix ( vec3 ( 0.0, 0.0, 0.0 ), specColor, fresnelFactor );
 	vec3 specular = ( specularFactor * specColor ) + fresnel;
 	
 	return diffuse + specular;
