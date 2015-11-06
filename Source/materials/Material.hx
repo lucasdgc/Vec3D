@@ -67,6 +67,8 @@ class Material
 	private function createTexture ( bData:BitmapData, isGresScale:Bool = false ):GLTexture {
 		var texture:GLTexture = GL.createTexture ();
 	
+		var ext = GL.getExtension('EXT_sRGB');
+		
 		GL.bindTexture ( GL.TEXTURE_2D, texture );
 		
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);

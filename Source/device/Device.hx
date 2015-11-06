@@ -32,6 +32,10 @@ class Device
 	private var renderer:Renderer;
 	
 	private var blurFrameBuffer:FrameBuffer;
+	private var shadowBuffer:FrameBuffer;
+	
+	private var shadowMapWidth:UInt = 1024;
+	private var shadowMapHeight:UInt = 1024;
 	
 	public function new() 
 	{
@@ -71,6 +75,8 @@ class Device
 			unitforms.push ( "uMaterialNormal" );
 			unitforms.push ( "uMaterialSmoothness" );
 			unitforms.push ( "uMaterialMetallic" );
+			unitforms.push ( "uShadowMap" );
+			unitforms.push ( "uLightSpaceMatrix" );
 			
 			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexTextCoords"], unitforms);
 			//var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "u_screenWidth", "u_screenHeight"]);
@@ -81,6 +87,8 @@ class Device
 			//sceneFrameBuffer = new FrameBuffer (2048, 1024, defaultFrameBufferShader, rect);
 			
 			//blurFrameBuffer = new FrameBuffer (SimpleMath.getCloserPow2(Engine.canvas.stage.stageWidth), SimpleMath.getCloserPow2(Engine.canvas.stage.stageHeight), defaultFrameBufferShader, rect);
+			var shadowProgram:ShaderProgram = new ShaderProgram ( "shadowProgram", "shadowmap", "shadowmap", [ "aVertexPosition" ], [ "uLightSpaceMatrix", "uModelMatrix" ] );
+			shadowBuffer = new FrameBuffer ( shadowMapWidth, shadowMapHeight, shadowProgram, rect, true );
 			
 			//trace ();
 			
@@ -121,8 +129,16 @@ class Device
 	}
 	
 	private function lowPerformanceRender () {
+		//GL.viewport ( 0, 0, shadowMapWidth, shadowMapHeight );
+		//GL.bindFramebuffer ( GL.FRAMEBUFFER,  );
+		//GL.clear ( GL.DEPTH_BUFFER_BIT );
+		//renderer.drawShadowMaps ( shadowBuffer, Engine.instance.currentScene.sun.transform, Engine.instance.currentScene.gameObject );
+		//renderer.drawFrameBuffer ( shadowBuffer );
+		GL.bindFramebuffer ( GL.FRAMEBUFFER, null );
+		GL.viewport (Std.int (Engine.canvas.stage.x), Std.int (Engine.canvas.stage.y), Std.int (Engine.canvas.stage.stageWidth), Std.int (Engine.canvas.stage.stageHeight));
 		renderer.clear(Engine.instance.currentScene.backgroundColor);
-		renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject);
+		renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject, null );
+		//renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject );
 		
 	}
 	
@@ -130,7 +146,7 @@ class Device
 		blurFrameBuffer.bind();
 		renderer.clear(Engine.instance.currentScene.backgroundColor);
 		GL.enable(GL.DEPTH_TEST);
-		renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject);
+	//	renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject, shadowBuffer.depthTexture);
 		GL.disable(GL.DEPTH_TEST);
 		renderer.drawFrameBuffer(blurFrameBuffer);
 	}

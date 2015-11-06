@@ -15,6 +15,7 @@ uniform samplerCube skybox;
 uniform mat4 uModelMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
+uniform mat4 uLightSpaceMatrix; 
 uniform vec3 uLightPos;
 uniform vec3 uCameraPos;
 
@@ -23,6 +24,7 @@ varying vec3 vFragPosition;
 varying vec3 vNormal;
 varying vec3 vLightPos;
 varying vec3 vEyePos;
+varying vec4 vFragPositionLS;
 	
 void main(void) {
 	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4 (aVertexPosition, 1.0);
@@ -38,4 +40,5 @@ void main(void) {
 	vNormal = normalW;
 	vLightPos = lightW;
 	vEyePos = eyeW;
+	vFragPositionLS = uLightSpaceMatrix * vec4 ( vFragPosition, 1.0 );
 }

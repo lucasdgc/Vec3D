@@ -97,6 +97,7 @@ class Mesh
 	public var drawFaces:Bool;
 	
 	public var isStatic:Bool = true;
+	public var castShadows:Bool = true;
 	
 	public var shaderProgram:ShaderProgram;
 	

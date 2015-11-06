@@ -7,8 +7,11 @@ import objects.Camera;
 import objects.GameObject;
 import objects.Light;
 import objects.PointLight;
+import objects.Transform;
+import openfl.gl.GLTexture;
 import openfl.utils.Float32Array;
 import rendering.Cubemap;
+import rendering.Mesh;
 import utils.Color;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;
@@ -28,6 +31,8 @@ class Renderer
 	public var drawCallCount:Int = 0;
 	private var frameDrawCalls:Int = 0;
 	
+	private var lightSpaceMatrix:Matrix;
+	
 	public function new () {
 		
 	}
@@ -37,7 +42,7 @@ class Renderer
 		GL.clear (GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 	}
 	
-	public function render(camera:Camera, gameObjects:Array<GameObject>) {
+	public function render( camera:Camera, gameObjects:Array<GameObject>, shadowMapTexture:GLTexture = null ) {
 		var viewMatrix = camera.viewMatrix.clone ();
 		var projectionMatrix = camera.projectionMatrix.clone ();
 		
@@ -47,7 +52,7 @@ class Renderer
 		GL.useProgram(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).program);
 		
 		for (gameObject in gameObjects) { 
-			if ( !gameObject.isStatic && gameObject.isVisible && gameObject.mesh != null) {
+			if ( !gameObject.isStatic && gameObject.isVisible && gameObject.mesh != null ) {
 				var mesh = gameObject.mesh;
 			
 				var worldMatrix:Matrix = gameObject.transform.transformMatrix;
@@ -103,6 +108,13 @@ class Renderer
 					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 1].index, 1 );
 					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 2].index, 2 );
 					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 3].index, 3 );
+				}
+				
+				if ( shadowMapTexture != null ) {
+					GL.activeTexture ( GL.TEXTURE4 );
+					GL.bindTexture ( GL.TEXTURE_2D, shadowMapTexture );
+					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 4].index, 4 );
+					GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[ materialUniformIndex + 5 ].index, false, new Float32Array (lightSpaceMatrix.m));
 				}
 				
 				drawGeometry(mesh.meshBuffer.vertexBuffer, mesh.vertices.length, mesh.drawPoints,
@@ -170,6 +182,36 @@ class Renderer
 		
 	}
 	
+	public function drawShadowMaps ( shadowBuffer:FrameBuffer, lightTransform:Transform, gameObjects:Array<GameObject>, isOrthogonal:Bool = true ) {
+		GL.viewport ( 0, 0, shadowBuffer.width, shadowBuffer.height );
+		GL.clear( GL.DEPTH_BUFFER_BIT );
+		GL.bindFramebuffer( GL.FRAMEBUFFER, shadowBuffer.frameBuffer );
+		GL.useProgram( shadowBuffer.shaderProgram.program );
+		GL.enable( GL.DEPTH_TEST );
+		
+		var lightProjection:Matrix = Matrix.OrthoLH ( 10, 10, 0.5, 100 ); 
+		var lightView:Matrix = Matrix.LookAtLH ( lightTransform.position, lightTransform.position.add ( lightTransform.forward ), Vector3.Up () );
+		lightSpaceMatrix = lightProjection.multiply ( lightView );
+		
+		GL.uniformMatrix4fv (shadowBuffer.shaderProgram.uniforms[0].index, false, new Float32Array (lightSpaceMatrix.m));
+		for ( go in gameObjects ) {
+			if ( go.isVisible && go.mesh != null ) {
+				if ( go.mesh.castShadows ) {
+					GL.uniformMatrix4fv (shadowBuffer.shaderProgram.uniforms[1].index, false, new Float32Array ( go.transform.transformMatrix.m ));
+					GL.bindBuffer( GL.ARRAY_BUFFER, go.mesh.meshBuffer.vertexBuffer );
+					GL.enableVertexAttribArray( shadowBuffer.shaderProgram.attributes[0].index );
+					GL.vertexAttribPointer( shadowBuffer.shaderProgram.attributes[0].index, 3, GL.FLOAT, false, 8 * 4, 0 );
+					
+					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, go.mesh.meshBuffer.faceIndexBuffer );
+					
+					GL.drawElements ( GL.TRIANGLES, go.mesh.faces.length * 3, GL.UNSIGNED_SHORT, 0 );
+				}
+			}
+		}
+		
+		
+	}
+	
 	public function drawFrameBuffer (frameBuffer:FrameBuffer) {
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);
 
@@ -194,6 +236,7 @@ class Renderer
 	public function drawCubemap ( cubemap:Cubemap, projection:Matrix, view:Matrix ) {
 		GL.bindBuffer ( GL.ARRAY_BUFFER, cubemap.vertexBuffer );
 		GL.useProgram ( cubemap.shaderProgram.program );
+		GL.activeTexture ( GL.TEXTURE0 );
 		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, cubemap.cubemapTexture );
 		
 		GL.enableVertexAttribArray ( cubemap.shaderProgram.attributes[0].index );
@@ -208,6 +251,11 @@ class Renderer
 		
 		GL.bindBuffer ( GL.ARRAY_BUFFER, null );
 		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, null );
+	}
+	
+	public function renderToShadowBuffers ( buffer:FrameBuffer ) {
+		
+		
 	}
 	
 	private function setDefaultShaderParams () {

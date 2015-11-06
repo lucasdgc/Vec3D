@@ -72,6 +72,7 @@ class Lighting extends Scene
 		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 		
 		sun = new Light ( LightType.DIRECTIONAL, null, 10, 3, Color.yellow, this );
+		sun.transform.rotate ( new Vector3 ( 10, 0, 0 ) );
 		var material:Material = new Material ( "bricks_a.jpg", "", "bricks_m.png", "bricks_s.png" );
 		floor.mesh.bindMaterialAt ( material );
 		cubeMesh.bindMaterialAt ( material );

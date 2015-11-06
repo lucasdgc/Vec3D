@@ -16,18 +16,19 @@ class FrameBuffer
 {
 	public var frameBuffer:GLFramebuffer;
 	public var texture (default, null):GLTexture;
+	public var depthTexture (default, null):GLTexture;
 	public var subTexture (default, null):GLTexture;
 	public var vertexBuffer (default, null):GLBuffer;
 	private var renderBuffer:GLRenderbuffer;
 	
-	private var width:Int;
-	private var height:Int;
+	public var width:Int;
+	public var height:Int;
 	
 	public var shaderProgram (default, null):ShaderProgram;
 	
 	public var renderTarget:Rectangle;
 		
-	public function new(width:Int, height:Int, shader:ShaderProgram = null, renderTarget:Rectangle = null) 
+	public function new( width:Int, height:Int, shader:ShaderProgram = null, renderTarget:Rectangle = null, isShadowBuffer:Bool = false ) 
 	{
 		if (Engine.instance == null) {
 			throw "Cannot create framebuffer without Engine instance...";
@@ -41,24 +42,56 @@ class FrameBuffer
 		frameBuffer = GL.createFramebuffer();
 		texture = GL.createTexture();
 		//subTexture = GL.createTexture();
-		vertexBuffer = GL.createBuffer();
-		renderBuffer = GL.createRenderbuffer();
+		//if ( ! isShadowBuffer ) {
+			vertexBuffer = GL.createBuffer();
+			renderBuffer = GL.createRenderbuffer();
+		//}
 
 		GL.bindFramebuffer(GL.FRAMEBUFFER, frameBuffer);
 		GL.bindTexture(GL.TEXTURE_2D, texture);
 		
-		GL.bindRenderbuffer(GL.RENDERBUFFER, renderBuffer);
-		GL.renderbufferStorage(GL.RENDERBUFFER, GL.RGBA4, width, height);
-		GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.RENDERBUFFER, renderBuffer);
-		
-		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, width, height, 0, GL.RGB, GL.UNSIGNED_BYTE, null);
+		if ( ! isShadowBuffer ) {
+			GL.bindRenderbuffer(GL.RENDERBUFFER, renderBuffer);
+			GL.renderbufferStorage(GL.RENDERBUFFER, GL.RGBA4, width, height);
+			GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.RENDERBUFFER, renderBuffer);
+			
+			GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, width, height, 0, GL.RGB, GL.UNSIGNED_BYTE, null);
+			
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+			
+			GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
+		} else {
+			//GL.bindRenderbuffer(GL.RENDERBUFFER, renderBuffer);
+			//GL.renderbufferStorage(GL.RENDERBUFFER, GL.RGBA4, width, height);
+			//GL.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.RENDERBUFFER, renderBuffer);
+			//GL.texImage2D(GL.TEXTURE_2D, 0, GL.DEPTH_COMPONENT, width, height, 0, GL.DEPTH_COMPONENT, GL.FLOAT, null);
+			#if html5
+			var depthTextureExt = GL.getExtension("WEBGL_depth_texture");
+			#end
+			
+			GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGB, width, height, 0, GL.RGB, GL.UNSIGNED_BYTE, null);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT); 
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);  
+			
+			depthTexture = GL.createTexture ();
+			GL.bindTexture(GL.TEXTURE_2D, depthTexture);
+			
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+			GL.texImage2D(GL.TEXTURE_2D, 0, GL.DEPTH_COMPONENT16, width, height, 0, GL.DEPTH_COMPONENT, GL.UNSIGNED_SHORT, null);
+			
+			GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
+			GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.TEXTURE_2D, depthTexture, 0);
+		}
 		//GL.texSubImage2D(GL.TEXTURE_2D, 0, 0, 0, Engine.canvas.stage.stageWidth, Engine.canvas.stage.stageHeight, GL.RGB, GL.UNSIGNED_BYTE, null);
 		//GL.texImage2D(GL.TEXTURE_2D, 0, GL.DEPTH_COMPONENT16, width, height, 0, GL.DEPTH_COMPONENT16, GL.UNSIGNED_BYTE, null)
-		
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-		
-		GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);
 		
 		GL.bindTexture(GL.TEXTURE_2D, null);
 		GL.bindFramebuffer(GL.FRAMEBUFFER, null);

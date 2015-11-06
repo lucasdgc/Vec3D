@@ -6,7 +6,7 @@ precision mediump float;
 precision mediump float;
 #endif
 
-#define pi 3.14159265359;
+#define PI 3.14159265359;
 
 /*struct material {
 	sampler2D albedo;
@@ -48,41 +48,39 @@ uniform sampler2D uMaterialNormal;
 uniform sampler2D uMaterialSmoothness;
 uniform sampler2D uMaterialMetallic;
 uniform sampler2D uMaterialParallax;
+uniform sampler2D uShadowMap;
 
 varying vec3 vFragPosition;
 varying vec3 vNormal;
 varying vec3 vLightPos;
 varying vec3 vEyePos;
 varying vec2 vTexCoords;
+varying vec4 vFragPositionLS;
 
 vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, float metallic );
-
 vec3 getDirectLightContribution ( float diffuseFactor, float specularFactor, float fresnelFactor, vec3 diffuseColor, vec3 specColor );
-
 float lambertDiffuse ( vec3 normal, vec3 lightDir );
-
 float specularBlinn ( vec3 normal, vec3 halfDir, float smoothness );
 float specularPhong  ( vec3 normal, vec3 lightDir, vec3 eye, float smoothness );
-
 vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir );
 vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir );
-
 float fresnelFloat ( vec3 eye, vec3 normal, float f0 );
-
 vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye );
+float calcShadows ( vec4 fragPosLS );
 
 void main (void)  {
 	//Fragment attributes
 	vec3 normal = normalize ( vNormal );
 	vec3 eye = normalize ( vEyePos - vFragPosition );
-	
+	float gamma = 2.2;
 	//Material attributes
 	vec3 sColor = vec3 ( 0.7, 0.7, 0.7 );
-	vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
-	float smoothness = vec3 ( texture2D ( uMaterialSmoothness, vTexCoords ) ).x;
-	//float smoothness = 0.4;
+	vec3 dColor = pow ( vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) ), vec3 ( gamma ) );
+	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
+	float smoothness = clamp ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords ) ).x, 0.0, 1.0 );
+	//float smoothness = 1.0;
 	float metallic = vec3 ( texture2D ( uMaterialMetallic, vTexCoords ) ).x;
-	//float metallic = 1.0;
+	//float metallic = 0.0;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );
 	
@@ -90,10 +88,13 @@ void main (void)  {
 	//float lightPower = 80.0;
 	//vec3 directLighting = lightColor * ( 1.0 / distanceSqr ) ;
 	
+	vec3 debugColor;
+	
 	vec3 fragColor = vec3 ( 0, 0, 0 );
 	//Directional Light Contribbution
 	if ( uDirLight.power != 0.0 ) {
 		vec3 dirLightAttr = calcLightFactors ( normalize ( -uDirLight.direction ), normal, eye, smoothness, metallic );
+		//debugColor = vec3 ( dot (  normalize ( -uDirLight.direction ), normal), dot (  normalize ( -uDirLight.direction ) , normal ), dot (  normalize ( -uDirLight.direction ) , n ) );
 		vec3 directionalContribution = getDirectLightContribution ( dirLightAttr.x, dirLightAttr.y, dirLightAttr.z, dColor, specColor );
 		fragColor += directionalContribution;
 	}
@@ -124,8 +125,13 @@ void main (void)  {
 			fragColor += spotContribution * intensity;
 		}
 	}
+	//Gamma Correction (change to postprocessing....)
+    fragColor = pow(fragColor, vec3(1.0/gamma));
+	//float shadow = calcShadows ( vFragPositionLS );
+	//fragColor = ( 1.0 - shadow ) * fragColor;
 	
 	gl_FragColor = vec4 ( fragColor, 1.0 );
+	//gl_FragColor = vec4 ( debugColor, 1.0 );
 }
 
 vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, float metallic ) {
@@ -136,7 +142,7 @@ vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, 
 	float diffuseFactor = max ( dotNL, 0.0 );
 	//float diffuseFactor = dotNL;
 	float specularFactor = max ( specularBlinn ( normal, halfDir, smoothness ) * dotNL, 0.0 );
-	float fresnelFactor = max ( fresnelFloat ( eye, normal, 0.0 ) * smoothness, 0.0 );
+	float fresnelFactor = max ( fresnelFloat ( eye, normal, 0.0 ), 0.0 ) * smoothness;
 	
 	return vec3 ( diffuseFactor, specularFactor, fresnelFactor );
 }
@@ -149,9 +155,22 @@ vec3 getDirectLightContribution ( float diffuseFactor, float specularFactor, flo
 	return diffuse + specular;
 }
 
+float calcShadows ( vec4 fragPosLS ) {
+	vec3 projCoords = fragPosLS.xyz / fragPosLS.w;
+	projCoords = projCoords * 0.5 + 0.5;
+	
+	float closestDepth = texture2D ( uShadowMap, projCoords.xy ).r; 
+    float currentDepth = projCoords.z;
+	float bias = 0.005;
+	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;  
+    //float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}
+
 float lambertDiffuse ( vec3 normal, vec3 lightDir ) {
 	float diff = max ( dot ( normal, lightDir ), 0.0 );
-	float normalization = 1.0 / pi;
+	float normalization = 1.0 / PI;
 	
 	return diff;
 }
@@ -197,7 +216,7 @@ vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir ) {
 }
 
 vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye ) {
-	float pie = pi;
+	float pie = PI;
 	float normalization = ( power + 2.0 ) / ( 2.0 * pie );
 	vec3 skyboxR = reflect ( - eye, normalize ( normal ) );
 	
