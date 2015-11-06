@@ -189,8 +189,9 @@ class Renderer
 		GL.useProgram( shadowBuffer.shaderProgram.program );
 		GL.enable( GL.DEPTH_TEST );
 		
-		var lightProjection:Matrix = Matrix.OrthoLH ( 10, 10, 0.5, 100 ); 
-		var lightView:Matrix = Matrix.LookAtLH ( lightTransform.position, lightTransform.position.add ( lightTransform.forward ), Vector3.Up () );
+		var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( -3, 3, -8, 3, 0.01, 40 ); 
+		//var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( 10, 10, 8, 8, 0.01, 1000 ); 
+		var lightView:Matrix = Matrix.LookAtLH ( lightTransform.forward.negate(), Vector3.Zero(), Vector3.Up() );
 		lightSpaceMatrix = lightProjection.multiply ( lightView );
 		
 		GL.uniformMatrix4fv (shadowBuffer.shaderProgram.uniforms[0].index, false, new Float32Array (lightSpaceMatrix.m));

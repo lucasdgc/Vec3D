@@ -127,8 +127,8 @@ void main (void)  {
 	}
 	//Gamma Correction (change to postprocessing....)
     fragColor = pow(fragColor, vec3(1.0/gamma));
-	//float shadow = calcShadows ( vFragPositionLS );
-	//fragColor = ( 1.0 - shadow ) * fragColor;
+	float shadow = calcShadows ( vFragPositionLS );
+	fragColor = ( 1.0 - shadow ) * fragColor;
 	
 	gl_FragColor = vec4 ( fragColor, 1.0 );
 	//gl_FragColor = vec4 ( debugColor, 1.0 );
@@ -162,7 +162,7 @@ float calcShadows ( vec4 fragPosLS ) {
 	float closestDepth = texture2D ( uShadowMap, projCoords.xy ).r; 
     float currentDepth = projCoords.z;
 	float bias = 0.005;
-	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;  
+	float shadow = currentDepth - bias > closestDepth  ? 0.7 : 0.0;  
     //float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
     return shadow;

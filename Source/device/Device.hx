@@ -132,12 +132,12 @@ class Device
 		//GL.viewport ( 0, 0, shadowMapWidth, shadowMapHeight );
 		//GL.bindFramebuffer ( GL.FRAMEBUFFER,  );
 		//GL.clear ( GL.DEPTH_BUFFER_BIT );
-		//renderer.drawShadowMaps ( shadowBuffer, Engine.instance.currentScene.sun.transform, Engine.instance.currentScene.gameObject );
+		renderer.drawShadowMaps ( shadowBuffer, Engine.instance.currentScene.sun.transform, Engine.instance.currentScene.gameObject );
 		//renderer.drawFrameBuffer ( shadowBuffer );
 		GL.bindFramebuffer ( GL.FRAMEBUFFER, null );
 		GL.viewport (Std.int (Engine.canvas.stage.x), Std.int (Engine.canvas.stage.y), Std.int (Engine.canvas.stage.stageWidth), Std.int (Engine.canvas.stage.stageHeight));
 		renderer.clear(Engine.instance.currentScene.backgroundColor);
-		renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject, null );
+		renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject, shadowBuffer.depthTexture );
 		//renderer.render(Engine.instance.currentScene.activeCamera, Engine.instance.currentScene.gameObject );
 		
 	}
