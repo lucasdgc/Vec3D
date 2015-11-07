@@ -66,7 +66,7 @@ vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir );
 vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir );
 float fresnelFloat ( vec3 eye, vec3 normal, float f0 );
 vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye );
-float calcShadows ( vec4 fragPosLS );
+float calcShadows ( vec4 fragPosLS, float dotNL );
 
 void main (void)  {
 	//Fragment attributes
@@ -87,13 +87,16 @@ void main (void)  {
 	//vec3 lightColor = vec3 ( 0.5, 0.4, 0.1 );
 	//float lightPower = 80.0;
 	//vec3 directLighting = lightColor * ( 1.0 / distanceSqr ) ;
+	float sunDotNL;
 	
 	vec3 debugColor;
 	
 	vec3 fragColor = vec3 ( 0, 0, 0 );
 	//Directional Light Contribbution
 	if ( uDirLight.power != 0.0 ) {
-		vec3 dirLightAttr = calcLightFactors ( normalize ( -uDirLight.direction ), normal, eye, smoothness, metallic );
+		vec3 sunDir = normalize ( -uDirLight.direction );
+		sunDotNL = dot ( normal, sunDir );
+		vec3 dirLightAttr = calcLightFactors ( sunDir, normal, eye, smoothness, metallic );
 		//debugColor = vec3 ( dot (  normalize ( -uDirLight.direction ), normal), dot (  normalize ( -uDirLight.direction ) , normal ), dot (  normalize ( -uDirLight.direction ) , n ) );
 		vec3 directionalContribution = getDirectLightContribution ( dirLightAttr.x, dirLightAttr.y, dirLightAttr.z, dColor, specColor );
 		fragColor += directionalContribution;
@@ -127,7 +130,7 @@ void main (void)  {
 	}
 	//Gamma Correction (change to postprocessing....)
     fragColor = pow(fragColor, vec3(1.0/gamma));
-	float shadow = calcShadows ( vFragPositionLS );
+	float shadow = calcShadows ( vFragPositionLS, sunDotNL );
 	fragColor = ( 1.0 - shadow ) * fragColor;
 	
 	gl_FragColor = vec4 ( fragColor, 1.0 );
@@ -155,13 +158,13 @@ vec3 getDirectLightContribution ( float diffuseFactor, float specularFactor, flo
 	return diffuse + specular;
 }
 
-float calcShadows ( vec4 fragPosLS ) {
+float calcShadows ( vec4 fragPosLS, float dotNL ) {
 	vec3 projCoords = fragPosLS.xyz / fragPosLS.w;
 	projCoords = projCoords * 0.5 + 0.5;
 	
 	float closestDepth = texture2D ( uShadowMap, projCoords.xy ).r; 
     float currentDepth = projCoords.z;
-	float bias = 0.005;
+	float bias = max ( 0.05 * ( 1.0 - dotNL ), 0.005 );  
 	float shadow = currentDepth - bias > closestDepth  ? 0.7 : 0.0;  
     //float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 

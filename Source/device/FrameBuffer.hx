@@ -85,6 +85,8 @@ class FrameBuffer
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 			GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+			var borderColor:Array<Float> = [ 1.0, 1.0, 1.0, 1.0 ];
+			//GL.texParameterfv(GL.TEXTURE_2D, GL.TEXTURE_BORD, borderColor);  
 			GL.texImage2D(GL.TEXTURE_2D, 0, GL.DEPTH_COMPONENT, width, height, 0, GL.DEPTH_COMPONENT, GL.UNSIGNED_SHORT, null);
 			
 			GL.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture, 0);

@@ -34,8 +34,8 @@ class Device
 	private var blurFrameBuffer:FrameBuffer;
 	private var shadowBuffer:FrameBuffer;
 	
-	private var shadowMapWidth:UInt = 1024;
-	private var shadowMapHeight:UInt = 1024;
+	private var shadowMapWidth:UInt = 2048 ;
+	private var shadowMapHeight:UInt = 2048;
 	
 	public function new() 
 	{

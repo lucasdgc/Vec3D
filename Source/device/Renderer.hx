@@ -184,13 +184,14 @@ class Renderer
 	
 	public function drawShadowMaps ( shadowBuffer:FrameBuffer, lightTransform:Transform, gameObjects:Array<GameObject>, isOrthogonal:Bool = true ) {
 		GL.viewport ( 0, 0, shadowBuffer.width, shadowBuffer.height );
-		GL.clear( GL.DEPTH_BUFFER_BIT );
 		GL.bindFramebuffer( GL.FRAMEBUFFER, shadowBuffer.frameBuffer );
+		GL.clear( GL.DEPTH_BUFFER_BIT | GL.COLOR_BUFFER_BIT );
 		GL.useProgram( shadowBuffer.shaderProgram.program );
 		GL.enable( GL.DEPTH_TEST );
+		GL.cullFace ( GL.FRONT );
 		
-		var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( -3, 3, -8, 3, 0.01, 40 ); 
-		//var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( 10, 10, 8, 8, 0.01, 1000 ); 
+		var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( -5, 5, -8, 3, 0.01, 10 ); 
+		//var lightProjection:Matrix = Matrix.OrthoLH ( 10, 10, 0.01, 10 ); 
 		var lightView:Matrix = Matrix.LookAtLH ( lightTransform.forward.negate(), Vector3.Zero(), Vector3.Up() );
 		lightSpaceMatrix = lightProjection.multiply ( lightView );
 		
@@ -209,7 +210,7 @@ class Renderer
 				}
 			}
 		}
-		
+		GL.cullFace ( GL.BACK );
 		
 	}
 	

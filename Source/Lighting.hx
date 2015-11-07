@@ -40,7 +40,7 @@ class Lighting extends Scene
 		var a = new VirtualAnalogStick ( rect, "Analog X", "Analog Y" );
 		#end
 		//var cubeMesh:Mesh = Primitives.createCube ();
-		var cubeMesh:Mesh = Mesh.loadMeshFile ( "sphere" );
+		var cubeMesh:Mesh = Mesh.loadMeshFile ( "monkey_uv" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		//cubeMesh.calculateNormals ();
 		cubeMesh.drawEdges = false;
@@ -72,7 +72,7 @@ class Lighting extends Scene
 		floor.transform.scale = new Vector3 ( 5, 1, 5  );
 		
 		sun = new Light ( LightType.DIRECTIONAL, new Vector3 ( 0, 0, -1 ), 10, 3, Color.yellow, this );
-		sun.transform.rotate ( new Vector3 ( -30, 0, 0 ) );
+		sun.transform.rotate ( new Vector3 ( -45, 0, 0 ) );
 		var material:Material = new Material ( "bricks_a.jpg", "", "bricks_m.png", "bricks_s.png" );
 		floor.mesh.bindMaterialAt ( material );
 		cubeMesh.bindMaterialAt ( material );
@@ -107,10 +107,10 @@ class Lighting extends Scene
 		
 		
 		//sun.transform.rotation = sun.transform.rotation.add ( new Vector3 ( 0, rotationSpeed, 0 ) );
-		//monkey2.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
+		monkey2.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
 		
 		//cube1.transform.rotate ( cube1.transform.up.multiplyByFloat ( rotationSpeed ) );
-		monkey2.transform.rotate ( monkey2.transform.up.multiplyByFloat ( - rotationSpeed ) );
+		//monkey2.transform.rotate ( monkey2.transform.up.multiplyByFloat ( - rotationSpeed ) );
 		monkey3.transform.rotate ( monkey3.transform.up.multiplyByFloat ( rotationSpeed ) );
 		monkey4.transform.rotate ( monkey4.transform.up.multiplyByFloat ( - rotationSpeed ) );
 		monkey5.transform.rotate ( monkey5.transform.up.multiplyByFloat ( rotationSpeed ) );
