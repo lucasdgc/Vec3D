@@ -99,7 +99,7 @@ class Lighting extends Scene
 		var h:Float = InputAxis.getValue ("Analog X");
 		var v:Float = InputAxis.getValue ("Analog Y");
 		#end
-		var rotationSpeed:Float = 150 * Time.deltaTime;
+		var rotationSpeed:Float = 15 * Time.deltaTime;
 		var moveSpeed:Float = 10 * Time.deltaTime;
 
 		//pointLight.transform.position = pointLight.transform.position.add ( new Vector3 ( h, 0, v ).multiplyByFloat ( moveSpeed ) );
