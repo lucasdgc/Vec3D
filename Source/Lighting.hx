@@ -73,9 +73,9 @@ class Lighting extends Scene
 		
 		sun = new Light ( LightType.DIRECTIONAL, new Vector3 ( 0, 0, -1 ), 10, 3, Color.yellow, this );
 		sun.transform.rotate ( new Vector3 ( -45, 0, 0 ) );
-		var material:Material = new Material ( "bricks_a.jpg", "", "bricks_m.png", "bricks_s.png" );
-		var material2:Material = new Material ( "rustmetal_a.png", "", "rustmetal_m.png", "rustmetal_s.png" );
-		var material3:Material = new Material ( "tiledroad_a.png", "", "tiledroad_m.png", "tiledroad_s.png" );
+		var material:Material = new Material ( "bricks_a.jpg", "bricks_n.png", "bricks_m.png", "bricks_s.png" );
+		var material2:Material = new Material ( "rustmetal_a.png", "rustmetal_n.png", "rustmetal_m.png", "rustmetal_s.png" );
+		var material3:Material = new Material ( "tiledroad_a.png", "tiledroad_n.png", "tiledroad_m.png", "tiledroad_s.png" );
 		floor.mesh.bindMaterialAt ( material2 );
 		cubeMesh.bindMaterialAt ( material );
 		monkey2.mesh.bindMaterialAt ( material );

@@ -137,6 +137,8 @@ class Renderer
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
+		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[3].index);
+		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[4].index);
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
@@ -151,13 +153,19 @@ class Renderer
 		GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
 		
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index, 3, GL.FLOAT, false, 8 * 4, 0);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index, 3, GL.FLOAT, false, 14 * 4, 0);
 
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index, 3, GL.FLOAT, false, 8 * 4, 3 * 4);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index, 3, GL.FLOAT, false, 14 * 4, 3 * 4);
 
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
-		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index, 2, GL.FLOAT, false, 8 * 4, 6 * 4);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index, 2, GL.FLOAT, false, 14 * 4, 6 * 4);
+		
+		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[3].index);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[3].index, 3, GL.FLOAT, false, 14 * 4, 8 * 4);
+		
+		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[4].index);
+		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[4].index, 3, GL.FLOAT, false, 14 * 4, 11 * 4);
 		
 		if ( Engine.instance.currentScene.skybox != null ) {
 			GL.bindTexture ( GL.TEXTURE_CUBE_MAP, Engine.instance.currentScene.skybox.cubemapTexture );

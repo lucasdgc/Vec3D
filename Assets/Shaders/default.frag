@@ -56,6 +56,7 @@ varying vec3 vLightPos;
 varying vec3 vEyePos;
 varying vec2 vTexCoords;
 varying vec4 vFragPositionLS;
+varying mat3 vTBN;
 
 vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, float metallic );
 vec3 getDirectLightContribution ( float diffuseFactor, float specularFactor, float fresnelFactor, vec3 diffuseColor, vec3 specColor );
@@ -70,7 +71,11 @@ float calcShadows ( vec4 fragPosLS, float dotNL );
 
 void main (void)  {
 	//Fragment attributes
-	vec3 normal = normalize ( vNormal );
+	//vec3 normal = normalize ( vNormal );
+	vec3 normal = texture2D ( uMaterialNormal, vTexCoords ).rgb;
+	normal = normalize ( normal * 2.0 - 1.0 );   
+	normal = normalize ( vTBN * normal );
+	
 	vec3 eye = normalize ( vEyePos - vFragPosition );
 	float gamma = 2.2;
 	//Material attributes
@@ -79,8 +84,8 @@ void main (void)  {
 	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
 	float smoothness = clamp ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, 0.0, 1.0 );
 	//float smoothness = 1.8;
-	float metallic = clamp ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, 0.0, 1.0 );
-	//float metallic = 0.0;
+	//float metallic = clamp ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, 0.0, 1.0 );
+	float metallic = 0.0;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );
 	

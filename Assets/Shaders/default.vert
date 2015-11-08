@@ -9,6 +9,8 @@ precision mediump float;
 attribute vec3 aVertexPosition;
 attribute vec3 aVertexNormal;
 attribute vec2 aVertexTextCoords;
+attribute vec3 aVertexTangent;
+attribute vec3 aVertexBitangent;
 
 uniform samplerCube skybox;
 
@@ -25,6 +27,7 @@ varying vec3 vNormal;
 varying vec3 vLightPos;
 varying vec3 vEyePos;
 varying vec4 vFragPositionLS;
+varying mat3 vTBN;
 	
 void main(void) {
 	gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * vec4 (aVertexPosition, 1.0);
@@ -35,10 +38,15 @@ void main(void) {
 	//vec3 eyeC = vec3 ( 0.0, 0.0, 0.0 ) - vertexC;
 	vec3 eyeW = uCameraPos;
 	
+	vec3 T = normalize ( vec3 ( uModelMatrix * vec4 ( aVertexTangent,   0.0 )));
+	vec3 B = normalize ( vec3 ( uModelMatrix * vec4 ( aVertexBitangent, 0.0 )));
+	vec3 N = normalize ( vec3 ( uModelMatrix * vec4 ( aVertexNormal,    0.0 )));
+	
 	vTexCoords = aVertexTextCoords;
     vFragPosition = vertexW;
 	vNormal = normalW;
 	vLightPos = lightW;
 	vEyePos = eyeW;
 	vFragPositionLS = uLightSpaceMatrix * vec4 ( vFragPosition, 1.0 );
+	vTBN = mat3 ( T, B, N );
 }

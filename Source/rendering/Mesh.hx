@@ -267,6 +267,14 @@ class Mesh
 			batch.push ( vertices[i].uv.x );
 			batch.push ( vertices[i].uv.y );
 			
+			batch.push ( vertices[i].tangent.x );
+			batch.push ( vertices[i].tangent.y );
+			batch.push ( vertices[i].tangent.z );
+			
+			batch.push ( vertices[i].bitangent.x );
+			batch.push ( vertices[i].bitangent.y );
+			batch.push ( vertices[i].bitangent.z );
+			
 			for(vGroup in vertexGroups){
 				for (vGroup in vertexGroups) {
 					if (vGroup.isColorGroup) {
@@ -345,7 +353,7 @@ class Mesh
 
 				var vGroups:Dynamic = jsonData.meshes[i].vertexGroups;
 				var vertexGroupCount = vGroups.length;
-				var vertexStructSize:UInt = ( hasUv ) ? 8 : 6;
+				var vertexStructSize:UInt = ( hasUv ) ? 14 : 6;
 				var verticesCount = Std.int(verticesArray.length / (vertexStep * vertexStructSize));
 				var facesCount = Std.int(facesArray.length / 3);
 				var edgesCount = Std.int(edgesArray.length / 2);
@@ -411,25 +419,33 @@ class Mesh
 					var normalY:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 4]);
 					var normalZ:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 5]);
 					
-					//var tangentX:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 6]);
-					//var tangentY:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 7]);
-					//var tangentZ:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 8]);
-					
-					//var bitangentx:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 9]);
-					//var bitangentY:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 10]);
-					//var bitangentZ:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 11]);
-					
 					var uvU:Float = 0;
 					var uvV:Float = 0;
+					
+					var tangentX:Float = 0;
+					var tangentY:Float = 0;
+					var tangentZ:Float = 0;
+					
+					var bitangentX:Float = 0;
+					var bitangentY:Float = 0;
+					var bitangentZ:Float = 0;
 
 					if ( hasUv ) {
 						uvU = Std.parseFloat(verticesArray[k * vertexStructSize + 6]);
 						uvV = Std.parseFloat(verticesArray[k * vertexStructSize + 7]);
+							
+						tangentX = Std.parseFloat(verticesArray[k * vertexStructSize + 8]);
+						tangentY = Std.parseFloat(verticesArray[k * vertexStructSize + 9]);
+						tangentZ = Std.parseFloat(verticesArray[k * vertexStructSize + 10]);
+						
+						bitangentX = Std.parseFloat(verticesArray[k * vertexStructSize + 11]);
+						bitangentY = Std.parseFloat(verticesArray[k * vertexStructSize + 12]);
+						bitangentZ = Std.parseFloat(verticesArray[k * vertexStructSize + 13]);
 					}
 					
 					if(i == 0){
 						mesh.vertices[k] = { position : new Vector3(x, y, z), normal : new Vector3 ( normalX, normalY, normalZ ), 
-						uv : new Vector2 (uvU,uvV), tangent : new Vector3 (), bitangent : new Vector3 () };
+						uv : new Vector2 (uvU,uvV), tangent : new Vector3 ( tangentX, tangentY, tangentZ ), bitangent : new Vector3 ( bitangentX, bitangentY, bitangentZ ) };
 					} /*else {
 						mesh.vertices[mesh.vertices.length] = new Vector3(x + pos.x, y + pos.y, z + pos.z);
 					}*/

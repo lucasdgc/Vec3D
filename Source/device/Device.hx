@@ -34,8 +34,8 @@ class Device
 	private var blurFrameBuffer:FrameBuffer;
 	private var shadowBuffer:FrameBuffer;
 	
-	private var shadowMapWidth:UInt = Std.int ( 256 );
-	private var shadowMapHeight:UInt = Std.int ( 256 );
+	private var shadowMapWidth:UInt = Std.int ( 1024 );
+	private var shadowMapHeight:UInt = Std.int ( 1024 );
 	
 	public function new() 
 	{
@@ -78,7 +78,7 @@ class Device
 			unitforms.push ( "uShadowMap" );
 			unitforms.push ( "uLightSpaceMatrix" );
 			
-			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexTextCoords"], unitforms);
+			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexTextCoords", "aVertexTangent", "aVertexBitangent"], unitforms);
 			//var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "u_screenWidth", "u_screenHeight"]);
 			//var bloomShader = new ShaderProgram ("bloomShader", "frameBuffer", "bloom", ["a_position"], ["u_sampler", "u_backgroundColor", ]);
 

@@ -49,13 +49,15 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 	def execute(self, context):
 	       return Export_babylon.save(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob", "global_scale")))
 		   
-	def mesh_triangulate(mesh):
+	def mesh_triangulate(mesh, calcTangent):
 		import bmesh
 		bm = bmesh.new()
 		bm.from_mesh(mesh)
 		bmesh.ops.triangulate(bm, faces=bm.faces)
 		bm.to_mesh(mesh)
 		mesh.calc_tessface()
+		if calcTangent == True:
+			mesh.calc_tangents ()
 		bm.free()
 
 	def write_array3(file_handler, name, array):
@@ -203,9 +205,6 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		matrix_world = object.matrix_world.copy()
 		matrix_world.translation = mathutils.Vector((0, 0, 0))
 		mesh.transform(matrix_world)		
-								
-		# Triangulate mesh if required
-		Export_babylon.mesh_triangulate(mesh)
 		
 		# Getting vertices, faces and edges
 		vertices=",\"vertices\":["
@@ -222,6 +221,9 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 		else:
 			hasUV = False
 			
+			
+		# Triangulate mesh if required
+		Export_babylon.mesh_triangulate(mesh, hasUV)
 		#if len(mesh.tessface_uv_textures) > 1:
 		#	UV2map=mesh.tessface_uv_textures[1].data
 		#else:
@@ -276,21 +278,34 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			hasUV = len(mesh.tessface_uv_textures) > 0
 			if hasUV:
 				savedUV = False
-				for face in mesh.tessfaces:
+				for face in mesh.polygons:
 					for v in range (0, 3):
 						if (face.vertices[v] == vertex_index):
 							savedUV = True
 							UVmap = mesh.tessface_uv_textures[0].data
 							vertex_UV = UVmap[face.index].uv[v]
+							
 							vertices+="%.4f,%.4f,"%(vertex_UV[0], vertex_UV[1])
+							
+							for loop in mesh.loops:
+								if loop.vertex_index == vertex_index:
+									vert = mesh.loops[v]
+									tangent = vert.tangent
+									normal = vert.normal
+									bitangent = vert.bitangent
+									vertices+="%.4f,%.4f,%.4f,"%(tangent.x,tangent.z,tangent.y)
+									vertices+="%.4f,%.4f,%.4f,"%(bitangent.x,bitangent.z,bitangent.y)
+									break
+							
+							
 							break
 					if (savedUV):
 						break
 			#if hasUV2:
 			#	vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
 			
-			# vertices+="%.4f,%.4f,%.4f,"%(tangent.x,tangent.z,tangent.y)
-			# vertices+="%.4f,%.4f,%.4f,"%(bitangent.x,bitangent.z,bitangent.y)
+			#
+			# 
 			
 			for vg in verts.groups:
 			
