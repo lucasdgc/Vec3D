@@ -48,6 +48,8 @@ import utils.SimpleMath;
 	var position:Vector3;
 	var normal:Vector3;
 	var uv:Vector2;
+	var tangent:Vector3;
+	var bitangent:Vector3;
  }
  
  typedef Edge = {
@@ -409,6 +411,14 @@ class Mesh
 					var normalY:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 4]);
 					var normalZ:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 5]);
 					
+					//var tangentX:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 6]);
+					//var tangentY:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 7]);
+					//var tangentZ:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 8]);
+					
+					//var bitangentx:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 9]);
+					//var bitangentY:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 10]);
+					//var bitangentZ:Float = Std.parseFloat(verticesArray[k * vertexStructSize + 11]);
+					
 					var uvU:Float = 0;
 					var uvV:Float = 0;
 
@@ -418,7 +428,8 @@ class Mesh
 					}
 					
 					if(i == 0){
-						mesh.vertices[k] = { position : new Vector3(x, y, z), normal : new Vector3 ( normalX, normalY, normalZ ), uv : new Vector2 (uvU,uvV) };
+						mesh.vertices[k] = { position : new Vector3(x, y, z), normal : new Vector3 ( normalX, normalY, normalZ ), 
+						uv : new Vector2 (uvU,uvV), tangent : new Vector3 (), bitangent : new Vector3 () };
 					} /*else {
 						mesh.vertices[mesh.vertices.length] = new Vector3(x + pos.x, y + pos.y, z + pos.z);
 					}*/
@@ -505,7 +516,7 @@ class Mesh
 	}
 	
 	public function addVertex(x:Float, y:Float, z:Float) {
-		var newVertex:Vertex = { position : new Vector3(x, y, z), normal : new Vector3 (), uv : new Vector2 (0,0) }
+		var newVertex:Vertex = { position : new Vector3(x, y, z), normal : new Vector3 (), uv : new Vector2 (0,0), tangent : new Vector3 (), bitangent : new Vector3 () }
 		
 		vertices.push(newVertex);
 	}

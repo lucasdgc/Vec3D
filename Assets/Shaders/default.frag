@@ -77,9 +77,9 @@ void main (void)  {
 	vec3 sColor = vec3 ( 0.7, 0.7, 0.7 );
 	vec3 dColor = pow ( vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) ), vec3 ( gamma ) );
 	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
-	float smoothness = clamp ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords ) ).x, 0.0, 1.0 );
-	//float smoothness = 1.0;
-	float metallic = vec3 ( texture2D ( uMaterialMetallic, vTexCoords ) ).x;
+	float smoothness = clamp ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, 0.0, 1.0 );
+	//float smoothness = 1.8;
+	float metallic = clamp ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, 0.0, 1.0 );
 	//float metallic = 0.0;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );

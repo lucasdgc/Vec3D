@@ -34,8 +34,8 @@ class Device
 	private var blurFrameBuffer:FrameBuffer;
 	private var shadowBuffer:FrameBuffer;
 	
-	private var shadowMapWidth:UInt = 2048 ;
-	private var shadowMapHeight:UInt = 2048;
+	private var shadowMapWidth:UInt = Std.int ( 256 );
+	private var shadowMapHeight:UInt = Std.int ( 256 );
 	
 	public function new() 
 	{
@@ -85,7 +85,9 @@ class Device
 			//var rect:Rectangle = new Rectangle (Engine.canvas.stage.stageWidth / 4, Engine.canvas.stage.stageHeight / 2, Engine.canvas.stage.stageWidth / 4, Engine.canvas.stage.stageHeight / 4);
 			var rect:Rectangle = new Rectangle (Engine.canvas.stage.x, Engine.canvas.stage.y, Engine.canvas.stage.stageWidth, Engine.canvas.stage.stageHeight);
 			//sceneFrameBuffer = new FrameBuffer (2048, 1024, defaultFrameBufferShader, rect);
-			
+			#if html5
+			var stdDerivatives = GL.getExtension("OES_standard_derivatives");
+			#end
 			//blurFrameBuffer = new FrameBuffer (SimpleMath.getCloserPow2(Engine.canvas.stage.stageWidth), SimpleMath.getCloserPow2(Engine.canvas.stage.stageHeight), defaultFrameBufferShader, rect);
 			var shadowProgram:ShaderProgram = new ShaderProgram ( "shadowProgram", "shadowmap", "shadowmap", [ "aVertexPosition" ], [ "uLightSpaceMatrix", "uModelMatrix" ] );
 			shadowBuffer = new FrameBuffer ( shadowMapWidth, shadowMapHeight, shadowProgram, rect, true );

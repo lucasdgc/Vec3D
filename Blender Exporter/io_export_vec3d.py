@@ -262,6 +262,9 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			vertex = mesh.vertices[vertex_index]
 			position = vertex.co
 			normal = vertex.normal	
+			# tangent = vertex.tangent
+			# bitangent = vertex.bitangent_sign * normal.cross(tangent)
+			
 		
 			index=vertsCount
 			alreadySavedVertices[vertex_index]=True
@@ -286,6 +289,8 @@ class Export_babylon(bpy.types.Operator, ExportHelper):
 			#if hasUV2:
 			#	vertices+="%.4f,%.4f,"%(vertex_UV2[0], vertex_UV2[1])
 			
+			# vertices+="%.4f,%.4f,%.4f,"%(tangent.x,tangent.z,tangent.y)
+			# vertices+="%.4f,%.4f,%.4f,"%(bitangent.x,bitangent.z,bitangent.y)
 			
 			for vg in verts.groups:
 			

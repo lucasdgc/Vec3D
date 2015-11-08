@@ -40,7 +40,7 @@ class Lighting extends Scene
 		var a = new VirtualAnalogStick ( rect, "Analog X", "Analog Y" );
 		#end
 		//var cubeMesh:Mesh = Primitives.createCube ();
-		var cubeMesh:Mesh = Mesh.loadMeshFile ( "monkey_uv" );
+		var cubeMesh:Mesh = Mesh.loadMeshFile ( "sphere" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		//cubeMesh.calculateNormals ();
 		cubeMesh.drawEdges = false;
@@ -74,11 +74,13 @@ class Lighting extends Scene
 		sun = new Light ( LightType.DIRECTIONAL, new Vector3 ( 0, 0, -1 ), 10, 3, Color.yellow, this );
 		sun.transform.rotate ( new Vector3 ( -45, 0, 0 ) );
 		var material:Material = new Material ( "bricks_a.jpg", "", "bricks_m.png", "bricks_s.png" );
-		floor.mesh.bindMaterialAt ( material );
+		var material2:Material = new Material ( "rustmetal_a.png", "", "rustmetal_m.png", "rustmetal_s.png" );
+		var material3:Material = new Material ( "tiledroad_a.png", "", "tiledroad_m.png", "tiledroad_s.png" );
+		floor.mesh.bindMaterialAt ( material2 );
 		cubeMesh.bindMaterialAt ( material );
 		monkey2.mesh.bindMaterialAt ( material );
-		monkey3.mesh.bindMaterialAt ( material );
-		monkey4.mesh.bindMaterialAt ( material );
+		monkey3.mesh.bindMaterialAt ( material2 );
+		monkey4.mesh.bindMaterialAt ( material3 );
 		monkey5.mesh.bindMaterialAt ( material );
 		
 		pointLight = new Light ( LightType.SPOT, new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
@@ -108,12 +110,15 @@ class Lighting extends Scene
 		
 		//sun.transform.rotation = sun.transform.rotation.add ( new Vector3 ( 0, rotationSpeed, 0 ) );
 		monkey2.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
+		monkey3.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
+		monkey4.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
+		monkey5.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
 		
 		//cube1.transform.rotate ( cube1.transform.up.multiplyByFloat ( rotationSpeed ) );
 		//monkey2.transform.rotate ( monkey2.transform.up.multiplyByFloat ( - rotationSpeed ) );
-		monkey3.transform.rotate ( monkey3.transform.up.multiplyByFloat ( rotationSpeed ) );
-		monkey4.transform.rotate ( monkey4.transform.up.multiplyByFloat ( - rotationSpeed ) );
-		monkey5.transform.rotate ( monkey5.transform.up.multiplyByFloat ( rotationSpeed ) );
+		//monkey3.transform.rotate ( monkey3.transform.up.multiplyByFloat ( rotationSpeed ) );
+		//monkey4.transform.rotate ( monkey4.transform.up.multiplyByFloat ( - rotationSpeed ) );
+		//monkey5.transform.rotate ( monkey5.transform.up.multiplyByFloat ( rotationSpeed ) );
 		//cube1.transform.rotate ( cube1.transform.right.multiplyByFloat ( rotationSpeed / 2 ) );
 		//activeCamera.transform.rotate ( activeCamera.transform.right.multiplyByFloat ( - rotationSpeed ) );
 	}
