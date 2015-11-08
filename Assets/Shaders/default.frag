@@ -83,9 +83,9 @@ void main (void)  {
 	vec3 dColor = pow ( vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) ), vec3 ( gamma ) );
 	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
 	float smoothness = clamp ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, 0.0, 1.0 );
-	//float smoothness = 1.8;
-	//float metallic = clamp ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, 0.0, 1.0 );
-	float metallic = 0.0;
+	//float smoothness = 0.4;
+	float metallic = clamp ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, 0.0, 1.0 );
+	//float metallic = 0.0;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );
 	
@@ -173,7 +173,8 @@ float calcShadows ( vec4 fragPosLS, float dotNL ) {
 	float shadow = currentDepth - bias > closestDepth  ? 0.7 : 0.0;  
     //float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
-    return shadow;
+    //return shadow;
+	return 0.0;
 }
 
 float lambertDiffuse ( vec3 normal, vec3 lightDir ) {

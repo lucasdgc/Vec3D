@@ -198,7 +198,7 @@ class Renderer
 		GL.enable( GL.DEPTH_TEST );
 		GL.cullFace ( GL.FRONT );
 		
-		var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( -5, 5, -8, 3, 0.01, 10 ); 
+		var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( -5, 5, -8, 8, 0.01, 10 ); 
 		//var lightProjection:Matrix = Matrix.OrthoLH ( 10, 10, 0.01, 10 ); 
 		var lightView:Matrix = Matrix.LookAtLH ( lightTransform.forward.negate(), Vector3.Zero(), Vector3.Up() );
 		lightSpaceMatrix = lightProjection.multiply ( lightView );
