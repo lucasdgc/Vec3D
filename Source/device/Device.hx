@@ -77,6 +77,7 @@ class Device
 			unitforms.push ( "uMaterialMetallic" );
 			unitforms.push ( "uShadowMap" );
 			unitforms.push ( "uLightSpaceMatrix" );
+			unitforms.push ( "uSkybox" );
 			
 			var defaultShader = new ShaderProgram (DEFAULT_SHADER_NAME, "default", "default", ["aVertexPosition", "aVertexNormal", "aVertexTextCoords", "aVertexTangent", "aVertexBitangent"], unitforms);
 			//var defaultFrameBufferShader = new ShaderProgram (DEFAULT_FRAMEBUFFER_SHADER_NAME, "frameBuffer", "frameBuffer", ["a_position"], ["u_sampler", "u_screenWidth", "u_screenHeight"]);

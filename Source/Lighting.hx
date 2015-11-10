@@ -73,18 +73,18 @@ class Lighting extends Scene
 		
 		sun = new Light ( LightType.DIRECTIONAL, new Vector3 ( 0, 0, -1 ), 10, 3, Color.yellow, this );
 		sun.transform.rotate ( new Vector3 ( -45, 0, 0 ) );
-		var material:Material = new Material ( "bricks_a.jpg", "bricks_n.png", "bricks_m.png", "bricks_s.png" );
+		var material:Material = new Material ( "bricks_a.png", "bricks_n.png", "bricks_m.png", "bricks_s.png" );
 		var material2:Material = new Material ( "rustmetal_a.png", "rustmetal_n.png", "rustmetal_m.png", "rustmetal_s.png" );
 		var material3:Material = new Material ( "tiledroad_a.png", "tiledroad_n.png", "tiledroad_m.png", "tiledroad_s.png" );
-		floor.mesh.bindMaterialAt ( material3 );
+		floor.mesh.bindMaterialAt ( material );
 		cubeMesh.bindMaterialAt ( material );
 		monkey2.mesh.bindMaterialAt ( material );
 		monkey3.mesh.bindMaterialAt ( material2 );
 		monkey4.mesh.bindMaterialAt ( material3 );
 		monkey5.mesh.bindMaterialAt ( material );
 		
-		pointLight = new Light ( LightType.SPOT, new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
-		pointLight.cutoff = 0.9;
+		//pointLight = new Light ( LightType.SPOT, new Vector3 ( 0, 0, -1 ), 10, 3, Color.white, this );
+		//pointLight.cutoff = 0.9;
 		
 		activeCamera.transform.position = new Vector3 ( 0, 10, -10 );
 		activeCamera.transform.rotate ( new Vector3 ( -45, 0, 0 ) );
@@ -110,7 +110,7 @@ class Lighting extends Scene
 		
 		
 		//sun.transform.rotation = sun.transform.rotation.add ( new Vector3 ( 0, rotationSpeed, 0 ) );
-		sun.transform.rotate ( new Vector3 ( 0, rotationSpeed, 0 ) );
+		//sun.transform.rotate ( new Vector3 ( 0, rotationSpeed, 0 ) );
 		monkey2.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
 		monkey3.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );
 		monkey4.transform.rotateAroundPoint ( cube1.transform.position, Vector3.Up(), rotationSpeed );

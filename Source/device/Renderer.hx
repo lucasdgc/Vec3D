@@ -198,7 +198,7 @@ class Renderer
 		GL.enable( GL.DEPTH_TEST );
 		GL.cullFace ( GL.FRONT );
 		
-		var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( -5, 5, -8, 8, 0.01, 10 ); 
+		var lightProjection:Matrix = Matrix.OrthoOffCenterLH ( -5, 5, -8, 3, 0.01, 10 ); 
 		//var lightProjection:Matrix = Matrix.OrthoLH ( 10, 10, 0.01, 10 ); 
 		var lightView:Matrix = Matrix.LookAtLH ( lightTransform.forward.negate(), Vector3.Zero(), Vector3.Up() );
 		lightSpaceMatrix = lightProjection.multiply ( lightView );
@@ -210,7 +210,7 @@ class Renderer
 					GL.uniformMatrix4fv (shadowBuffer.shaderProgram.uniforms[1].index, false, new Float32Array ( go.transform.transformMatrix.m ));
 					GL.bindBuffer( GL.ARRAY_BUFFER, go.mesh.meshBuffer.vertexBuffer );
 					GL.enableVertexAttribArray( shadowBuffer.shaderProgram.attributes[0].index );
-					GL.vertexAttribPointer( shadowBuffer.shaderProgram.attributes[0].index, 3, GL.FLOAT, false, 8 * 4, 0 );
+					GL.vertexAttribPointer( shadowBuffer.shaderProgram.attributes[0].index, 3, GL.FLOAT, false, 14 * 4, 0 );
 					
 					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, go.mesh.meshBuffer.faceIndexBuffer );
 					

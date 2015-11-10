@@ -35,7 +35,7 @@ struct spotLight {
 	float cutoff;
 };
 
-uniform samplerCube skybox;
+uniform samplerCube uSkybox;
 
 uniform directionalLight uDirLight;
 uniform int uPointLightCount;
@@ -83,7 +83,7 @@ void main (void)  {
 	vec3 dColor = pow ( vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) ), vec3 ( gamma ) );
 	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
 	float smoothness = clamp ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, 0.0, 1.0 );
-	//float smoothness = 0.4;
+	//float smoothness = 0.8;
 	float metallic = clamp ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, 0.0, 1.0 );
 	//float metallic = 0.0;
 	
@@ -103,6 +103,7 @@ void main (void)  {
 		sunDotNL = dot ( normal, sunDir );
 		vec3 dirLightAttr = calcLightFactors ( sunDir, normal, eye, smoothness, metallic );
 		//debugColor = vec3 ( dot (  normalize ( -uDirLight.direction ), normal), dot (  normalize ( -uDirLight.direction ) , normal ), dot (  normalize ( -uDirLight.direction ) , n ) );
+		//vec3 directionalContribution = getDirectLightContribution ( dirLightAttr.x, dirLightAttr.y, dirLightAttr.z, dColor, specColor );
 		vec3 directionalContribution = getDirectLightContribution ( dirLightAttr.x, dirLightAttr.y, dirLightAttr.z, dColor, specColor );
 		fragColor += directionalContribution;
 	}
@@ -138,6 +139,8 @@ void main (void)  {
 	float shadow = calcShadows ( vFragPositionLS, sunDotNL );
 	fragColor = ( 1.0 - shadow ) * fragColor;
 	
+	//fragColor = fragColor + ambientSpecular ( smoothness, sunDotNL, normal, eye );
+	
 	gl_FragColor = vec4 ( fragColor, 1.0 );
 	//gl_FragColor = vec4 ( debugColor, 1.0 );
 }
@@ -145,10 +148,10 @@ void main (void)  {
 vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, float metallic ) {
 	lightDir = lightDir;
 	vec3 halfDir = normalize ( lightDir + eye );
-	float dotNL = dot ( normal, lightDir );
+	float dotNL = max ( dot ( normal, lightDir ), 0.0 );
 	
-	float diffuseFactor = max ( dotNL, 0.0 );
-	//float diffuseFactor = dotNL;
+	//float diffuseFactor = max ( dotNL, 0.0 );
+	float diffuseFactor = dotNL;
 	float specularFactor = max ( specularBlinn ( normal, halfDir, smoothness ) * dotNL, 0.0 );
 	float fresnelFactor = max ( fresnelFloat ( eye, normal, 0.0 ), 0.0 ) * smoothness;
 	
@@ -161,6 +164,7 @@ vec3 getDirectLightContribution ( float diffuseFactor, float specularFactor, flo
 	vec3 specular = ( specularFactor * specColor ) + fresnel;
 	
 	return diffuse + specular;
+	//return fresnel;
 }
 
 float calcShadows ( vec4 fragPosLS, float dotNL ) {
@@ -173,8 +177,8 @@ float calcShadows ( vec4 fragPosLS, float dotNL ) {
 	float shadow = currentDepth - bias > closestDepth  ? 0.7 : 0.0;  
     //float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
-    //return shadow;
-	return 0.0;
+    return shadow;
+	//return 0.0;
 }
 
 float lambertDiffuse ( vec3 normal, vec3 lightDir ) {
@@ -216,7 +220,7 @@ vec3 fresnelSchlick ( vec3 specColor, vec3 eye, vec3 halfDir ) {
 }
 
 float fresnelFloat ( vec3 eye, vec3 normal, float f0 ) {
-	return f0 + ( 1.0 - f0 ) * pow ( 1.0 - dot ( normal, eye ), 4.0 );
+	return clamp ( f0 + ( 1.0 - f0 ) * pow ( 1.0 - dot ( normal, eye ), 5.0 ), 0.0, 1.0 );
 }
 
 vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir ) {
@@ -230,7 +234,7 @@ vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye ) {
 	vec3 skyboxR = reflect ( - eye, normalize ( normal ) );
 	
 	//return normalization * pow ( dotNL, power ) * dotNL * vec3 ( textureCube ( skybox, skyboxR ) );
-	vec3 pfColor = dotNL * vec3 ( textureCube ( skybox, skyboxR ) );
+	vec3 pfColor = dotNL * vec3 ( textureCube ( uSkybox, skyboxR ) );
 	
 	return pfColor;
 }
