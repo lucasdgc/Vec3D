@@ -134,13 +134,13 @@ void main (void)  {
 			fragColor += spotContribution * intensity;
 		}
 	}
-	//Gamma Correction (change to postprocessing....)
-    fragColor = pow(fragColor, vec3(1.0/gamma));
 	float shadow = calcShadows ( vFragPositionLS, sunDotNL );
 	fragColor = ( 1.0 - shadow ) * fragColor;
 	
-	//fragColor = fragColor + ambientSpecular ( smoothness, sunDotNL, normal, eye );
+	fragColor = fragColor * ambientSpecular ( smoothness, sunDotNL, normal, eye );
 	
+	//Gamma Correction (change to postprocessing....)
+	fragColor = pow(fragColor, vec3(1.0/gamma));
 	gl_FragColor = vec4 ( fragColor, 1.0 );
 	//gl_FragColor = vec4 ( debugColor, 1.0 );
 }
@@ -153,7 +153,7 @@ vec3 calcLightFactors ( vec3 lightDir, vec3 normal, vec3 eye, float smoothness, 
 	//float diffuseFactor = max ( dotNL, 0.0 );
 	float diffuseFactor = dotNL;
 	float specularFactor = max ( specularBlinn ( normal, halfDir, smoothness ) * dotNL, 0.0 );
-	float fresnelFactor = max ( fresnelFloat ( eye, normal, 0.0 ), 0.0 ) * smoothness;
+	float fresnelFactor = max ( fresnelFloat ( eye, normal, 0.01 ), 0.0 ) * smoothness;
 	
 	return vec3 ( diffuseFactor, specularFactor, fresnelFactor );
 }
@@ -164,7 +164,7 @@ vec3 getDirectLightContribution ( float diffuseFactor, float specularFactor, flo
 	vec3 specular = ( specularFactor * specColor ) + fresnel;
 	
 	return diffuse + specular;
-	//return fresnel;
+	//return diffuse;
 }
 
 float calcShadows ( vec4 fragPosLS, float dotNL ) {
@@ -229,12 +229,12 @@ vec3 fresnelSchlickAprox ( vec3 specColor, vec3 eye, vec3 halfDir ) {
 }
 
 vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye ) {
-	float pie = PI;
-	float normalization = ( power + 2.0 ) / ( 2.0 * pie );
+	//float pie = PI;
+	//float normalization = ( power + 2.0 ) / ( 2.0 * pie );
 	vec3 skyboxR = reflect ( - eye, normalize ( normal ) );
 	
 	//return normalization * pow ( dotNL, power ) * dotNL * vec3 ( textureCube ( skybox, skyboxR ) );
-	vec3 pfColor = dotNL * vec3 ( textureCube ( uSkybox, skyboxR ) );
+	vec3 pfColor = pow ( vec3 ( textureCube ( uSkybox, skyboxR, 3.0 ) ), vec3 ( 2.2 ) );
 	
 	return pfColor;
 }

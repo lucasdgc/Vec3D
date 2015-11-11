@@ -117,6 +117,13 @@ class Renderer
 					GL.uniformMatrix4fv (mesh.shaderProgram.uniforms[ materialUniformIndex + 5 ].index, false, new Float32Array (lightSpaceMatrix.m));
 				}
 				
+				if ( Engine.instance.currentScene.skybox != null ) {
+					GL.activeTexture ( GL.TEXTURE5 );
+					GL.uniform1i ( mesh.shaderProgram.uniforms[ materialUniformIndex + 6 ].index, 5 );
+					GL.bindTexture ( GL.TEXTURE_CUBE_MAP, Engine.instance.currentScene.skybox.cubemapTexture );
+				}
+		
+				
 				drawGeometry(mesh.meshBuffer.vertexBuffer, mesh.vertices.length, mesh.drawPoints,
 						mesh.meshBuffer.edgeIndexBuffer, mesh.edges.length, mesh.drawEdges,
 						mesh.meshBuffer.faceIndexBuffer, mesh.faces.length, mesh.drawFaces);
@@ -129,16 +136,17 @@ class Renderer
 			//drawGeometry ();
 		}
 		
-		GL.disable ( GL.CULL_FACE );
-		if (Engine.instance.currentScene.skybox != null) {
-			drawCubemap ( Engine.instance.currentScene.skybox, projectionMatrix, viewMatrix );
-		}
-		
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[0].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[1].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[2].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[3].index);
 		GL.disableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[4].index);
+		
+		
+		GL.disable ( GL.CULL_FACE );
+		if (Engine.instance.currentScene.skybox != null) {
+			drawCubemap ( Engine.instance.currentScene.skybox, projectionMatrix, viewMatrix );
+		}
 		
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
@@ -166,10 +174,6 @@ class Renderer
 		
 		GL.enableVertexAttribArray(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[4].index);
 		GL.vertexAttribPointer(ShaderProgram.getShaderProgram(Device.DEFAULT_SHADER_NAME).attributes[4].index, 3, GL.FLOAT, false, 14 * 4, 11 * 4);
-		
-		if ( Engine.instance.currentScene.skybox != null ) {
-			GL.bindTexture ( GL.TEXTURE_CUBE_MAP, Engine.instance.currentScene.skybox.cubemapTexture );
-		}
 		
 		if (drawVertex && vertexBufferSize > 0) {
 			frameDrawCalls ++;
@@ -218,6 +222,8 @@ class Renderer
 				}
 			}
 		}
+		
+		GL.disableVertexAttribArray( shadowBuffer.shaderProgram.attributes[0].index );
 		GL.cullFace ( GL.BACK );
 		
 	}
@@ -241,6 +247,7 @@ class Renderer
 		//GL.uniform1f(frameBuffer.shaderProgram.uniforms[1].index, Time.deltaTime * 2 * 3.14159 * .75 * 10);
 		
 		GL.drawArrays(GL.TRIANGLE_STRIP, 0, 4);
+		GL.disableVertexAttribArray(frameBuffer.shaderProgram.attributes[0].index);
 	}
 	
 	public function drawCubemap ( cubemap:Cubemap, projection:Matrix, view:Matrix ) {

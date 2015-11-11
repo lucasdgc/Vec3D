@@ -38,6 +38,7 @@ class Cubemap
 		cubemapTexture = GL.createTexture ();
 		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, cubemapTexture );
 		loadImages ( [posX, negX, posY, negY, posZ, negZ] );
+		
 		GL.bindTexture ( GL.TEXTURE_CUBE_MAP, null );
 		
 		createBuffers ();
@@ -107,6 +108,7 @@ class Cubemap
 				imageBD = Assets.getBitmapData ( cubemapAssetsDirectory + images[i] + ".jpg" );
 				imgData = ImageOperations.rgbBitmapDataToUIntArray8 ( imageBD );
 				GL.texImage2D ( GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL.RGB, imageBD.width, imageBD.height, 0, GL.RGB, GL.UNSIGNED_BYTE, imgData );
+				
 				imageBD.dispose ();
 				imgData = null;
 				loadMipMaps ( GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, cubemapAssetsDirectory + images[i], i );
@@ -119,8 +121,8 @@ class Cubemap
 		
 		for ( mipLevel in 0...mimapNumbers ) {
 			mipmapBD = Assets.getBitmapData ( cubemapAssetsDirectory + "512/512" + "_m0" + mipLevel + "_" + "c0" + i + ".jpg" );
-			trace (cubemapAssetsDirectory + "512/512" + "_m0" + mipLevel + "_" + "c0" + i + ".jpg");
-			trace ( mipLevel + 1 );
+			//trace (cubemapAssetsDirectory + "512/512" + "_m0" + mipLevel + "_" + "c0" + i + ".jpg");
+			trace ( "Loaded CubeMap mipmap level: " + ( mipLevel + 1 ) );
 			imgData = ImageOperations.rgbBitmapDataToUIntArray8 ( mipmapBD );
 			GL.texImage2D ( slot, mipLevel + 1, GL.RGB, mipmapBD.width, mipmapBD.height, 0, GL.RGB, GL.UNSIGNED_BYTE, imgData );
 			mipmapBD.dispose ();
