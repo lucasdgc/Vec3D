@@ -40,7 +40,7 @@ class Lighting extends Scene
 		var a = new VirtualAnalogStick ( rect, "Analog X", "Analog Y" );
 		#end
 		//var cubeMesh:Mesh = Primitives.createCube ();
-		var cubeMesh:Mesh = Mesh.loadMeshFile ( "monkey_high" );
+		var cubeMesh:Mesh = Mesh.loadMeshFile ( "sphere" );
 		//var cubeMesh:Mesh = Mesh.loadMeshFile ( "cube" );
 		//cubeMesh.calculateNormals ();
 		cubeMesh.drawEdges = false;
