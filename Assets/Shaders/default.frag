@@ -79,13 +79,13 @@ void main (void)  {
 	vec3 eye = normalize ( vEyePos - vFragPosition );
 	float gamma = 2.2;
 	//Material attributes
-	vec3 sColor = vec3 ( 0.7, 0.7, 0.7 );
+	vec3 sColor = pow ( vec3 ( 0.7, 0.7, 0.7 ), vec3 ( gamma ) );
 	vec3 dColor = pow ( vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) ), vec3 ( gamma ) );
 	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
-	float smoothness = clamp ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, 0.0, 1.0 );
-	//float smoothness = 1.0;
-	float metallic = clamp ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, 0.0, 1.0 );
-	//float metallic = 1.0;
+	//float smoothness = clamp ( pow ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, gamma ), 0.0, 1.0 );
+	float smoothness = 0.8;
+	//float metallic = clamp ( pow ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, gamma ), 0.0, 1.0 );
+	float metallic = 1.0;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );
 	
