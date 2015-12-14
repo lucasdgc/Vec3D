@@ -83,9 +83,9 @@ void main (void)  {
 	vec3 dColor = pow ( vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) ), vec3 ( gamma ) );
 	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
 	//float smoothness = clamp ( pow ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, gamma ), 0.0, 1.0 );
-	float smoothness = 0.8;
+	float smoothness = 0.95;
 	//float metallic = clamp ( pow ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, gamma ), 0.0, 1.0 );
-	float metallic = 1.0;
+	float metallic = 0.0;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );
 	
@@ -140,7 +140,8 @@ void main (void)  {
 	//Ambient Component
 	vec3 ambientSpec = ambientSpecular ( smoothness, sunDotNL, normal, eye );
 	vec3 metallicColor = fragColor * ambientSpec;
-	vec3 dielectricColor = fragColor + ambientSpec;
+	vec3 dielectricColor = max ( fragColor, metallicColor );
+	//vec3 dielectricColor = fragColor;
 	
 	fragColor = mix ( dielectricColor, metallicColor, metallic );
 	
