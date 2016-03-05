@@ -82,10 +82,10 @@ void main (void)  {
 	vec3 sColor = pow ( vec3 ( 0.7, 0.7, 0.7 ), vec3 ( gamma ) );
 	vec3 dColor = pow ( vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) ), vec3 ( gamma ) );
 	//vec3 dColor = vec3 ( texture2D ( uMaterialAlbedo, vTexCoords ) );
-	//float smoothness = clamp ( pow ( vec3 ( texture2D ( uMaterialSmoothness, vTexCoords )).x, gamma ), 0.0, 1.0 );
-	float smoothness = 0.95;
+	//float smoothness = clamp (vec3 ( texture2D ( uMaterialSmoothness, vTexCoords ) ).x, 0.0, 1.0 );
+	float smoothness = 1.0;
 	//float metallic = clamp ( pow ( vec3 ( texture2D ( uMaterialMetallic, vTexCoords )).x, gamma ), 0.0, 1.0 );
-	float metallic = 0.0;
+	float metallic = 1.0;
 	
 	vec3 specColor = mix ( sColor, dColor, metallic );
 	
@@ -241,6 +241,7 @@ vec3 ambientSpecular ( float power, float dotNL, vec3 normal, vec3 eye ) {
 	
 	//return normalization * pow ( dotNL, power ) * dotNL * vec3 ( textureCube ( skybox, skyboxR ) );
 	vec3 pfColor = pow ( vec3 ( textureCube ( uSkybox, skyboxR, ( 1.0 - power ) * 10.0 ) ), vec3 ( 2.2 ) );
+	//vec3 pfColor = vec3 ( 1.0, 1.0, 1.0 );
 	
 	return pfColor;
 }
